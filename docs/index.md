@@ -1,3 +1,4 @@
 ---
-template: home.html title: gofer
+template: home.html 
+title: gofer
 ---

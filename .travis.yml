@@ -10,20 +10,10 @@ services:
 matrix:
   fast_finish: true
 
-install:
-  - # Do nothing. This is needed to prevent default install action "go get -t -v ./..." from happening here (we want it to happen inside script step).
-
-before_script:
-  #- echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
-  # - sh -c "if [ '$DB' = 'postgresql' ]; then psql -c 'CREATE DATABASE tests;' -U postgres; psql -U postgres -d tests -a -f tests/migration.psql.sql; fi"
-#- mysql -e 'UPDATE mysql.db SET Host='%' WHERE Host='localhost' AND User='root';FLUSH PRIVILEGES;'
-
 script:
   - go get -t -v ./...
-  - # diff -u <(echo -n) <(gofmt -d -s .) ignored because of helper_internal_test.go and helper_test.go
   - go vet ./...
   - go test -v -p 1 ./... -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
-  - curl -s https://codecov.io/bash
-#- if [ $DB == "postgresql" ]; then bash <(curl -s https://codecov.io/bash) -cF postgresql;fi
+  - bash <(curl -s https://codecov.io/bash)

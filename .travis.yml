@@ -13,7 +13,7 @@ matrix:
 script:
   - go get -t -v ./...
   - go vet ./...
-  - go test -v -p 1 ./... -coverprofile=coverage.txt -covermode=atomic
+  - go test -p 1 ./... -coverprofile=coverage.txt -covermode=count
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

@@ -22,7 +22,7 @@ script:
   - go get -t -v ./...
   - # diff -u <(echo -n) <(gofmt -d -s .) ignored because of helper_internal_test.go and helper_test.go
   - go vet .
-  - go test -v -p 1 -race ./... -coverprofile=coverage.txt -covermode=atomic
+  - go test -v -p 1 ./... -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - if [ $DB == "mysql" ]; then bash <(curl -s https://codecov.io/bash);fi

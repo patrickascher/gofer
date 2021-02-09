@@ -7,6 +7,7 @@ package logger_test
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/patrickascher/gofer/logger"
@@ -143,7 +144,9 @@ func testWithFieldsTimer(asserts *assert.Assertions, mockProvider *mocks.Provide
 	log = log.WithFields(logger.Fields{"John": "Doe"})
 	log.SetCallerFields(true)
 	log.Info("bbb")
-	asserts.Equal(logger.Fields{"file": "/Users/x/goProjects/src/github.com/patrickascher/gofer/logger/logger_test.go", "John": "Doe", "line": 145}, logEntry.Fields)
+	asserts.True(strings.Contains(logEntry.Fields["file"].(string), "github.com/patrickascher/gofer/logger/logger_test.go"))
+	asserts.Equal("Doe", logEntry.Fields["John"])
+	asserts.Equal(146, logEntry.Fields["line"])
 	asserts.Equal(3, len(logEntry.Fields))
 
 	// ok - test WithTimer and WithFields combined.

@@ -119,11 +119,10 @@ func TestBase_CommitRollback_Without_TX(t *testing.T) {
 // TestMysql_Timeout_Config checks the mysql timeout dns param.
 func TestMysql_Timeout_Config(t *testing.T) {
 	asserts := assert.New(t)
-	createDatabase(asserts)
 
 	// set a database and create a builder.
 	cfg := testConfig().DB
-	cfg.Host = "127.0.0.2"
+	cfg.Host = "127.0.0.50"
 	cfg.Timeout = "1s"
 	b, err := query.New("mysql", cfg)
 	asserts.Error(err)

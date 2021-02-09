@@ -59,7 +59,10 @@ func newManager(provider Interface) Manager {
 	}
 }
 
-var ErrNotExist = "cache: item or prefix %s does not exist"
+// Error messages.
+var (
+	ErrNotExist = "cache: item or prefix %s does not exist"
+)
 
 // SetDefaultPrefix for cache items.
 func (m *manager) SetDefaultPrefix(prefix string) {
@@ -111,13 +114,13 @@ func (m *manager) Prefix(prefix string) ([]Item, error) {
 
 // All cached items.
 func (m *manager) All() ([]Item, error) {
-	if items, err := m.provider.All(); err == nil {
+	items, err := m.provider.All()
+	if err == nil {
 		m.increaseAllHitCounter()
 		return items, nil
-	} else {
-		// wrapping the provider err for a better stack
-		return nil, fmt.Errorf("cache: %w", err)
 	}
+	// wrapping the provider err for a better stack
+	return nil, fmt.Errorf("cache: %w", err)
 }
 
 // Set an item by its prefix, name, value and lifetime.

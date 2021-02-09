@@ -34,7 +34,7 @@ func (w *Response) Values() map[string]interface{} {
 	return w.data
 }
 
-// ResetValues.
+// ResetValues will create a new data instance.
 func (w *Response) ResetValues() {
 	w.data = make(map[string]interface{})
 }

@@ -6,8 +6,9 @@ package condition
 
 import "strconv"
 
-// PLACEHOLDER character.
 const tmpPlaceholder = "§$%"
+
+// PLACEHOLDER character.
 const PLACEHOLDER = "?"
 
 // Placeholder is used to ensure an unique placeholder for different database adapters.

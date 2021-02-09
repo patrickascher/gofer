@@ -10,10 +10,10 @@ import (
 
 // register json renderer automatically.
 func init() {
-	_ = RegisterRenderer("json", newJsonRenderer)
+	_ = RegisterRenderer("json", newJSONRenderer)
 }
 
-func newJsonRenderer() (Renderer, error) {
+func newJSONRenderer() (Renderer, error) {
 	return &jsonRenderer{}, nil
 }
 

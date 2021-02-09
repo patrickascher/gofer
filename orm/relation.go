@@ -47,7 +47,7 @@ type Relation struct {
 	Kind  string
 	Type  reflect.Type
 
-	NoSqlColumn bool
+	NoSQLColumn bool
 	Permission  Permission
 	Validator   validator
 
@@ -136,8 +136,8 @@ func (m *Model) createRelations(structRelations []reflect.StructField) error {
 		relation.Validator.SetConfig(structRelation.Tag.Get(TagValidate))
 
 		// custom field
-		if _, ok := tags[tagNoSqlField]; ok {
-			relation.NoSqlColumn = true
+		if _, ok := tags[tagNoSQLField]; ok {
+			relation.NoSQLColumn = true
 		} else {
 
 			// init Model will be called if the orm model was not initialized by any parent model yet,

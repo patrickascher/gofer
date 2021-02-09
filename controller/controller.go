@@ -136,6 +136,7 @@ func (c *Base) Redirect(status int, url string) {
 	http.Redirect(c.Context().Response.Writer(), c.Context().Request.HTTPRequest(), url, status)
 }
 
+// T is a helper to translate a string.
 func (c *Base) T(name string, template ...map[string]interface{}) string {
 	l := c.Context().Request.Localizer()
 	if l == nil {
@@ -147,6 +148,7 @@ func (c *Base) T(name string, template ...map[string]interface{}) string {
 	return name
 }
 
+// TP is a helper to translate a plural string.
 func (c *Base) TP(name string, count int, template ...map[string]interface{}) string {
 	l := c.Context().Request.Localizer()
 	if l == nil {
@@ -186,7 +188,7 @@ func (c *Base) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// hasError will be true if the function Error was called.
+// HasError will be true if the function Error was called.
 // If set, the Render function will not be called.
 func (c *Base) HasError() bool {
 	return c.err
@@ -205,7 +207,7 @@ func newController(c *Base) Interface {
 	return execController
 }
 
-// methodBy pattern and HTTP method will return the mapped controller method.
+// CallAction will call a controller function by name.
 // Error will return if the controller method does not exist.
 func (c *Base) CallAction(name string) (func(), error) {
 	c.actionName = name

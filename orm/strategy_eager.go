@@ -121,29 +121,28 @@ func createOrUpdate(relModel Interface, relation Relation, selfReference bool) e
 
 	if !relScope.PrimaryKeysSet() {
 		return relModel.Create()
-	} else {
-
-		// if only the belongsTo foreign key and the manyToMany join table should be updated.
-		if root, err := relScope.Parent(RootStruct); err == nil && root.config[RootStruct].updateReferencesOnly {
-			return nil
-		}
-
-		// on self reference there is a problem with a loop, so the changed value is not checked again.
-		if !selfReference {
-			relScope.TakeSnapshot(true)
-		}
-
-		err := relModel.Update()
-		// if the ID does not exist yet, error will be thrown. then create it.
-		if err == sql.ErrNoRows {
-			err = relModel.Create()
-		}
-
-		if selfReference {
-			relModel.model().parentModel = nil
-		}
-		return err
 	}
+
+	// if only the belongsTo foreign key and the manyToMany join table should be updated.
+	if root, err := relScope.Parent(RootStruct); err == nil && root.config[RootStruct].updateReferencesOnly {
+		return nil
+	}
+
+	// on self reference there is a problem with a loop, so the changed value is not checked again.
+	if !selfReference {
+		relScope.TakeSnapshot(true)
+	}
+
+	err = relModel.Update()
+	// if the ID does not exist yet, error will be thrown. then create it.
+	if err == sql.ErrNoRows {
+		err = relModel.Create()
+	}
+
+	if selfReference {
+		relModel.model().parentModel = nil
+	}
+	return err
 }
 
 // compareValues is a helper function to sanitize the value to a string and compare it.

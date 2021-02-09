@@ -28,7 +28,7 @@ func (_m *Builder) Config() query.Config {
 }
 
 // Query provides a mock function with given fields: _a0
-func (_m *Builder) Query(_a0 ...query.QueryTx) query.Query {
+func (_m *Builder) Query(_a0 ...query.Tx) query.Query {
 	_va := make([]interface{}, len(_a0))
 	for _i := range _a0 {
 		_va[_i] = _a0[_i]
@@ -38,7 +38,7 @@ func (_m *Builder) Query(_a0 ...query.QueryTx) query.Query {
 	ret := _m.Called(_ca...)
 
 	var r0 query.Query
-	if rf, ok := ret.Get(0).(func(...query.QueryTx) query.Query); ok {
+	if rf, ok := ret.Get(0).(func(...query.Tx) query.Query); ok {
 		r0 = rf(_a0...)
 	} else {
 		if ret.Get(0) != nil {

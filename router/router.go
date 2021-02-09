@@ -70,7 +70,7 @@ type Provider interface {
 	AddPublicFile(url string, path string) error
 }
 
-// Interface of the router.
+// Manager interface of the router.
 type Manager interface {
 	// Routes return all defined routes.
 	Routes() []Route

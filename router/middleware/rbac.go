@@ -21,6 +21,7 @@ type RoleService interface {
 	Allowed(pattern string, HTTPMethod string, claims interface{}) bool
 }
 
+// Error messages.
 var (
 	ErrRbacPatternService = "rbac: pattern or service is not defined"
 	ErrRbacClaim          = "rbac: claim is not set"

@@ -86,12 +86,12 @@ type Model struct {
 	// autoTx will be set on root level if there is no tx defined yet.
 	// TODO: at the moment its not possible to define a tx as user but orm is already build for it.
 	builder query.Builder
-	tx      query.QueryTx
+	tx      query.Tx
 	autoTx  bool
 
 	// cache settings for the struct.
 	cache      cache.Manager
-	cacheTTl   time.Duration
+	cacheTTL   time.Duration
 	softDelete *SoftDelete
 
 	permissionList *permissionList
@@ -449,7 +449,7 @@ func (m *Model) Init(caller Interface) error {
 	m.caller = caller
 
 	// check if a cache is set.
-	if m.cache, m.cacheTTl = m.caller.DefaultCache(); m.cache == nil {
+	if m.cache, m.cacheTTL = m.caller.DefaultCache(); m.cache == nil {
 		return fmt.Errorf(ErrMandatory, "cache", reflectName(caller))
 	}
 
@@ -513,7 +513,7 @@ func (m *Model) Init(caller Interface) error {
 		m.scope.SetConfig(&config{allowHasOneZero: true, showDeletedRows: false})
 
 		// set cache
-		err = m.cache.Set(prefixCache, m.scope.Name(true), *m, m.cacheTTl)
+		err = m.cache.Set(prefixCache, m.scope.Name(true), *m, m.cacheTTL)
 		if err != nil {
 			return fmt.Errorf("orm: %w", err)
 		}

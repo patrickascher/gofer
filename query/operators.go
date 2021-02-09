@@ -4,6 +4,7 @@
 
 package query
 
+// all allowed sql operators.
 const (
 	EQ      = "= ?"
 	NEQ     = "!= ?"
@@ -19,6 +20,7 @@ const (
 	NOTIN   = "NOT IN (?)"
 )
 
+// IsOperatorAllowed will return false if the operator is not implemented.
 func IsOperatorAllowed(s string) bool {
 	switch s {
 	case EQ, NEQ, NULL, NOTNULL, GT, GTE, LT, LTE, LIKE, NOTLIKE, IN, NOTIN:

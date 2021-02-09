@@ -11,13 +11,15 @@ import (
 	"github.com/patrickascher/gofer/query/condition"
 )
 
+// Builder interface.
 type Builder interface {
 	SetLogger(logger.Manager)
-	Query(...QueryTx) Query
+	Query(...Tx) Query
 	Config() Config
 	QuoteIdentifier(string) string
 }
 
+// Provider interface.
 type Provider interface {
 	Open() error
 	Config() Config
@@ -26,15 +28,16 @@ type Provider interface {
 	QuoteIdentifierChar() string
 	SetLogger(logger.Manager)
 	Query
-	QueryTx //TODO DELETE
+	Tx
 	Query() Query
 	Exec([]string, [][]interface{}) ([]sql.Result, error)
 	First(string, []interface{}) (*sql.Row, error)
 	All(string, []interface{}) (*sql.Rows, error)
 }
 
+// Query interface.
 type Query interface {
-	Tx() (QueryTx, error)
+	Tx() (Tx, error)
 	HasTx() bool
 	Commit() error
 	Rollback() error
@@ -48,7 +51,8 @@ type Query interface {
 	Information(string) Information
 }
 
-type QueryTx interface {
+// Tx interface.
+type Tx interface {
 	HasTx() bool
 	Commit() error
 	Rollback() error
@@ -62,6 +66,7 @@ type QueryTx interface {
 	Information(string) Information
 }
 
+// Insert interface.
 type Insert interface {
 	Batch(int) Insert
 	Columns(...string) Insert
@@ -72,6 +77,7 @@ type Insert interface {
 	Exec() ([]sql.Result, error)
 }
 
+// Update interface.
 type Update interface {
 	Set(map[string]interface{}) Update
 	Columns(...string) Update
@@ -82,6 +88,7 @@ type Update interface {
 	Exec() (sql.Result, error)
 }
 
+// Delete interface.
 type Delete interface {
 	Condition(c condition.Condition) Delete
 	Where(string, ...interface{}) Delete
@@ -90,6 +97,7 @@ type Delete interface {
 	Exec() (sql.Result, error)
 }
 
+// Select interface.
 type Select interface {
 	Columns(...string) Select
 	First() (*sql.Row, error)
@@ -106,11 +114,13 @@ type Select interface {
 	Offset(offset int) Select
 }
 
+// Information interface
 type Information interface {
 	Describe(columns ...string) ([]Column, error)
 	ForeignKey() ([]ForeignKey, error)
 }
 
+// Type interface
 type Type interface {
 	Kind() string
 	Raw() string

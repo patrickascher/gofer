@@ -12,6 +12,9 @@ const (
 	tagKeyValue  = ":"
 )
 
+// ParseTag will return a map with the configuration.
+// If the value is empty, an empty string will be added.
+// a:b;c = map["a"]"b",map["c"]""
 func ParseTag(tag string) map[string]string {
 
 	// trim tag

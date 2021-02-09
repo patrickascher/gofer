@@ -88,9 +88,8 @@ func (f *Field) SetType(t string) *Field {
 func (f Field) Title() string {
 	if rv := f.title.get(f.mode); rv != nil {
 		return rv.(string)
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // SetTitle of the field.
@@ -104,9 +103,9 @@ func (f *Field) SetTitle(title *value) *Field {
 func (f Field) Description() string {
 	if rv := f.description.get(f.mode); rv != nil {
 		return rv.(string)
-	} else {
-		return ""
 	}
+	return ""
+
 }
 
 // SetDescription of the field.
@@ -116,14 +115,15 @@ func (f *Field) SetDescription(desc *value) *Field {
 	return f
 }
 
+// Position of the field.
 func (f Field) Position() int {
 	if rv := f.position.get(f.mode); rv != nil {
 		return rv.(int)
-	} else {
-		return 0
 	}
+	return 0
 }
 
+// SetPosition of the field.
 // The argument must be a grid.NewValue() because the title can have different values between the grid modes.
 func (f *Field) SetPosition(pos *value) *Field {
 	f.position = *pos
@@ -134,9 +134,8 @@ func (f *Field) SetPosition(pos *value) *Field {
 func (f Field) Removed() bool {
 	if rv := f.remove.get(f.mode); rv != nil {
 		return rv.(bool)
-	} else {
-		return false
 	}
+	return false
 }
 
 // SetRemove identifier of the field.
@@ -150,9 +149,8 @@ func (f *Field) SetRemove(remove *value) *Field {
 func (f Field) Hidden() bool {
 	if rv := f.hidden.get(f.mode); rv != nil {
 		return rv.(bool)
-	} else {
-		return false
 	}
+	return false
 }
 
 // SetHidden identifier of the field.
@@ -166,9 +164,8 @@ func (f *Field) SetHidden(hidden *value) *Field {
 func (f Field) View() string {
 	if rv := f.view.get(f.mode); rv != nil {
 		return rv.(string)
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // SetView of the field.
@@ -303,7 +300,7 @@ func (f Field) Error() error {
 	return f.error
 }
 
-// MarshalJson is used to create the header information of the field.
+// MarshalJSON is used to create the header information of the field.
 func (f Field) MarshalJSON() ([]byte, error) {
 	rv := map[string]interface{}{}
 

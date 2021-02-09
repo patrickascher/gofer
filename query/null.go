@@ -12,6 +12,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+// Error messages.
 var (
 	ErrSanitize = "query: can not sanitize value %v of type %s"
 )
@@ -56,6 +57,8 @@ func NewNullTime(t time.Time, valid bool) NullTime {
 	return NullTime(null.NewTime(t, valid))
 }
 
+// SanitizeToString will convert any type to a string.
+// Error will return if the type is not implemented in SanitizeInterfaceValue.
 func SanitizeToString(i interface{}) (string, error) {
 	v, err := SanitizeInterfaceValue(i)
 	if err != nil {

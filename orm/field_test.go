@@ -87,7 +87,7 @@ func TestModel_createFields(t *testing.T) {
 					asserts.NoError(err)
 					field, err := scope.Field("IDTag")
 					asserts.NoError(err)
-					asserts.Equal("Count(*)", field.SqlSelect)
+					asserts.Equal("Count(*)", field.SQLSelect)
 					asserts.Equal("required", field.Validator.Config())
 					asserts.Equal(orm.Permission{Read: true, Write: true}, field.Permission)
 					asserts.Equal("id", field.Information.Name)

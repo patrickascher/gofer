@@ -20,6 +20,7 @@ type config struct {
 	Exports []string
 }
 
+// Action configuration.
 type Action struct {
 	Right        bool
 	AllowDetails bool
@@ -28,14 +29,14 @@ type Action struct {
 	AllowDelete  bool
 }
 
-// renderTypes
+// Export render types.
 type Export struct {
 	Key  string
 	Name string
 	Icon string
 }
 
-// renderTypes
+// Filter configuration.
 type Filter struct {
 	Allow            bool
 	ShowQuickFilter  bool

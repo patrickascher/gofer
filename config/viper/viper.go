@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-// viper provides a wrapper for the https://github.com/spf13/viper package.
+// Package viper provides a wrapper for the https://github.com/spf13/viper package.
 // It offers a different callback function, to get access to the viper instance.
 // By default, the watcher will automatically unmarshal the data of the defined configuration struct.
 // TODO: add remote features

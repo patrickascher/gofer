@@ -22,11 +22,13 @@ var (
 	ErrPlaceholderMismatch = "query: %v placeholder(%d) and arguments(%d) does not fit"
 )
 
+// Clause interface.
 type Clause interface {
 	Arguments() []interface{}
 	Condition() string
 }
 
+// Condition interface.
 type Condition interface {
 	SetWhere(condition string, args ...interface{}) Condition
 	Where() []Clause
@@ -437,33 +439,33 @@ func clauseManipulation(clause string, args []interface{}) (string, []interface{
 	// if no arguments exist, just add the condition.
 	if len(args) == 0 {
 		return clause, nil, nil
-	} else {
+	}
 
-		// check if there is an array or slice defined.
-		for i := 0; i < len(args); i++ {
-			// handle array/slice arguments
-			argReflect := reflect.ValueOf(args[i])
-			spStmt := strings.SplitAfter(clause, PLACEHOLDER)
+	// check if there is an array or slice defined.
+	for i := 0; i < len(args); i++ {
+		// handle array/slice arguments
+		argReflect := reflect.ValueOf(args[i])
+		spStmt := strings.SplitAfter(clause, PLACEHOLDER)
 
-			if argReflect.Kind() == reflect.Array || argReflect.Kind() == reflect.Slice {
-				//split after placeholder and only replace the map placeholder
-				spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder+strings.Repeat(", "+tmpPlaceholder, reflect.ValueOf(args[i]).Len()-1), -1)
-				clause = strings.Join(spStmt, "")
+		if argReflect.Kind() == reflect.Array || argReflect.Kind() == reflect.Slice {
+			//split after placeholder and only replace the map placeholder
+			spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder+strings.Repeat(", "+tmpPlaceholder, reflect.ValueOf(args[i]).Len()-1), -1)
+			clause = strings.Join(spStmt, "")
 
-				var newArg []interface{}
-				if len(args[:i]) > 0 {
-					newArg = append(newArg, args[:i]...)
-				}
-				for n := 0; n < argReflect.Len(); n++ {
-					newArg = append(newArg, argReflect.Index(n).Interface())
-				}
-				args = append(newArg, args[i+1:]...)
-			} else {
-				//split after placeholder and only replace the map placeholder
-				spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder, -1)
-				clause = strings.Join(spStmt, "")
+			var newArg []interface{}
+			if len(args[:i]) > 0 {
+				newArg = append(newArg, args[:i]...)
 			}
+			for n := 0; n < argReflect.Len(); n++ {
+				newArg = append(newArg, argReflect.Index(n).Interface())
+			}
+			args = append(newArg, args[i+1:]...)
+		} else {
+			//split after placeholder and only replace the map placeholder
+			spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder, -1)
+			clause = strings.Join(spStmt, "")
 		}
 	}
+
 	return strings.Replace(clause, tmpPlaceholder, PLACEHOLDER, -1), args, err
 }

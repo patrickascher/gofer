@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-// Logrus provider for the logger package. Its a wrapper for https://github.com/sirupsen/logrus.
+// Package logrus provider for the logger package. Its a wrapper for https://github.com/sirupsen/logrus.
 // The logrus can be configured by the exported Instance field.
 package logrus
 

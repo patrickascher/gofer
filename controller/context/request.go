@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+// Package context todos:
 // TODO parse files, localizer
 // TODO body/file size limit
 package context

@@ -23,7 +23,7 @@ import (
 // Error messages.
 var (
 	ErrRequestBody = "request body is empty in %s"
-	ErrJsonInvalid = "json is invalid in %s"
+	ErrJSONInvalid = "json is invalid in %s"
 	ErrConfig      = "no fields are configured"
 )
 
@@ -31,7 +31,7 @@ type gridSource struct {
 	orm orm.Interface
 }
 
-// Grid converts an orm model to a grid source.
+// Orm converts an orm model to a grid source.
 func Orm(orm orm.Interface) *gridSource {
 	g := &gridSource{}
 	g.orm = orm
@@ -276,7 +276,7 @@ func (g *gridSource) unmarshalModel(grid Grid) error {
 
 	// check if the json is valid
 	if !json.Valid(body) {
-		return fmt.Errorf(ErrJsonInvalid, grid.Scope().Config().ID)
+		return fmt.Errorf(ErrJSONInvalid, grid.Scope().Config().ID)
 	}
 
 	// unmarshal the request to the model struct
@@ -361,12 +361,12 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 
 		field.referenceID = f.Name
 		field.referenceName = f.Name
-		if !f.NoSqlColumn {
+		if !f.NoSQLColumn {
 			field.referenceID = f.Information.Name
 		}
 
 		field.SetName(f.Name)
-		if skipJsonByTagOrSetJsonName(scope, &field) {
+		if skipJSONByTagOrSetJSONName(scope, &field) {
 			continue
 		}
 		field.SetPrimary(f.Information.PrimaryKey)
@@ -460,7 +460,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		field.referenceName = relation.Field
 		field.SetName(relation.Field)
 		field.SetRelation(true)
-		if skipJsonByTagOrSetJsonName(scope, &field) {
+		if skipJSONByTagOrSetJSONName(scope, &field) {
 			continue
 		}
 		field.SetType(relation.Kind)
@@ -521,9 +521,9 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 	return rv, nil
 }
 
-// skipJsonByTagOrSetJsonName will return true if the json skip tag exists.
+// skipJSONByTagOrSetJSONName will return true if the json skip tag exists.
 // Otherwise it checks if a json name is set, and sets the field Name.
-func skipJsonByTagOrSetJsonName(scope orm.Scope, f *Field) bool {
+func skipJSONByTagOrSetJSONName(scope orm.Scope, f *Field) bool {
 
 	rField, ok := reflect.TypeOf(scope.Caller()).Elem().FieldByName(f.name)
 	if ok {

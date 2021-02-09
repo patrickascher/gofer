@@ -247,7 +247,7 @@ func (s scope) Name(ns bool) string {
 func (s scope) SQLRelations(p Permission) []Relation {
 	var rv []Relation
 	for _, rel := range s.Relations(p) {
-		if rel.NoSqlColumn || (p.Read && !rel.Permission.Read) || (p.Write && !rel.Permission.Write) {
+		if rel.NoSQLColumn || (p.Read && !rel.Permission.Read) || (p.Write && !rel.Permission.Write) {
 			continue
 		}
 		rv = append(rv, rel)
@@ -266,7 +266,7 @@ func (s scope) Relations(p Permission) []Relation {
 	return rv
 }
 
-// SQLRelation will return teh requested relation by permission.
+// SQLRelation will return the requested relation by permission.
 // Relations(s) which are defined as "custom" or have not the required Permission will not be returned.
 // Error will return if the relation does not exist or has not the required permission.
 func (s scope) SQLRelation(relation string, p Permission) (Relation, error) {
@@ -305,7 +305,7 @@ func (s scope) SQLFields(p Permission) []Field {
 	var rv []Field
 	for _, field := range s.Fields(p) {
 		// skip if no real sql field or permission is not permitted.
-		if field.NoSqlColumn {
+		if field.NoSQLColumn {
 			continue
 		}
 		rv = append(rv, field)
@@ -605,7 +605,7 @@ func hasCustomTag(field reflect.StructField) bool {
 	tag := field.Tag.Get(TagKey)
 	tags := structer.ParseTag(tag)
 
-	if _, ok := tags[tagNoSqlField]; ok {
+	if _, ok := tags[tagNoSQLField]; ok {
 		switch field.Type.Kind() {
 		case reflect.Struct, reflect.Slice, reflect.Ptr:
 			return true

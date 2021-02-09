@@ -24,12 +24,12 @@ type serverCfg struct {
 	Password string
 }
 
-func createJson(user string) {
+func createJSON(user string) {
 	file, _ := json.MarshalIndent(serverCfg{Host: "localhost", User: user}, "", " ")
 	_ = ioutil.WriteFile("test.json", file, 0644)
 }
 
-func deleteJson() {
+func deleteJSON() {
 	_ = os.Remove("test.json")
 }
 
@@ -76,7 +76,7 @@ func testMandatoryFields(asserts *assert.Assertions) {
 }
 
 func testViperInstance(asserts *assert.Assertions) {
-	deleteJson()
+	deleteJSON()
 
 	c := &serverCfg{}
 	c2 := &serverCfg{}
@@ -93,7 +93,7 @@ func testViperInstance(asserts *assert.Assertions) {
 	asserts.Equal(fmt.Errorf("viper-provider: %w", errors.Unwrap(err)), err)
 
 	// ok - file exists
-	createJson("root")
+	createJSON("root")
 	err = v.Parse(c, opt)
 	asserts.NoError(err)
 	asserts.True(len(vInstances) == 1)
@@ -103,7 +103,7 @@ func testViperInstance(asserts *assert.Assertions) {
 	}
 
 	// ok - test if the cfg and options are getting re-assigned on an existing instance
-	createJson("root")
+	createJSON("root")
 	opt.Watch = true
 	err = v.Parse(c2, opt)
 	asserts.NoError(err)
@@ -132,7 +132,7 @@ func testViperWatcher(asserts *assert.Assertions) {
 	asserts.Equal("", c.Password)
 
 	// edit file
-	createJson("admin")
+	createJSON("admin")
 	time.Sleep(100 * time.Millisecond) // because of the goroutine
 	asserts.Equal("localhost", c.Host)
 	asserts.Equal("admin", c.User)
@@ -140,7 +140,7 @@ func testViperWatcher(asserts *assert.Assertions) {
 }
 
 func testViperWatcherCustomFn(asserts *assert.Assertions) {
-	createJson("root")
+	createJSON("root")
 	time.Sleep(100 * time.Millisecond) // because of the goroutine
 
 	var callbackCalled bool
@@ -164,7 +164,7 @@ func testViperWatcherCustomFn(asserts *assert.Assertions) {
 	asserts.False(callbackCalled)
 
 	// edit file
-	createJson("admin")
+	createJSON("admin")
 	time.Sleep(100 * time.Millisecond) // because of the goroutine
 	asserts.Equal("localhost", c.Host)
 	asserts.Equal("admin", c.User)
@@ -236,5 +236,5 @@ func TestViperProvider_Parse(t *testing.T) {
 	testViperEnvBinding(asserts)
 
 	// delete the test file.
-	deleteJson()
+	deleteJSON()
 }

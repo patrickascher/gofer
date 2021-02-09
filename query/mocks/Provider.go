@@ -307,15 +307,15 @@ func (_m *Provider) SetLogger(_a0 logger.Manager) {
 }
 
 // Tx provides a mock function with given fields:
-func (_m *Provider) Tx() (query.QueryTx, error) {
+func (_m *Provider) Tx() (query.Tx, error) {
 	ret := _m.Called()
 
-	var r0 query.QueryTx
-	if rf, ok := ret.Get(0).(func() query.QueryTx); ok {
+	var r0 query.Tx
+	if rf, ok := ret.Get(0).(func() query.Tx); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(query.QueryTx)
+			r0 = ret.Get(0).(query.Tx)
 		}
 	}
 

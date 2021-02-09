@@ -9,22 +9,22 @@ import (
 	"github.com/serenize/snaker"
 )
 
-// CamelToSnake
+// CamelToSnake of the given string.
 func CamelToSnake(s string) string {
 	return snaker.CamelToSnake(s)
 }
 
-// SnakeToCamel
+// SnakeToCamel of the given string.
 func SnakeToCamel(s string) string {
 	return snaker.SnakeToCamel(s)
 }
 
-// Plural
+// Plural of the given string.
 func Plural(s string) string {
 	return inflection.Plural(s)
 }
 
-// Singular
+// Singular of the given string.
 func Singular(s string) string {
 	return inflection.Singular(s)
 }

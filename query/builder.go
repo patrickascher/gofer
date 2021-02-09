@@ -2,11 +2,11 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-// query provides a simple programmatically sql query builder.
+// Package query provides a simple programmatically sql query builder.
 // The idea was to create a unique query builder which can be used with any database driver in go.
 //
 // Features: Unique Placeholder for all database drivers, Batching function for large Inserts, Whitelist, Quote Identifiers, SQL queries and durations log debugging
-// TODO: ForeignKeys should already hold the infomation of the relation type 1:1 1:n,...
+// TODO: ForeignKeys should already hold the information of the relation type 1:1 1:n,...
 // TODO: Create a slow query log (WARN) lvl with a config
 // TODO mysql Query must return a new instance to avoid race problems (tx).
 package query
@@ -66,7 +66,7 @@ func (b *builder) SetLogger(l logger.Manager) {
 }
 
 // Query will return a new query interface.
-func (b *builder) Query(tx ...QueryTx) Query {
+func (b *builder) Query(tx ...Tx) Query {
 	if len(tx) == 1 && tx[0] != nil {
 		return tx[0].(Query)
 	}

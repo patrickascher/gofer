@@ -4,6 +4,7 @@
 
 package types
 
+// sanitized types over multiple databases.
 const (
 	BOOL        = "Bool"
 	INTEGER     = "Integer"
@@ -17,7 +18,7 @@ const (
 	MULTISELECT = "MultiSelect"
 )
 
-// Type interface
+// Interface of the types to access the sanitized kind and the raw sql data.
 type Interface interface {
 	Kind() string
 	Raw() string
@@ -103,7 +104,7 @@ type Int struct {
 	common
 }
 
-// Int represents all kind of sql integers
+// Bool represents all kind of sql booleans.
 type Bool struct {
 	common
 }
@@ -142,12 +143,13 @@ type Float struct {
 	//precision
 }
 
-// Enum represents all kind of sql enums
+// Select represents sql enum and set.
 type Select struct {
 	Values []string
 	common
 }
 
+// Items will return the defined values.
 func (e *Select) Items() []string {
 	return e.Values
 }
@@ -158,6 +160,7 @@ type Set struct {
 	common
 }
 
+// Items interface.
 type Items interface {
 	Items() []string
 }

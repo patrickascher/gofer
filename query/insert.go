@@ -16,6 +16,7 @@ import (
 
 const defaultBatchSize = 50
 
+// Error messages.
 var (
 	ErrValueMissing = "query: no %s value is set (%s)"
 	ErrColumn       = "query: column (%s) does not exist in (%s)"
@@ -82,9 +83,9 @@ func (i *InsertBase) Exec() ([]sql.Result, error) {
 
 	// update last id
 	if err == nil && i.ILastID != nil && len(res) == 1 {
-		var lastId int64
-		lastId, err = res[0].LastInsertId()
-		id.Elem().SetInt(lastId)
+		var lastID int64
+		lastID, err = res[0].LastInsertId()
+		id.Elem().SetInt(lastID)
 	}
 
 	return res, err

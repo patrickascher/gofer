@@ -318,7 +318,7 @@ func testAddPublicRoute(asserts *assert.Assertions, manager router.Manager) {
 	asserts.Equal(router.ErrHandler, errors.Unwrap(err))
 
 	// error: no handler has wrong type
-	err = manager.AddPublicRoute(router.NewRoute("/public", "hanlder"))
+	err = manager.AddPublicRoute(router.NewRoute("/public", "handler"))
 	asserts.Error(err)
 	asserts.Equal(router.ErrHandler, errors.Unwrap(err))
 

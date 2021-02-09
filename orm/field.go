@@ -28,21 +28,21 @@ const (
 	TagValidate = "validate"
 
 	tagSkip       = "-"
-	tagNoSqlField = "custom"
+	tagNoSQLField = "custom"
 	tagColumn     = "column"
 	tagPermission = "permission"
-	tagSqlSelect  = "sql"
+	tagSQLSelect  = "sql"
 	tagPrimary    = "primary"
 )
 
 // Field is holding the struct field information.
 type Field struct {
 	Name        string
-	SqlSelect   string
+	SQLSelect   string
 	Permission  Permission
 	Information query.Column
 	Validator   validator
-	NoSqlColumn bool // defines a none db column.
+	NoSQLColumn bool // defines a none db column.
 }
 
 // Permission of the field.
@@ -75,8 +75,8 @@ func (m *Model) createFields(structFields []reflect.StructField) error {
 		// parse tag and config the Field.
 		for k, v := range structer.ParseTag(structField.Tag.Get("orm")) {
 			switch k {
-			case tagNoSqlField:
-				f.NoSqlColumn = true
+			case tagNoSQLField:
+				f.NoSQLColumn = true
 			case tagPrimary:
 				f.Information.PrimaryKey = true
 			case tagColumn:
@@ -90,8 +90,8 @@ func (m *Model) createFields(structFields []reflect.StructField) error {
 				if strings.Contains(v, "w") {
 					f.Permission.Write = true
 				}
-			case tagSqlSelect:
-				f.SqlSelect = v
+			case tagSQLSelect:
+				f.SQLSelect = v
 			}
 		}
 
@@ -162,7 +162,7 @@ Columns:
 	for i := 0; i < len(m.fields); i++ {
 
 		// if its a custom field.
-		if m.fields[i].NoSqlColumn {
+		if m.fields[i].NoSQLColumn {
 			continue
 		}
 

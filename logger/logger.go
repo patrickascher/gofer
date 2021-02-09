@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-// The package logger provides an interface for logging. It wraps awesome existing go loggers with that interface.
+// Package logger provides an interface for logging. It wraps awesome existing go loggers with that interface.
 // In that case, it is easy to change the log provider without breaking anything in your application.
 // Additionally log level, fields, time duration or caller information can be added.
 package logger
@@ -32,7 +32,7 @@ const (
 	PANIC
 )
 
-// level type
+// Level type
 type Level int32
 
 // String converts the level code.

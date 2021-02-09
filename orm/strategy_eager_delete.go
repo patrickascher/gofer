@@ -41,26 +41,26 @@ func (e *eager) Delete(scope Scope, c condition.Condition) error {
 			// ignore - belongsTo - stays untouched
 		case HasOne, HasMany:
 			// hasOne - deleteSql - ignore softDelete if the main struct has none.
-			var deleteSql query.Delete
+			var deleteSQL query.Delete
 			if relation.IsPolymorphic() {
-				deleteSql = relationScope.Builder().Query(scope.Model().tx).Delete(relationScope.FqdnTable()) // TODO tx is wrong, must be of relationScope to work on different dbs...
-				deleteSql.Where(b.QuoteIdentifier(relation.Mapping.References.Information.Name)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
-				deleteSql.Where(b.QuoteIdentifier(relation.Mapping.Polymorphic.TypeField.Information.Name)+" = ?", relation.Mapping.Polymorphic.Value)
+				deleteSQL = relationScope.Builder().Query(scope.Model().tx).Delete(relationScope.FqdnTable()) // TODO tx is wrong, must be of relationScope to work on different dbs...
+				deleteSQL.Where(b.QuoteIdentifier(relation.Mapping.References.Information.Name)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
+				deleteSQL.Where(b.QuoteIdentifier(relation.Mapping.Polymorphic.TypeField.Information.Name)+" = ?", relation.Mapping.Polymorphic.Value)
 			} else {
-				deleteSql = relationScope.Builder().Query(scope.Model().tx).Delete(relationScope.FqdnTable()) // TODO tx is wrong, must be of relationScope to work on different dbs...
-				deleteSql.Where(b.QuoteIdentifier(relation.Mapping.References.Information.Name)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
+				deleteSQL = relationScope.Builder().Query(scope.Model().tx).Delete(relationScope.FqdnTable()) // TODO tx is wrong, must be of relationScope to work on different dbs...
+				deleteSQL.Where(b.QuoteIdentifier(relation.Mapping.References.Information.Name)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
 			}
-			_, err := deleteSql.Exec()
+			_, err := deleteSQL.Exec()
 			if err != nil {
 				return err
 			}
 		case ManyToMany:
 			// hasManyToMany - only junction table entries are getting deleted - for the association table use SQL CASCADE or a callbacks
-			deleteSql := relationScope.Builder().Query(scope.Model().tx).Delete(relation.Mapping.Join.Table).Where(b.QuoteIdentifier(relation.Mapping.Join.ForeignColumnName)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
+			deleteSQL := relationScope.Builder().Query(scope.Model().tx).Delete(relation.Mapping.Join.Table).Where(b.QuoteIdentifier(relation.Mapping.Join.ForeignColumnName)+" = ?", scope.FieldValue(relation.Mapping.ForeignKey.Name).Interface())
 			if relation.IsPolymorphic() {
-				deleteSql.Where(relation.Mapping.Polymorphic.TypeField.Information.Name+" = ?", relation.Mapping.Polymorphic.Value)
+				deleteSQL.Where(relation.Mapping.Polymorphic.TypeField.Information.Name+" = ?", relation.Mapping.Polymorphic.Value)
 			}
-			_, err := deleteSql.Exec()
+			_, err := deleteSQL.Exec()
 			if err != nil {
 				return err
 			}

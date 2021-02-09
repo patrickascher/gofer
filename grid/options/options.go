@@ -5,6 +5,7 @@
 // Package options provides some pre-defined field options.
 package options
 
+// pre defined options.
 const (
 	SELECT = "select"
 	UNIQUE = "unique"
@@ -15,7 +16,7 @@ const (
 type Select struct {
 	Items []SelectItem `json:",omitempty"`
 
-	Api          string `json:"api,omitempty"` // backend api link
+	API          string `json:"api,omitempty"` // backend api link
 	TextField    string `json:",omitempty"`    // name of the text field
 	ValueField   string `json:",omitempty"`    // name of the value field
 	Condition    string `json:",omitempty"`    // additional conditions

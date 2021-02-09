@@ -80,7 +80,7 @@ func (b *Base) QuoteIdentifier(columns ...string) string {
 
 // Tx will create a sql.Tx.
 // Error will return if a tx was already set or the provider returns an error.
-func (b *Base) Tx() (QueryTx, error) {
+func (b *Base) Tx() (Tx, error) {
 	var err error
 	b.TransactionBase.Tx, err = b.Provider.DB().Begin()
 	if err != nil {
@@ -207,7 +207,7 @@ func (b *Base) Open() error {
 	return nil
 }
 
-// SetLogger
+// SetLogger will set the logger for the query.
 func (b *Base) SetLogger(logger logger.Manager) {
 	b.Logger = logger
 }

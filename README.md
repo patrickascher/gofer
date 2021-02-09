@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/patrickascher/gofer.svg)](https://pkg.go.dev/github.com/patrickascher/gofer)
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickascher/gofer)](https://goreportcard.com/report/github.com/patrickascher/gofer)
-
+[![Build Status](https://travis-ci.com/patrickascher/gofer.svg?branch=master)](https://travis-ci.com/patrickascher/gofer)
 
 <!--
 **patrickascher/gofer** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.

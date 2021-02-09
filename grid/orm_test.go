@@ -247,7 +247,7 @@ type TestCtrl struct {
 
 // configs for role tests
 func testConfig() query.Config {
-	return query.Config{Username: "root", Password: "root", Database: "tests", Host: "127.0.0.1", Port: 3319}
+	return query.Config{Username: "root", Password: "", Database: "tests", Host: "127.0.0.1", Port: 3306}
 }
 
 func helperCreateDatabaseAndTable(asserts *assert.Assertions) {

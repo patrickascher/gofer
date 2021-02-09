@@ -166,7 +166,7 @@ func (t *OrmFieldBase) DefaultBuilder() query.Builder {
 }
 
 func testConfig() query.Config {
-	return query.Config{Username: "root", Password: "root", Database: "tests", Host: "127.0.0.1", Port: 3319}
+	return query.Config{Username: "root", Password: "", Database: "tests", Host: "127.0.0.1", Port: 3306}
 }
 
 // createTestTable is a helper to create the test table.

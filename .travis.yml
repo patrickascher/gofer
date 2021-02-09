@@ -11,7 +11,7 @@ matrix:
   fast_finish: true
 
 before_script:
-  - echo "USE mysql;\nupdate user set authentication_string=PASSWORD("root") where User="root";\nFLUSH PRIVILEGES;\n"
+  - mysql -e 'USE mysql;update user set authentication_string=password(\'root\') where user=\'root\';FLUSH PRIVILEGES'
 
 script:
   - go get -t -v ./...

@@ -14,8 +14,9 @@ install:
   - # Do nothing. This is needed to prevent default install action "go get -t -v ./..." from happening here (we want it to happen inside script step).
 
 before_script:
+  #- echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
   # - sh -c "if [ '$DB' = 'postgresql' ]; then psql -c 'CREATE DATABASE tests;' -U postgres; psql -U postgres -d tests -a -f tests/migration.psql.sql; fi"
-  - mysql -e 'UPDATE mysql.db SET Host='%' WHERE Host='localhost' AND User='root';FLUSH PRIVILEGES;'
+#- mysql -e 'UPDATE mysql.db SET Host='%' WHERE Host='localhost' AND User='root';FLUSH PRIVILEGES;'
 
 script:
   - go get -t -v ./...

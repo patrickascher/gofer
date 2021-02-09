@@ -3,9 +3,9 @@ language: go
 
 go:
   - 1.x
-env:
-  - DB=mysql
-  # - DB=postgresql
+
+services:
+  - mysql
 
 matrix:
   fast_finish: true
@@ -14,8 +14,8 @@ install:
   - # Do nothing. This is needed to prevent default install action "go get -t -v ./..." from happening here (we want it to happen inside script step).
 
 before_script:
-# - sh -c "if [ '$DB' = 'postgresql' ]; then psql -c 'CREATE DATABASE tests;' -U postgres; psql -U postgres -d tests -a -f tests/migration.psql.sql; fi"
- - sh -c "if [ '$DB' = 'mysql' ]; then  mysql -e 'UPDATE mysql.db SET Host='%' WHERE Host='localhost' AND User='root';FLUSH PRIVILEGES;'; fi"
+  # - sh -c "if [ '$DB' = 'postgresql' ]; then psql -c 'CREATE DATABASE tests;' -U postgres; psql -U postgres -d tests -a -f tests/migration.psql.sql; fi"
+  - mysql -e 'UPDATE mysql.db SET Host='%' WHERE Host='localhost' AND User='root';FLUSH PRIVILEGES;'
 
 script:
   - go get -t -v ./...
@@ -24,5 +24,5 @@ script:
   - go test -v -p 1 ./... -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
-  - if [ $DB == "mysql" ]; then bash <(curl -s https://codecov.io/bash);fi
+  - curl -s https://codecov.io/bash
 #- if [ $DB == "postgresql" ]; then bash <(curl -s https://codecov.io/bash) -cF postgresql;fi

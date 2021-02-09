@@ -27,3 +27,37 @@ func TestInterfaceExists(t *testing.T) {
 	assert.False(t, exists)
 	assert.Equal(t, 0, k)
 }
+
+func TestStringPrefixExists(t *testing.T) {
+
+	pool := []string{"orm_base", "orm_user"}
+
+	prefixes := slicer.StringPrefixExists(pool, "orm_")
+	assert.Equal(t, 2, len(prefixes))
+
+	prefixes = slicer.StringPrefixExists(pool, "grid_")
+	assert.Equal(t, 0, len(prefixes))
+}
+
+func TestStringExists(t *testing.T) {
+
+	pool := []string{"orm_base", "orm_user"}
+
+	pos, exists := slicer.StringExists(pool, "orm_")
+	assert.False(t, exists)
+	assert.Equal(t, 0, pos)
+
+	pos, exists = slicer.StringExists(pool, "orm_user")
+	assert.True(t, exists)
+	assert.Equal(t, 1, pos)
+}
+
+func TestStringUnique(t *testing.T) {
+
+	pool := []string{"orm_base", "orm_user", "orm_base"}
+
+	result := slicer.StringUnique(pool)
+	assert.Equal(t, 2, len(result))
+	assert.Equal(t, "orm_base", result[0])
+	assert.Equal(t, "orm_user", result[1])
+}

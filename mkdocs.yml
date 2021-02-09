@@ -1,0 +1,44 @@
+site_name: gofer
+site_description: The fullstack go framework. Focus on your actual ideas and create applications within minutes.
+copyright: Made with ❤️ by gofer contributors.
+repo_name: patrickascher
+repo_url: https://github.com/patrickascher
+edit_uri: docs/edit/master/docs/
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Install: quickstart/index.md
+  - Reference:
+      - Go:
+          - reference/go/registry.md
+          - reference/go/cache.md
+          - reference/go/config.md
+          - reference/go/logger.md
+          - reference/go/router.md
+          - reference/go/controller.md
+          - reference/go/query.md
+          - reference/go/stringer.md
+          - reference/go/structer.md
+          - reference/go/slicer.md
+          - reference/go/orm.md
+          - reference/go/grid.md
+
+theme:
+  name: material
+  custom_dir: docs/overwrites
+  language: en
+  logo: assets/img/go.png
+  favicon: static/favicon.ico
+  features:
+    - navigation.tabs
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js
+  - assets/js/config.js
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atom-one-light.min.css

@@ -1,10 +1,11 @@
-### Hi there 👋
-
 [![Go Reference](https://pkg.go.dev/badge/github.com/patrickascher/gofer.svg)](https://pkg.go.dev/github.com/patrickascher/gofer)
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickascher/gofer)](https://goreportcard.com/report/github.com/patrickascher/gofer)
 [![Build Status](https://travis-ci.com/patrickascher/gofer.svg?branch=master)](https://travis-ci.com/patrickascher/gofer)
 [![codecov](https://codecov.io/gh/patrickascher/gofer/branch/master/graph/badge.svg?token=HRNFEI9NKZ)](https://codecov.io/gh/patrickascher/gofer)
 <!--
+
+docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
+
 **patrickascher/gofer** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
 Here are some ideas to get you started:
@@ -18,5 +19,3 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
-
-test

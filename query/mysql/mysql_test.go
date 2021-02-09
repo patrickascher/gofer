@@ -23,7 +23,7 @@ type Config struct {
 
 // testConfig helper returns the DB config.
 func testConfig() Config {
-	return Config{DB: query.Config{Username: "root", Password: "", Host: "127.0.0.1", Port: 3306}}
+	return Config{DB: query.Config{Username: "root", Password: "root", Host: "127.0.0.1", Port: 3306}}
 }
 
 // createDatabase helper for the tests.

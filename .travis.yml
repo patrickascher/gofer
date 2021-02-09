@@ -10,10 +10,13 @@ services:
 matrix:
   fast_finish: true
 
+before_script:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+
 script:
   - go get -t -v ./...
   - go vet ./...
-  - go test -p 1 ./... -coverprofile=coverage.txt -covermode=count
+  - go test -p 1 ./... -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

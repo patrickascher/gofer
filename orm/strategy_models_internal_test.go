@@ -18,7 +18,7 @@ var builder2 query.Builder
 var c cache.Manager
 
 func testConfig() query.Config {
-	return query.Config{Username: "root", Password: "", Database: "tests", Host: "127.0.0.1", Port: 3306}
+	return query.Config{Username: "root", Password: "root", Database: "tests", Host: "127.0.0.1", Port: 3306}
 }
 
 func helperCreateDatabaseAndTable(asserts *assert.Assertions) {

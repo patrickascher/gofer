@@ -11,9 +11,9 @@ import (
 	"reflect"
 	"strings"
 
+	valid "github.com/go-playground/validator/v10"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/types"
-	valid "gopkg.in/go-playground/validator.v10"
 )
 
 // init registers a global validator and the null types of the query package.

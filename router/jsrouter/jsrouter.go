@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	jsRouter "github.com/julienschmidt/httprouter"
+	"github.com/julienschmidt/httprouter"
 	"github.com/patrickascher/gofer/router"
 )
 
@@ -39,7 +39,7 @@ func init() {
 
 // httpRouterExtended was created to override the httprouter.HandlerFunc, to add params to the request.ctx.
 type httpRouterExtended struct {
-	jsRouter.Router
+	httprouter.Router
 	manager              router.Manager
 	CatchAllKeyValuePair bool
 }
@@ -54,11 +54,11 @@ func New(manager router.Manager, options interface{}) (router.Provider, error) {
 
 	// default options
 	if options == nil {
-		r.RedirectTrailingSlash = true
-		r.RedirectFixedPath = true
-		r.HandleMethodNotAllowed = true
-		r.HandleOPTIONS = true
-		r.SaveMatchedRoutePath = true
+		r.Router.RedirectTrailingSlash = true
+		r.Router.RedirectFixedPath = true
+		r.Router.HandleMethodNotAllowed = true
+		r.Router.HandleOPTIONS = true
+		r.Router.SaveMatchedRoutePath = true
 		r.CatchAllKeyValuePair = true
 	}
 
@@ -73,7 +73,7 @@ func (h *httpRouterExtended) HandlerFunc(method, path string, handler http.Handl
 // Handler
 func (h *httpRouterExtended) Handler(method, path string, handler http.Handler) {
 	h.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request, p jsRouter.Params) {
+		func(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 			ctx := req.Context()
 			ctx = context.WithValue(ctx, router.PATTERN, p.MatchedRoutePath())
 			ctx = context.WithValue(ctx, router.PARAMS, h.paramsToMap(p, w))
@@ -141,7 +141,7 @@ func (h *httpRouterExtended) SetNotFound(handler http.Handler) {
 }
 
 // paramsToMap are mapping all router params to the the request context.
-func (h *httpRouterExtended) paramsToMap(params jsRouter.Params, w http.ResponseWriter) map[string][]string {
+func (h *httpRouterExtended) paramsToMap(params httprouter.Params, w http.ResponseWriter) map[string][]string {
 	rv := make(map[string][]string)
 
 	// check if its a catch-all route
@@ -152,7 +152,7 @@ func (h *httpRouterExtended) paramsToMap(params jsRouter.Params, w http.Response
 	}
 
 	for _, p := range params {
-		if p.Key == jsRouter.MatchedRoutePathParam {
+		if p.Key == httprouter.MatchedRoutePathParam {
 			continue
 		}
 

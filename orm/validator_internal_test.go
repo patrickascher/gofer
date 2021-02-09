@@ -9,9 +9,9 @@ import (
 	"reflect"
 	"testing"
 
+	valid "github.com/go-playground/validator/v10"
 	"github.com/patrickascher/gofer/query"
 	"github.com/stretchr/testify/assert"
-	valid "gopkg.in/go-playground/validator.v10"
 )
 
 // TestRegisterValidation tests:

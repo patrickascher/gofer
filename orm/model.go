@@ -10,11 +10,11 @@ import (
 	"reflect"
 	"time"
 
+	valid "github.com/go-playground/validator/v10"
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/slicer"
-	valid "gopkg.in/go-playground/validator.v10"
 )
 
 // predefined constants.

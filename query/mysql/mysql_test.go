@@ -127,6 +127,7 @@ func TestMysql_Timeout_Config(t *testing.T) {
 	b, err := query.New("mysql", cfg)
 	asserts.Error(err)
 	asserts.Nil(b)
+	fmt.Println(err.Error())
 	asserts.True(strings.Contains(err.Error(), "timeout"))
 }
 

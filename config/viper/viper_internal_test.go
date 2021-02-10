@@ -133,10 +133,12 @@ func testViperWatcher(asserts *assert.Assertions) {
 
 	// edit file
 	createJSON("admin")
-	time.Sleep(100 * time.Millisecond) // because of the goroutine
+	time.Sleep(200 * time.Millisecond) // because of the goroutine
+	mutex.Lock()
 	asserts.Equal("localhost", c.Host)
 	asserts.Equal("admin", c.User)
 	asserts.Equal("", c.Password)
+	mutex.Unlock()
 }
 
 func testViperWatcherCustomFn(asserts *assert.Assertions) {
@@ -148,11 +150,21 @@ func testViperWatcherCustomFn(asserts *assert.Assertions) {
 	v := viperProvider{}
 	c := &serverCfg{}
 	opt := Options{
-		FileName:      "test.json",
-		FilePath:      ".",
-		FileType:      "json",
-		Watch:         true,
-		WatchCallback: func(cfg interface{}, v *viper.Viper, e fsnotify.Event) { callbackCalled = true },
+		FileName: "test.json",
+		FilePath: ".",
+		FileType: "json",
+		Watch:    true,
+		WatchCallback: func(cfg interface{}, v *viper.Viper, e fsnotify.Event) {
+			asserts.True(true)
+			asserts.Equal("localhost", cfg.(*serverCfg).Host)
+			asserts.Equal("localhost", v.Get("Host"))
+
+			asserts.Equal("admin", cfg.(*serverCfg).User)
+			asserts.Equal("admin", v.Get("User"))
+
+			asserts.Equal("", cfg.(*serverCfg).Password)
+			asserts.Equal("", v.Get("Password"))
+		},
 	}
 	err := v.Parse(c, opt)
 	asserts.NoError(err)
@@ -165,12 +177,12 @@ func testViperWatcherCustomFn(asserts *assert.Assertions) {
 
 	// edit file
 	createJSON("admin")
-	time.Sleep(100 * time.Millisecond) // because of the goroutine
+	time.Sleep(500 * time.Millisecond) // because of the goroutine
+	mutex.Lock()
 	asserts.Equal("localhost", c.Host)
 	asserts.Equal("admin", c.User)
 	asserts.Equal("", c.Password)
-	asserts.True(callbackCalled)
-
+	mutex.Unlock()
 }
 
 func testViperEnvAutomatic(asserts *assert.Assertions) {
@@ -198,7 +210,9 @@ func testViperEnvAutomatic(asserts *assert.Assertions) {
 }
 
 func testViperEnvBinding(asserts *assert.Assertions) {
+	mutex.Lock()
 	vInstances = nil
+	mutex.Unlock()
 
 	v := viperProvider{}
 	c := &serverCfg{}

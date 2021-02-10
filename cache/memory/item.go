@@ -49,12 +49,12 @@ func (m item) expired() bool {
 
 // expiredKeys returns all expired cache items by name.
 func (m *memory) expiredKeys() (name []string) {
-	m.mutex.RLock()
+	m.mutex.Lock()
 	for _, itm := range m.items {
 		if itm.expired() {
 			name = append(name, itm.Name())
 		}
 	}
-	m.mutex.RUnlock()
+	m.mutex.Unlock()
 	return name
 }

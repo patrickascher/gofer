@@ -81,13 +81,11 @@ func (m *memory) Get(name string) (cache.Item, error) {
 // GetAll returns all items of the cache as []Item.
 func (m *memory) All() ([]cache.Item, error) {
 	m.mutex.Lock()
-
 	var items []cache.Item
 	for i := range m.items {
 		item := m.items[i]
 		items = append(items, &item)
 	}
-
 	m.mutex.Unlock() // not deferred because its taking extra ns.
 
 	return items, nil
@@ -97,10 +95,8 @@ func (m *memory) All() ([]cache.Item, error) {
 // The expiration can be set by time.duration or forever with cache.INFINITY.
 func (m *memory) Set(name string, value interface{}, exp time.Duration) error {
 	m.mutex.Lock()
-
 	m.items[name] = item{name: name, val: value, created: time.Now(), exp: exp}
 	m.itemsKeys = append(m.itemsKeys, name)
-
 	m.mutex.Unlock() // not deferred because its taking extra ns.
 
 	return nil
@@ -124,9 +120,9 @@ func (m *memory) Delete(name string) error {
 
 // DeleteAll removes all items from the cache.
 func (m *memory) DeleteAll() error {
-	m.mutex.RLock()
+	m.mutex.Lock()
 	m.items = make(map[string]item, 0)
-	m.mutex.RUnlock() // not deferred because its taking extra ns.
+	m.mutex.Unlock() // not deferred because its taking extra ns.
 
 	return nil
 }
@@ -137,11 +133,11 @@ func (m *memory) GC() {
 	for {
 		<-time.After(m.options.GCInterval)
 		if keys := m.expiredKeys(); len(keys) != 0 {
-			m.mutex.RLock()
+			m.mutex.Lock()
 			for _, key := range keys {
 				delete(m.items, key)
 			}
-			m.mutex.RUnlock()
+			m.mutex.Unlock()
 		}
 	}
 }

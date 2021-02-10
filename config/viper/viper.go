@@ -14,12 +14,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/patrickascher/gofer/config"
 	"github.com/patrickascher/gofer/registry"
 	"github.com/spf13/viper"
 )
+
+var mutex sync.Mutex
 
 // init registers the viper provider.
 func init() {
@@ -101,18 +104,23 @@ func (vp *viperProvider) Parse(cfg interface{}, opt interface{}) error {
 
 	// By default, the config will be updated on file change.
 	// If there is a custom function, it will be called as well.
+
 	if options.WatchCallback != nil {
 		i.viper.OnConfigChange(func(e fsnotify.Event) {
+			mutex.Lock()
 			if i, ok := vInstances[e.Name]; ok {
 				_ = i.viper.Unmarshal(i.cfg)
-				i.options.WatchCallback(vInstances[e.Name].cfg, i.viper, e)
+				vInstances[e.Name].options.WatchCallback(vInstances[e.Name].cfg, vInstances[e.Name].viper, e)
 			}
+			mutex.Unlock()
 		})
 	} else {
 		i.viper.OnConfigChange(func(e fsnotify.Event) {
+			mutex.Lock()
 			if i, ok := vInstances[e.Name]; ok {
 				_ = i.viper.Unmarshal(i.cfg)
 			}
+			mutex.Unlock()
 		})
 	}
 
@@ -142,7 +150,6 @@ func (vp *viperProvider) Parse(cfg interface{}, opt interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	// unmarshal
 	return i.viper.Unmarshal(&cfg)
 }
@@ -168,11 +175,13 @@ func instance(cfg interface{}, opt Options) (vInstance, error) {
 	if _, ok := vInstances[name]; !ok {
 		vInstances[name] = vInstance{options: opt, cfg: cfg, viper: viper.New()}
 	} else {
+		mutex.Lock()
 		// re-assign *cfg and config on multiple call.
 		v := vInstances[name]
 		v.cfg = cfg
 		v.options = opt
 		vInstances[name] = v
+		mutex.Unlock()
 	}
 
 	return vInstances[name], nil

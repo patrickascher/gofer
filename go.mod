@@ -2,6 +2,8 @@ module github.com/patrickascher/gofer
 
 go 1.15
 
+replace github.com/spf13/viper => github.com/patrickascher/viper v1.7.1-mutex
+
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
@@ -15,7 +17,7 @@ require (
 	github.com/segmentio/ksuid v1.0.3
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/sirupsen/logrus v1.7.0
-	github.com/spf13/viper v1.7.1
+	github.com/spf13/viper v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.7.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )

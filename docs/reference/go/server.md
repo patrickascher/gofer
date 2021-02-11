@@ -1,4 +1,4 @@
-# Router
+# Server
 
 Package server is a configurable webserver with pre-defined hooks.
 

@@ -8,6 +8,8 @@ import "time"
 
 // Config sql struct.
 type Config struct {
+	Provider string // used for gofer.Server
+
 	Username string
 	Password string
 	Host     string

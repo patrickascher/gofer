@@ -211,7 +211,7 @@ func (m *manager) AddPublicFile(pattern string, source string) error {
 		return err
 	}
 	// add to routes.
-	m.routes = append(m.routes, NewRoute(pattern, nil, nil))
+	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, nil)))
 	return m.provider.AddPublicFile(pattern, source)
 }
 
@@ -224,7 +224,7 @@ func (m *manager) AddPublicDir(pattern string, source string) error {
 		return err
 	}
 	// add to routes.
-	m.routes = append(m.routes, NewRoute(pattern, nil, nil))
+	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, nil)))
 	return m.provider.AddPublicDir(pattern, source)
 }
 
@@ -253,6 +253,8 @@ func (m *manager) AddSecureRoute(r Route) error {
 		}
 		route.mapping[k] = mapping
 	}
+	route.secure = true
+	fmt.Println("xxxx", route.mapping[0].Middleware().All())
 
 	// add to provider
 	err = m.provider.AddRoute(r)

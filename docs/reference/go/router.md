@@ -87,7 +87,8 @@ err := routerManager.AddPublicRoute(router.NewRoute("/login", handleFunc))
 
 ### AddSecureRoute
 
-A secure route can be added to the router. Please see the [route section](router.md#route) for more details.
+A secure route can be added to the router. Please see the [route section](router.md#route) for more details. The route
+secure variable will be set to `true`
 
 If no secure middleware(s) are defined, an error will return.
 

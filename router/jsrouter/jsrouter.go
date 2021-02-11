@@ -95,11 +95,18 @@ func (h *httpRouterExtended) HTTPHandler() http.Handler {
 func (h *httpRouterExtended) AddRoute(r router.Route) error {
 	for _, mapping := range r.Mapping() {
 		for _, method := range mapping.Methods() {
+
+			var handler http.HandlerFunc
 			if r.Handler() != nil {
-				h.Handler(method, r.Pattern(), r.Handler())
+				handler = r.Handler().ServeHTTP
 			} else {
-				h.HandlerFunc(method, r.Pattern(), r.HandlerFunc())
+				handler = r.HandlerFunc()
 			}
+			if mapping.Middleware() != nil {
+				handler = mapping.Middleware().Handle(handler)
+			}
+
+			h.HandlerFunc(method, r.Pattern(), handler)
 		}
 	}
 

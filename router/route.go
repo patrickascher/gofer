@@ -35,6 +35,8 @@ type Route interface {
 	HandlerFunc() http.HandlerFunc
 	// Mapping of the route.
 	Mapping() []Mapping
+	// Secure identifies if the rout was added with a secured middleware.
+	Secure() bool
 	// Error message.
 	Error() error
 }
@@ -56,7 +58,13 @@ type route struct {
 	handler     http.Handler
 	handlerFunc http.HandlerFunc
 	mapping     []Mapping
+	secure      bool
 	err         error
+}
+
+// Secure returns if the route was added through AddSecureRoute().
+func (r route) Secure() bool {
+	return r.secure
 }
 
 // Pattern return the route pattern as string.

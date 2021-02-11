@@ -23,6 +23,7 @@ nav:
           - reference/go/slicer.md
           - reference/go/orm.md
           - reference/go/grid.md
+          - reference/go/server.md
 
 theme:
   name: material

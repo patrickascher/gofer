@@ -297,6 +297,7 @@ func testAddSecureRoute(asserts *assert.Assertions, manager router.Manager) {
 	})
 	err = manager.AddSecureRoute(router.NewRoute("/secure4", mockHandler, router.NewMapping([]string{http.MethodGet}, "Test", mw)))
 	asserts.NoError(err)
+	asserts.Equal(true, route.Secure())
 	asserts.Equal("Test", route.Mapping()[0].Action())
 	asserts.NotNil(route.Handler())
 	asserts.Equal(mockHandler, route.Handler())
@@ -337,6 +338,7 @@ func testAddPublicRoute(asserts *assert.Assertions, manager router.Manager) {
 	err = manager.AddPublicRoute(router.NewRoute("/public", handleFunc))
 	asserts.NoError(err)
 	asserts.Equal("/public", route.Pattern())
+	asserts.Equal(false, route.Secure())
 	asserts.Nil(route.Error())
 	asserts.NotNil(route.HandlerFunc())
 

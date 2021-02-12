@@ -16,7 +16,7 @@ func (t *Token) MW(h http.HandlerFunc) http.HandlerFunc {
 		if err := t.Parse(w, r); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			// as secure reasons, the error message will not be shown.
-			//_, _ = w.Write([]byte(err.Error()))
+			_, _ = w.Write([]byte(err.Error()))
 			return
 		}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router"
+	"github.com/patrickascher/gofer/router/middleware/jwt"
 	"net/http"
 	"reflect"
 )
@@ -30,10 +31,15 @@ type server struct {
 	router    router.Manager
 	databases []query.Builder
 	caches    []cache.Manager
+	jwt       *jwt.Token
 }
 
 // New creates a new server instance with the given configuration.
 func New(config interface{}) error {
+
+	// ensure a ptr as config
+	// check if function exists.
+
 	// create server instance.
 	webserver = &server{config: config}
 
@@ -75,6 +81,23 @@ func Stop() error {
 		return ErrInit
 	}
 	return webserver.server.Close()
+}
+
+// JWT of the webserver.
+// Error will return if the server instance was not created yet.
+func JWT() (*jwt.Token, error) {
+	if !isInit() {
+		return nil, ErrInit
+	}
+	return webserver.jwt, nil
+}
+
+func SetJWT(t *jwt.Token) error {
+	if !isInit() {
+		return nil
+	}
+	webserver.jwt = t
+	return nil
 }
 
 // Config of the webserver.

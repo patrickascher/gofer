@@ -134,7 +134,7 @@ func (h *httpRouterExtended) AddPublicDir(pattern string, source string) error {
 }
 
 // AddPublicFile to the provider.
-// TODO if the file does not exist, the standart http.NotFound handler will be called.
+// TODO if the file does not exist, the standard http.NotFound handler will be called.
 func (h *httpRouterExtended) AddPublicFile(pattern string, source string) error {
 	h.HandlerFunc("GET", pattern, func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, source)

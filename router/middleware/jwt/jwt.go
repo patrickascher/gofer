@@ -59,8 +59,8 @@ type Token struct {
 
 	// should be used to check if the refresh token is still valid. Error should return if not.
 	CallbackRefresh func(http.ResponseWriter, *http.Request, Claimer) error
-	// should be used to update the claim, before the token gets generated.
-	CallbackGenerate func(http.ResponseWriter, *http.Request, Claimer) error
+	// should be used to check user data and update the claim, before the token gets generated.
+	CallbackGenerate func(http.ResponseWriter, *http.Request, Claimer, string) error
 }
 
 // New token instance.
@@ -97,6 +97,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 
 	// create a new claim.
 	now := time.Now()
+	refreshToken := ksuid.New().String()
 	claim := reflect.New(reflect.TypeOf(t.claim).Elem()).Interface().(Claimer)
 	claim.SetJid(ksuid.New().String())                // Token ID
 	claim.SetIat(now.Unix())                          // IAT
@@ -108,7 +109,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 
 	// callback for further claim manipulation.
 	if t.CallbackGenerate != nil {
-		err := t.CallbackGenerate(w, r, claim)
+		err := t.CallbackGenerate(w, r, claim, refreshToken)
 		if err != nil {
 			return nil, fmt.Errorf("jwt: %w", err)
 		}
@@ -131,10 +132,12 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 		if err != nil {
 			return nil, fmt.Errorf("jwt: %w", err)
 		}
-		// JWT token will live infinity as cookie, to have some user data for the refresh token (more security than only a refresh token).
-		NewCookie(w, CookieJWT, tokenString, 0)
+
 		// set the refresh cookie.
-		NewCookie(w, CookieRefresh, ksuid.New().String(), t.config.RefreshToken.Expiration)
+		NewCookie(w, CookieRefresh, refreshToken, t.config.RefreshToken.Expiration)
+
+		// JWT token lives exactly as long as the refresh token, to have some additional data for refreshing (more secure).
+		NewCookie(w, CookieJWT, tokenString, t.config.RefreshToken.Expiration)
 	}
 
 	return claim, nil
@@ -145,6 +148,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 // The Claim will be set as request context JWT.
 // A refresh token will only be generated if the CookieJWT (expired) and CookieRefresh is set.
 func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
+
 	// get jwt cookie.
 	token, err := Cookie(r, CookieJWT)
 	if err != nil {
@@ -207,5 +211,6 @@ func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
 
 	// add the claim as context.
 	*r = *r.WithContext(context.WithValue(r.Context(), CLAIM, claim))
+
 	return nil
 }

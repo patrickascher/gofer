@@ -40,7 +40,6 @@ func NewRbac(r RoleService) *rbac {
 // MW must be passed to the middleware.
 func (rb *rbac) MW(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// checking the request context for the required keys
 		claim := r.Context().Value(jwt.CLAIM)
 		pattern := r.Context().Value(router.PATTERN)

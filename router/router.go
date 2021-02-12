@@ -254,7 +254,6 @@ func (m *manager) AddSecureRoute(r Route) error {
 		route.mapping[k] = mapping
 	}
 	route.secure = true
-	fmt.Println("xxxx", route.mapping[0].Middleware().All())
 
 	// add to provider
 	err = m.provider.AddRoute(r)

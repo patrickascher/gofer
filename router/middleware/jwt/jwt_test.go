@@ -77,11 +77,11 @@ func TestToken_Generate(t *testing.T) {
 	asserts := assert.New(t)
 
 	// declarations
-	callbackOk := func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer) error {
+	callbackOk := func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer, rf string) error {
 		claimer.(*customClaim).Email = "john@doe.com"
 		return nil
 	}
-	callbackErr := func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer) error {
+	callbackErr := func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer, rf string) error {
 		return errors.New("callback error")
 	}
 	defaultConfig := gJwt.Config{Issuer: "mock", Subject: "test#1", Audience: "gotest", Expiration: 2 * time.Second, SignKey: "secret"}
@@ -94,10 +94,11 @@ func TestToken_Generate(t *testing.T) {
 
 		// generate
 		tests := []struct {
-			callbackFn func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer) error
+			callbackFn func(w http.ResponseWriter, r *http.Request, claimer gJwt.Claimer, rf string) error
 			email      string
 			error      bool
 			errorMsg   string
+			rf         string
 		}{
 			{callbackFn: callbackOk, email: "john@doe.com"},
 			{error: true, errorMsg: "callback error", callbackFn: callbackErr},
@@ -138,8 +139,8 @@ func TestToken_Generate(t *testing.T) {
 				asserts.Equal("", claim.Render())
 				// test cookies
 				asserts.True(len(w.Header().Values("Set-Cookie")) == 2)
-				asserts.True(strings.Contains(w.Header().Values("Set-Cookie")[0], gJwt.CookieJWT))
-				asserts.True(strings.Contains(w.Header().Values("Set-Cookie")[1], gJwt.CookieRefresh))
+				asserts.True(strings.Contains(w.Header().Values("Set-Cookie")[0], gJwt.CookieRefresh))
+				asserts.True(strings.Contains(w.Header().Values("Set-Cookie")[1], gJwt.CookieJWT))
 			}
 		}
 	}
@@ -290,7 +291,7 @@ func TestToken_Parse(t *testing.T) {
 	asserts.NoError(err)
 	jwtCookie = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZG9lLmNvbSIsImF1ZCI6ImdvdGVzdCIsImV4cCI6MTYwOTMzMzA3NiwianRpIjoiMW1OUU9DWmZWb2hoYUM1dzZFSXJaQlBEdWhhIiwiaWF0IjoxNjA5MzMxNTM0LCJpc3MiOiJtb2NrIiwibmJmIjoxNjA5MzMxNTM0LCJzdWIiOiJ0ZXN0IzEifQ.kiJCfd-KqCieNJQ-axK2_qlzA1uP9KuKpZTta9mrA0-FEHYdGndo55tZKOA5VBW60-kH5LY7v-PMexaQQ03Blg"
 	r.AddCookie(&http.Cookie{Name: gJwt.CookieJWT, Value: jwtCookie})
-	token.CallbackGenerate = func(w2 http.ResponseWriter, r2 *http.Request, claimer gJwt.Claimer) error {
+	token.CallbackGenerate = func(w2 http.ResponseWriter, r2 *http.Request, claimer gJwt.Claimer, rf string) error {
 		return errors.New("callback generate error")
 	}
 	token.CallbackRefresh = func(w2 http.ResponseWriter, r2 *http.Request, claimer gJwt.Claimer) error {
@@ -306,7 +307,7 @@ func TestToken_Parse(t *testing.T) {
 	asserts.NoError(err)
 	jwtCookie = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZG9lLmNvbSIsImF1ZCI6ImdvdGVzdCIsImV4cCI6MTYwOTMzMzA3NiwianRpIjoiMW1OUU9DWmZWb2hoYUM1dzZFSXJaQlBEdWhhIiwiaWF0IjoxNjA5MzMxNTM0LCJpc3MiOiJtb2NrIiwibmJmIjoxNjA5MzMxNTM0LCJzdWIiOiJ0ZXN0IzEifQ.kiJCfd-KqCieNJQ-axK2_qlzA1uP9KuKpZTta9mrA0-FEHYdGndo55tZKOA5VBW60-kH5LY7v-PMexaQQ03Blg"
 	r.AddCookie(&http.Cookie{Name: gJwt.CookieJWT, Value: jwtCookie})
-	token.CallbackGenerate = func(w2 http.ResponseWriter, r2 *http.Request, claimer gJwt.Claimer) error {
+	token.CallbackGenerate = func(w2 http.ResponseWriter, r2 *http.Request, claimer gJwt.Claimer, rf string) error {
 		claimer.(*customClaim).Email = "john@doe.com"
 		return nil
 	}

@@ -63,7 +63,6 @@ func TestController_RenderType2(t *testing.T) {
 	asserts := assert.New(t)
 
 	c := testController{}
-	c.Initialize(&c)
 	c.SetRenderType("CUSTOM")
 
 	// create router settings
@@ -150,7 +149,6 @@ func TestController_ServeHTTP(t *testing.T) {
 	asserts := assert.New(t)
 
 	c := testController{}
-	c.Initialize(&c)
 
 	// create router settings
 	r, err := router.New(router.JSROUTER, nil)
@@ -220,7 +218,6 @@ func TestController_ServeHTTP_BrowserCancellation(t *testing.T) {
 
 	// controller
 	c := testController{}
-	c.Initialize(&c)
 
 	// create router settings
 	r, err := router.New(router.JSROUTER, nil)

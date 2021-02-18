@@ -8,12 +8,15 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/peterhellberg/duration"
+	"net/http"
+	"reflect"
+
+	"github.com/patrickascher/gofer"
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
-	"net/http"
-	"reflect"
 )
 
 var webserver *server
@@ -21,6 +24,7 @@ var webserver *server
 // Error messages
 var (
 	ErrInit = errors.New("server: is not loaded")
+	ErrJWT  = errors.New("server: jwt is not defined")
 )
 
 // server struct.
@@ -37,17 +41,24 @@ type server struct {
 // New creates a new server instance with the given configuration.
 func New(config interface{}) error {
 
-	// ensure a ptr as config
-	// check if function exists.
-
-	// create server instance.
-	webserver = &server{config: config}
-
-	// checking config.
-	var err error
-	webserver.cfg, err = checkConfig(config)
-	if err != nil {
+	if cfg, err := checkConfig(config); err != nil {
 		return err
+	} else {
+		// TODO create a standard solution for this.
+		if cfg.Auth.TokenDuration != "" {
+			cfg.Auth.JWT.Expiration, err = duration.Parse(cfg.Auth.TokenDuration)
+			if err != nil {
+				return err
+			}
+		}
+		if cfg.Auth.RefreshTokenDuration != "" {
+			cfg.Auth.JWT.RefreshToken.Expiration, err = duration.Parse(cfg.Auth.RefreshTokenDuration)
+			if err != nil {
+				return err
+			}
+		}
+
+		webserver = &server{config: config, cfg: cfg}
 	}
 
 	// init web hooks.
@@ -60,6 +71,10 @@ func Start() error {
 	if !isInit() {
 		return ErrInit
 	}
+
+	// server logo
+	// TODO init logger.
+	ascii()
 
 	// create routes db entry
 	err := createRouteDatabaseEntries(webserver.router)
@@ -89,9 +104,14 @@ func JWT() (*jwt.Token, error) {
 	if !isInit() {
 		return nil, ErrInit
 	}
+	if webserver.jwt == nil {
+		return nil, ErrJWT
+	}
 	return webserver.jwt, nil
 }
 
+// SetJWT to the webserver.
+// This is needed because the jwt token claim must be set-able to guarantee a customization.
 func SetJWT(t *jwt.Token) error {
 	if !isInit() {
 		return nil
@@ -100,13 +120,22 @@ func SetJWT(t *jwt.Token) error {
 	return nil
 }
 
-// Config of the webserver.
+// Config will return the given configuration.
 // Error will return if the server instance was not created yet.
 func Config() (interface{}, error) {
 	if !isInit() {
 		return nil, ErrInit
 	}
 	return webserver.config, nil
+}
+
+// ServerConfig will return the server.Configuration.
+// Error will return if the server instance was not created yet.
+func ServerConfig() (Configuration, error) {
+	if !isInit() {
+		return Configuration{}, ErrInit
+	}
+	return webserver.cfg, nil
 }
 
 // Router of the webserver.
@@ -159,4 +188,10 @@ func checkConfig(config interface{}) (Configuration, error) {
 		}
 	}
 	return Configuration{}, errors.New("server: config is wrong")
+}
+
+// ascii server logo
+func ascii() {
+	fmt.Println(" ________   ________   ________  _______    ________                   ________   _______    ________   ___      ___  _______    ________     \n|\\   ____\\ |\\   __  \\ |\\  _____\\|\\  ___ \\  |\\   __  \\                 |\\   ____\\ |\\  ___ \\  |\\   __  \\ |\\  \\    /  /||\\  ___ \\  |\\   __  \\    \n\\ \\  \\___| \\ \\  \\|\\  \\\\ \\  \\__/ \\ \\   __/| \\ \\  \\|\\  \\   ____________ \\ \\  \\___|_\\ \\   __/| \\ \\  \\|\\  \\\\ \\  \\  /  / /\\ \\   __/| \\ \\  \\|\\  \\   \n \\ \\  \\  ___\\ \\  \\\\\\  \\\\ \\   __\\ \\ \\  \\_|/__\\ \\   _  _\\ |\\____________\\\\ \\_____  \\\\ \\  \\_|/__\\ \\   _  _\\\\ \\  \\/  / /  \\ \\  \\_|/__\\ \\   _  _\\  \n  \\ \\  \\|\\  \\\\ \\  \\\\\\  \\\\ \\  \\_|  \\ \\  \\_|\\ \\\\ \\  \\\\  \\|\\|____________| \\|____|\\  \\\\ \\  \\_|\\ \\\\ \\  \\\\  \\|\\ \\    / /    \\ \\  \\_|\\ \\\\ \\  \\\\  \\| \n   \\ \\_______\\\\ \\_______\\\\ \\__\\    \\ \\_______\\\\ \\__\\\\ _\\                  ____\\_\\  \\\\ \\_______\\\\ \\__\\\\ _\\ \\ \\__/ /      \\ \\_______\\\\ \\__\\\\ _\\ \n    \\|_______| \\|_______| \\|__|     \\|_______| \\|__|\\|__|                |\\_________\\\\|_______| \\|__|\\|__| \\|__|/        \\|_______| \\|__|\\|__|")
+	fmt.Println(gofer.VERSION)
 }

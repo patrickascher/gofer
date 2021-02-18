@@ -4,7 +4,17 @@ Package server is a configurable webserver with pre-defined hooks.
 
 ## New
 
-New will create a new webserver instance. Only one webserver instance can exist at the moment.
+New will create a new webserver instance. Only one webserver instance can exist.
+
+The following hooks will be called:
+
+| Name      | Description                                                                                                                                             |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| router    | If a router provider is defined by config, a new router manager will be created. The Favicon, PublicDir(s) and PublicFile(s)s will be added if defined. |
+| databases | All defined databases will be saved globally and opened.                                                                                                |
+| caches    | All defined caches will be created and saved globally.|
+
+If the configuration `Router.CreateDBRoutes` is set to `true`, for each route an db entry will be made.
 
 ```go 
 cfg := server.Configuration{}
@@ -16,13 +26,31 @@ err := server.New(cfg)
 
 ### Config
 
-The server config can be embedded in your application configuration which can be passed to the `New` function.
+The server config can be embedded in your application configuration which can be passed to the `New` function. Error
+will return if this function is called before a server instance exists.
 
 ```go
 type MyAppConfig struct {
 server.Configuration `mapstructure:",squash"`
 Name string
 }
+```
+
+Within your application you can access your Config by `server.Config()`. You have to cast the interface to your actual
+type.
+
+```go
+config, err := server.Config()
+myConfig := config.(MyConfig) // cast to ...
+```
+
+### ServerConfig
+
+By this function you will only receive the `server.Configuration` struct. Error will return if this function is called
+before a server instance exists.
+
+```go
+srvConfig, err := server.ServerConfig() 
 ```
 
 ## Start
@@ -43,12 +71,22 @@ err := server.Stop()
 // ...
 ```
 
-## Config
+## JWT
 
-Will return the server configuration. Error will return if this function is called before a server instance exists.
+Will return the `*jwt.Token` of the webserver. Error will return if this function is called before a server instance
+exists.
 
 ```go
-cfg, err := server.Config()
+jwt, err := server.JWT()
+// ...
+```
+
+## SetJWT
+
+Set the server jwt token.. Error will return if this function is called before a server instance exists.
+
+```go
+err := server.SetJWT(jwt)
 // ...
 ```
 

@@ -162,6 +162,7 @@ func (c *Base) TP(name string, count int, template ...map[string]interface{}) st
 
 // ServeHTTP handler.
 func (c *Base) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	// create new instance per request
 	reqController := newController(c)
 	reqController.SetContext(context.New(w, r))

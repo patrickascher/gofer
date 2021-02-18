@@ -22,7 +22,6 @@ var (
 // initHooks will initialize all pre-defined server hooks.
 func (s *server) initHooks() error {
 
-	// init router
 	err := s.routerHook()
 	if err != nil {
 		return err
@@ -55,9 +54,11 @@ func (s *server) routerHook() error {
 		}
 
 		// add favicon if defined
-		err = s.router.SetFavicon(s.cfg.Router.Favicon)
-		if err != nil {
-			return err
+		if s.cfg.Router.Favicon != "" {
+			err = s.router.SetFavicon(s.cfg.Router.Favicon)
+			if err != nil {
+				return err
+			}
 		}
 
 		for _, dir := range s.cfg.Router.Directories {

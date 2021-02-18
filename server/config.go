@@ -6,37 +6,50 @@ package server
 
 import (
 	"github.com/patrickascher/gofer/query"
+	"github.com/patrickascher/gofer/router/middleware/jwt"
 )
 
 // Configuration for the Webserver.
 // This configuration can be simple embedded in your application config.
 type Configuration struct {
 	Databases []query.Config
-	Server    serverConfig
-	Router    routerConfiguration
-	Caches    []cacheConfiguration
+	Server    ConfigurationServer
+	Router    ConfigurationRouter
+	Caches    []ConfigurationCache
+	Auth      ConfigurationAuth
 }
 
-type serverConfig struct {
+type ConfigurationServer struct {
 	Domain   string
 	Language string
 	HTTPPort int
 }
 
-type routerConfiguration struct {
+type ConfigurationAuth struct {
+	Providers            map[string]map[string]interface{}
+	JWT                  jwt.Config
+	BcryptCost           int    `json:"bcryptCost"`
+	AllowedFailedLogin   int    `json:"allowedFailedLogins"` // 0 = infinity
+	LockDuration         string `json:"lockDuration"`
+	InactiveDuration     string `json:"inactiveDuration"`
+	TokenDuration        string `json:"tokenDuration"`
+	RefreshTokenDuration string `json:"refreshTokenDuration"`
+}
+
+type ConfigurationRouter struct {
 	Provider       string
 	Favicon        string
-	Directories    []patternSource
-	Files          []patternSource
+	Directories    []PatternSource
+	Files          []PatternSource
 	CreateDBRoutes bool
 }
 
-type patternSource struct {
+type PatternSource struct {
 	Pattern string
 	Source  string
 }
 
-type cacheConfiguration struct {
+type ConfigurationCache struct {
 	Provider   string
 	GCInterval int
 }

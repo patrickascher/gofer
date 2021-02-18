@@ -24,7 +24,7 @@ nav:
           - reference/go/orm.md
           - reference/go/grid.md
           - reference/go/server.md
-
+          - reference/go/auth.md
 theme:
   name: material
   custom_dir: docs/overwrites

@@ -174,7 +174,7 @@ mw := router.NewMiddleware(middleware.NewLogger(logManager).MW)
 ### JWT
 
 Provides a middleware to check against a JWT token. If the JWT token is invalid a `http.StatusUnauthorized` will return.
-If the JWT token is expired it will be re-generated if allowed.
+If the JWT token is expired it will be re-generated if allowed. In such case, the request header will be manipulated if a refresh happens, so that there is the new refresh token as `REFRESH` cookie and the old one as `REFRESH_OLD`.
 
 There are two callback functions. `CallbackGenerate` for manipulating the claim before its signed. `CallbackRefresh` to
 check if the refresh token is still valid, against a custom logic.

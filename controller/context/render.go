@@ -6,6 +6,7 @@ package context
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/patrickascher/gofer/registry"
 )
@@ -43,15 +44,19 @@ func RenderType(name string) (Renderer, error) {
 
 // RenderTypes returns all registered render providers.
 // Error will return if a renderer constructor returns one.
-func RenderTypes() ([]Renderer, error) {
-	var providers []Renderer
+func RenderTypes() (map[string]Renderer, error) {
+
+	var providers map[string]Renderer
 	values := registry.Prefix(registryPrefix)
-	for _, v := range values {
+	for key, v := range values {
 		provider, err := v.(providerFn)()
 		if err != nil {
 			return nil, fmt.Errorf("render: %w", err)
 		}
-		providers = append(providers, provider)
+		if providers == nil {
+			providers = make(map[string]Renderer)
+		}
+		providers[strings.Replace(key, registryPrefix, "", -1)] = provider
 	}
 	return providers, nil
 }

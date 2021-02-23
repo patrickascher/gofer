@@ -115,20 +115,21 @@ func TestGet(t *testing.T) {
 }
 
 func TestPrefix(t *testing.T) {
-	test := assert.New(t)
+	asserts := assert.New(t)
 
 	// define some data
 	err := registry.Set("export_json", "json")
-	test.NoError(err)
+	asserts.NoError(err)
 	err = registry.Set("export_pdf", "pdf")
-	test.NoError(err)
+	asserts.NoError(err)
 	err = registry.Set("jpg", "jpg")
-	test.NoError(err)
+	asserts.NoError(err)
 
 	// error: no provider is given
 	v := registry.Prefix("export")
-	test.Equal(2, len(v))
-	test.True(v[0].(string) == "json" || v[0].(string) == "pdf")
-	test.True(v[1].(string) == "json" || v[1].(string) == "pdf")
+	asserts.Equal(2, len(v))
 
+	// check if json and pdf exist in map
+	asserts.Equal("json", v["export_json"])
+	asserts.Equal("pdf", v["export_pdf"])
 }

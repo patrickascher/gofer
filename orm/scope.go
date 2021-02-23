@@ -197,6 +197,12 @@ func (s scope) NewScopeFromType(p reflect.Type) (Scope, error) {
 		return nil, err
 	}
 
+	// copy fields/relation permission from parent, if its of the same type.
+	if s.Name(true) == strings.Replace(p.String(), "*", "", -1) {
+		copy(model.model().fields, s.model.fields)
+		copy(model.model().relations, s.model.relations)
+	}
+
 	// add loop detection
 	s.copyLoopDetection(model)
 
@@ -869,6 +875,7 @@ func (s scope) addField(a []reflect.StructField, b []reflect.StructField) ([]ref
 // If the poly_value tag is set, the Polymorphic value can be customized.
 // Error will return if the field does not exists in the struct.
 func (s scope) polymorphic(relScope Scope, tags map[string]string, fk *Field) (Polymorphic, error) {
+
 	if v, ok := tags[tagPolymorphic]; ok {
 		name := relScope.Name(false)
 		if v != "" {

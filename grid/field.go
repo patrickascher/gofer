@@ -43,7 +43,7 @@ type Field struct {
 
 	groupAble bool
 
-	option map[string]interface{}
+	option map[string][]interface{}
 
 	relation bool
 	fields   []Field
@@ -236,14 +236,14 @@ func (f *Field) SetGroupAble(allow bool) *Field {
 }
 
 // Options of the field.
-func (f Field) Options() map[string]interface{} {
+func (f Field) Options() map[string][]interface{} {
 	return f.option
 }
 
 // Option will return by key.
 // If the key does not exist, nil will return.
 // TODO check if field error is better?
-func (f Field) Option(key string) interface{} {
+func (f Field) Option(key string) []interface{} {
 	if v, ok := f.option[key]; ok {
 		return v
 	}
@@ -251,11 +251,11 @@ func (f Field) Option(key string) interface{} {
 }
 
 // SetOption will define an option by key and value.
-func (f *Field) SetOption(key string, value interface{}) *Field {
+func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	if f.option == nil {
-		f.option = map[string]interface{}{}
+		f.option = map[string][]interface{}{}
 	}
-	f.option[key] = value
+	f.option[key] = append([]interface{}{}, value...)
 	return f
 }
 

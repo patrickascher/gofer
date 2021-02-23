@@ -25,6 +25,9 @@ nav:
           - reference/go/grid.md
           - reference/go/server.md
           - reference/go/auth.md
+      - Frontend:
+          - reference/frontend/alert.md
+          - reference/frontend/login.md
 theme:
   name: material
   custom_dir: docs/overwrites

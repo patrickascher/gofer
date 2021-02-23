@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/peterhellberg/duration"
+	"github.com/rs/cors"
 	"net/http"
 	"reflect"
 
@@ -86,6 +87,17 @@ func Start() error {
 	webserver.server = http.Server{}
 	webserver.server.Addr = fmt.Sprint(":", webserver.cfg.Server.HTTPPort)
 	webserver.server.Handler = webserver.router.Handler()
+
+	//TODO write own cors middleware
+	corsManager := cors.New(cors.Options{
+		AllowCredentials: true,
+		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Authorization", "Origin", "Cache-Control", "Accept", "Content-Type", "X-Requested-With"},
+		Debug:            true,
+	})
+	webserver.server.Handler = corsManager.Handler(webserver.router.Handler())
+
 	return webserver.server.ListenAndServe()
 }
 

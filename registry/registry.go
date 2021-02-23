@@ -86,13 +86,16 @@ func Get(name string) (interface{}, error) {
 	return instanceFn, nil
 }
 
-// Prefix returns all entries which name start with this prefix.
-// If none was found, nil will return.
-func Prefix(prefix string) []interface{} {
-	var rv []interface{}
+// Prefix returns all entries as map which name start with the given prefix.
+// If none was found, nil map will return.
+func Prefix(prefix string) map[string]interface{} {
+	var rv map[string]interface{}
 	for n, v := range registry {
 		if strings.HasPrefix(n, prefix) {
-			rv = append(rv, v)
+			if rv == nil {
+				rv = make(map[string]interface{})
+			}
+			rv[n] = v
 		}
 	}
 	return rv

@@ -7,7 +7,13 @@ package grid
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path"
 	"reflect"
 	"strings"
 
@@ -22,6 +28,7 @@ import (
 
 // Error messages.
 var (
+	ErrCallback    = "requested callback %s is not implemented"
 	ErrRequestBody = "request body is empty in %s"
 	ErrJSONInvalid = "json is invalid in %s"
 	ErrConfig      = "no fields are configured"
@@ -51,6 +58,9 @@ func (g *gridSource) Init(grid Grid) error {
 		return err
 	}
 	scope.SetConfig(orm.NewConfig().SetUpdateReferenceOnly(true))
+
+	fmt.Println("init set config-->", scope.Config())
+
 	return nil
 }
 
@@ -58,8 +68,16 @@ func (g *gridSource) PreInit(grid Grid) error {
 	return nil
 }
 
-func (g *gridSource) Callback(string, Grid) (interface{}, error) {
-	return nil, nil
+func (g *gridSource) Callback(cbk string, gr Grid) (interface{}, error) {
+
+	switch cbk {
+	case "select":
+		return selectCallback(gr)
+	case "upload":
+		return uploadCallback(gr)
+	}
+
+	return nil, fmt.Errorf(ErrCallback, cbk)
 }
 
 func (g *gridSource) Cache() cache.Manager {
@@ -70,8 +88,8 @@ func (g *gridSource) Cache() cache.Manager {
 // UpdatedFields is called before the grid render starts.
 // The permissions will be set.
 func (g *gridSource) UpdatedFields(grid Grid) error {
-	if grid.Mode() != SrcCallback && grid.Mode() != SrcDelete {
 
+	if grid.Mode() != SrcCallback && grid.Mode() != SrcDelete {
 		// get user defined field config
 		whitelist, err := whitelistFields(g, grid.Scope().Fields(), "")
 		if err != nil {
@@ -84,11 +102,12 @@ func (g *gridSource) UpdatedFields(grid Grid) error {
 			if err != nil {
 				return err
 			}
-			s.SetConfig(orm.NewConfig().SetPermissionsExplicit(true))
+			s.SetConfig(orm.NewConfig().SetUpdateReferenceOnly(true).SetPermissionsExplicit(true))
 		} else {
 			return fmt.Errorf(ErrConfig)
 		}
 	}
+
 	return nil
 }
 
@@ -239,7 +258,6 @@ func (g *gridSource) Update(grid Grid) error {
 	err = g.orm.Update()
 	if err != nil {
 		return err
-
 	}
 	return nil
 }
@@ -371,8 +389,13 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		}
 		field.SetPrimary(f.Information.PrimaryKey)
 		field.SetType(f.Information.Type.Kind())
-		field.SetTitle(NewValue(scope.Name(true) + ":" + f.Name + "-title"))
-		field.SetDescription(NewValue(scope.Name(true) + ":" + f.Name + "-description"))
+		if g.Scope().Config().Translation {
+			field.SetTitle(NewValue(scope.Name(true) + ":" + f.Name + "-title"))
+			field.SetDescription(NewValue(scope.Name(true) + ":" + f.Name + "-description"))
+		} else {
+			field.SetTitle(NewValue(f.Name))
+		}
+
 		field.SetPosition(NewValue(i))
 		// field.SetRemove(NewValue(false))
 		// field.SetHidden(NewValue(false))
@@ -395,7 +418,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			if f.Information.Type.Kind() == types.MULTISELECT {
 				multiple = true
 			}
-			field.SetOption(options.SELECT, options.Select{ReturnObject: true, Items: items, Multiple: multiple})
+			field.SetOption(options.SELECT, options.Select{ReturnID: true, TextField: "text", ValueField: "value", Items: items, Multiple: multiple})
 		}
 
 		// field manipulations
@@ -438,7 +461,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 					}
 					rv[k].SetType(relation.Kind)
 					rv[k].SetRemove(NewValue(false))
-					rv[k].SetOption(options.SELECT, options.Select{ReturnObject: false, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
+					rv[k].SetOption(options.SELECT, options.Select{ReturnID: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
 				}
 			}
 
@@ -464,8 +487,12 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			continue
 		}
 		field.SetType(relation.Kind)
-		field.SetTitle(NewValue(scope.Name(true) + ":" + relation.Field + "-title"))
-		field.SetDescription(NewValue(scope.Name(true) + ":" + relation.Field + "-description"))
+		if g.Scope().Config().Translation {
+			field.SetTitle(NewValue(scope.Name(true) + ":" + relation.Field + "-title"))
+			field.SetDescription(NewValue(scope.Name(true) + ":" + relation.Field + "-description"))
+		} else {
+			field.SetTitle(NewValue(relation.Field))
+		}
 		field.SetPosition(NewValue(i))
 		//field.SetRemove(NewValue(false))
 		//field.SetHidden(false)
@@ -482,7 +509,13 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		// add options for BelongsTo and ManyToMany relations.
 		if relation.Kind == orm.BelongsTo || relation.Kind == orm.ManyToMany {
 			// experimental (model,id, title...) by default always the third field is taken.
-			field.SetOption(options.SELECT, options.Select{TextField: relation.Type.Elem().Field(2).Name, ValueField: relation.Mapping.References.Name})
+			var name string
+			if relation.Kind == orm.BelongsTo {
+				name = relation.Type.Field(2).Name
+			} else {
+				name = relation.Type.Elem().Field(2).Name
+			}
+			field.SetOption(options.SELECT, options.Select{TextField: name, ValueField: relation.Mapping.References.Name})
 		}
 
 		// recursively add fields
@@ -544,4 +577,181 @@ func skipJSONByTagOrSetJSONName(scope orm.Scope, f *Field) bool {
 	}
 
 	return false
+}
+
+func uploadCallback(g Grid) (interface{}, error) {
+	// get field name and options
+	selectField, err := g.Scope().Controller().Context().Request.Param("f")
+	if err != nil {
+		return nil, err
+	}
+	path := g.Field(selectField[0]).Option(options.FILEPATH)
+	if len(path) != 1 || path[0].(string) == "" {
+		return nil, errors.New("path is not defined")
+	}
+
+	switch g.Scope().Controller().Context().Request.Method() {
+	case http.MethodPost:
+		filesTags, err := g.Scope().Controller().Context().Request.Files()
+		if err != nil {
+			return nil, err
+		}
+		for _, files := range filesTags {
+			for _, file := range files {
+				rv, err := saveFile(path[0].(string), file)
+				if err != nil {
+					return nil, err
+				}
+				return rv, nil
+			}
+		}
+	case http.MethodDelete:
+		// TODO create a secure version over file id.
+		type File struct {
+			File string
+		}
+
+		file := File{}
+		err = json.Unmarshal(g.Scope().Controller().Context().Request.Body(), &file)
+		if err != nil {
+			return nil, err
+		}
+
+		err = os.Remove(file.File)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return nil, nil
+}
+
+func saveFile(filepath string, header *multipart.FileHeader) (interface{}, error) {
+	file, err := header.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// create folder
+	ex, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	path_ := path.Dir(ex) + "/" + filepath
+	err = os.MkdirAll(path_, os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+	tempFile, err := ioutil.TempFile(path_, "upload-*.png")
+	if err != nil {
+		return nil, err
+	}
+
+	// read all of the contents of our uploaded file into a
+	// byte array
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	// write this byte array to our temporary file
+	_, err = tempFile.Write(fileBytes)
+
+	// return that we have successfully uploaded our file!
+	rv := map[string]interface{}{}
+	rv["Name"] = tempFile.Name()
+	rv["Size"] = header.Size
+	rv["Type"] = header.Header.Get("content-type")
+	return rv, err
+}
+
+// TODO docu
+func selectCallback(g Grid) (interface{}, error) {
+
+	selectField, err := g.Scope().Controller().Context().Request.Param("f")
+	if err != nil {
+		return nil, err
+	}
+
+	// get the defined grid object
+	selField := g.Field(selectField[0])
+	if selField.Error() != nil {
+		return nil, selField.Error()
+	}
+	selX := selField.Option(options.SELECT)
+	sel := selX[0].(options.Select)
+
+	var relScope orm.Scope
+	fields := strings.Split(selectField[0], ".")
+	if sel.OrmField != "" {
+		fields = strings.Split(sel.OrmField, ".")
+	}
+
+	// get relation field of the orm
+	src := g.Scope().Source().(orm.Interface)
+	scope, err := src.Scope()
+	relation, err := scope.SQLRelation(fields[0], orm.Permission{Read: true})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(fields) > 1 {
+		// create a new orm object
+		relScope, err := scope.NewScopeFromType(relation.Type)
+		if err != nil {
+			return nil, err
+		}
+		// get relation field of the orm
+		relation, err = relScope.SQLRelation(fields[1], orm.Permission{Read: true})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// create a new orm object
+	relScope, err = scope.NewScopeFromType(relation.Type)
+	if err != nil {
+		return nil, err
+	}
+
+	// create the result slice
+	var rRes reflect.Value
+	// TODO check if slice then
+	if relation.Type.Kind() == reflect.Slice {
+		rRes = reflect.New(relation.Type)
+	} else {
+		rRes = reflect.New(reflect.MakeSlice(reflect.SliceOf(relation.Type), 0, 0).Type())
+	}
+
+	// set whitelist fields
+	reqFields := []string{sel.ValueField}
+	textFields := strings.Split(sel.TextField, ",")
+	for k, tf := range textFields {
+		textFields[k] = strings.Trim(tf, " ")
+		reqFields = append(reqFields, strings.Trim(tf, " "))
+	}
+
+	fmt.Println(relation.Type, rRes)
+
+	_, err = g.Scope().Controller().Context().Request.Param("allFields")
+	if err != nil {
+		fmt.Println("not all fields")
+		relScope.Model().SetPermissions(orm.WHITELIST, reqFields...)
+	} else {
+		fmt.Println("all field not all fields")
+		fmt.Println(g.Scope().Controller().Context().Request.Param("allFields"))
+
+	}
+
+	// request the data
+	c := condition.New()
+	if sel.Condition != "" {
+		c.SetWhere(sel.Condition)
+	}
+	err = relScope.Model().All(rRes.Interface(), c)
+	if err != nil {
+		return nil, err
+	}
+
+	return reflect.Indirect(rRes).Interface(), nil
 }

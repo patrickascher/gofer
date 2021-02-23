@@ -23,9 +23,9 @@ const (
 // If the fields exists in the DB, the will be filled automatically.
 // But they are excluded from First and All. This behaviour can be changed by permission.
 type TimeFields struct {
-	CreatedAt query.NullTime `orm:"permission:w"`
-	UpdatedAt query.NullTime `orm:"permission:w"`
-	DeletedAt query.NullTime `orm:"permission:w"`
+	CreatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
+	UpdatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
+	DeletedAt query.NullTime `orm:"permission:w"json:",omitempty"`
 }
 
 // SoftDelete should return the field and value.

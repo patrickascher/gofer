@@ -169,20 +169,23 @@ func (m *Model) createRelations(structRelations []reflect.StructField) error {
 					return err
 				}
 				refs, err = m.scope.references(tagReferences, tags, relScope)
-				if err != nil {
+				// error and no poly defined, because the poly will set a different ref key if set...
+				if _, ok := tags[tagPolymorphic]; !ok && err != nil {
 					return err
 				}
 				poly, err = m.scope.polymorphic(relScope, tags, &refs)
 				if err != nil {
 					return err
 				}
+
 			case BelongsTo:
 				fk, err = relScope.references(tagForeignKey, tags, &m.scope)
 				if err != nil {
 					return err
 				}
 				refs, err = relScope.foreignKey(tagReferences, tags)
-				if err != nil {
+				// error and no poly defined, because the poly will set a different ref key if set...
+				if _, ok := tags[tagPolymorphic]; !ok && err != nil {
 					return err
 				}
 				poly, err = m.scope.polymorphic(relScope, tags, &refs)
@@ -205,9 +208,6 @@ func (m *Model) createRelations(structRelations []reflect.StructField) error {
 
 				// join fk
 				j.ForeignColumnName = stringer.CamelToSnake(stringer.Singular(m.scope.Name(false)) + fk.Name)
-				if v, ok := tags[tagJoinFk]; ok && v != "" {
-					j.ForeignColumnName = v
-				}
 
 				// if poly is set
 				if v, ok := tags[tagPolymorphic]; ok {
@@ -234,6 +234,10 @@ func (m *Model) createRelations(structRelations []reflect.StructField) error {
 				// set join table by tag
 				if v, ok := tags[tagJoinTable]; ok && v != "" {
 					j.Table = v
+				}
+				// set join fk by tag
+				if v, ok := tags[tagJoinFk]; ok && v != "" {
+					j.ForeignColumnName = v
 				}
 
 				// join refs

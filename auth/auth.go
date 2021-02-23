@@ -21,6 +21,7 @@ const (
 	ParamPassword = "password"
 	ParamProvider = "provider"
 	KeyClaim      = "claim"
+	KeyNavigation = "navigation"
 )
 
 // Error messages.

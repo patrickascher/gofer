@@ -21,6 +21,7 @@ func NewCookie(w http.ResponseWriter, name string, value string, ttl time.Durati
 	cookie := &http.Cookie{}
 	cookie.Name = name
 	cookie.Value = value
+	cookie.Path = "/"
 
 	//cookie.HttpOnly = true // not available for JS
 	//cookie.Secure = true   // send only over HTTPS

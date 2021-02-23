@@ -17,7 +17,9 @@ type config struct {
 
 	Action  Action
 	Filter  Filter
-	Exports []string
+	Exports []string `json:"-"`
+
+	Translation bool
 }
 
 // Action configuration.
@@ -78,7 +80,7 @@ func defaultConfig(ctrl controller.Interface) config {
 			AllowedRowsPerPage: []int{-1, 5, 10, 15, 25, 50},
 			DefaultRowsPerPage: 15,
 		},
-		Exports: []string{"csv", "pdf"},
+		Exports: []string{CSV},
 	}
 
 	cfg.ID = ctrl.Name() + ":" + ctrl.Action()

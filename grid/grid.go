@@ -28,7 +28,7 @@ func init() {
 }
 
 // availableRenderer will store all defined render types.
-var availableRenderer []context.Renderer
+var availableRenderer map[string]context.Renderer
 
 // prefix for the cache.
 const prefixCache = "grid_"
@@ -39,6 +39,7 @@ const (
 	paramModeKey      = "mode"
 	paramModeFilter   = "filter"
 	paramModeCallback = "callback"
+	paramTypeCallback = "callback"
 	paramModeCreate   = "create"
 	paramModeUpdate   = "update"
 	paramModeDetails  = "details"
@@ -56,6 +57,11 @@ const (
 	ctrlTitle       = "title"
 	ctrlDescription = "description"
 	ctrlConfig      = "config"
+)
+
+// Pre-defined exports
+const (
+	CSV = "gridCsv"
 )
 
 // operation modes
@@ -80,6 +86,7 @@ var (
 	ErrField    = "grid: field %s was not found"
 	ErrSecurity = "grid: the mode %s is not allowed"
 	errWrap     = "grid: %w"
+	ErrExport   = "grid: export type %s is not registered as render type"
 )
 
 // Grid interface is reduced to a minimum.
@@ -125,7 +132,9 @@ type grid struct {
 	srcCondition condition.Condition
 	controller   controller.Interface
 	fields       []Field
+
 	config       config
+	configExport []Export
 }
 
 // New creates a new grid instance.
@@ -166,6 +175,12 @@ func New(ctrl controller.Interface, src Source, conf *config) (Grid, error) {
 			return nil, fmt.Errorf(errWrap, err)
 		}
 
+		// TODO create a SET,GET Export for dynamic config per user/role?
+		g.configExport, err = g.getExportTypes()
+		if err != nil {
+			return nil, err
+		}
+
 		// set cache
 		err = cacheMgr.Set(prefixCache, cfg.ID, g, cache.NoExpiration)
 		if err != nil {
@@ -182,12 +197,11 @@ func New(ctrl controller.Interface, src Source, conf *config) (Grid, error) {
 }
 
 // Mode will return the correct grid mode.
-//
+// HTTP.ANYTYPE: mode callback = SrcCallback
 // HTTP.GET:
 // 		- no mode param = FeTable
 // 		- mode filter = FeFilter
 // 		- mode export = FeExport
-// 		- mode callback = SrcCallback
 // 		- mode create = FeCreate
 // 		- mode details = FeDetails
 // 		- mode update = FeUpdate
@@ -202,6 +216,11 @@ func (g *grid) Mode() int {
 	m, table := req.Param(paramModeKey)
 	if table != nil && httpMethod == http.MethodGet {
 		return FeTable
+	}
+
+	// callbacks can be of all types.
+	if table == nil && m[0] == paramModeCallback {
+		return SrcCallback
 	}
 
 	// Requested HTTP method of the controller.
@@ -297,12 +316,20 @@ func (g *grid) Render() {
 		return
 	}
 
-	// title and description
-	g.controller.Set(ctrlTitle, g.config.Title)
-	g.controller.Set(ctrlDescription, g.config.Description)
-
 	// TODO active filter? only id?
 	switch g.Mode() {
+	case SrcCallback:
+		cbk, err := g.controller.Context().Request.Param(paramTypeCallback)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		value, err := g.src.Callback(cbk[0], g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		g.controller.Set(ctrlData, value)
 	case SrcCreate:
 		pk, err := g.src.Create(g)
 		if err != nil {
@@ -333,6 +360,8 @@ func (g *grid) Render() {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
 		}
+		g.controller.Set(ctrlTitle, g.config.Title)
+		g.controller.Set(ctrlDescription, g.config.Description)
 
 		// TODO if export no pagination and no limit!
 
@@ -363,11 +392,17 @@ func (g *grid) Render() {
 				return
 			}
 			g.controller.SetRenderType(t[0])
+		} else {
+			g.controller.Set("export", g.configExport)
 		}
 		// default render type by controller.
 	case FeCreate:
+		g.controller.Set(ctrlTitle, g.config.Title)
+		g.controller.Set(ctrlDescription, g.config.Description)
 		g.controller.Set(ctrlHead, g.sortFields())
 	case FeDetails, FeUpdate:
+		g.controller.Set(ctrlTitle, g.config.Title)
+		g.controller.Set(ctrlDescription, g.config.Description)
 		c, err := g.conditionFirst()
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
@@ -424,6 +459,18 @@ func (g *grid) setFieldModeRecursively(mode int, fields []Field) {
 	}
 }
 
+func (g *grid) getExportTypes() ([]Export, error) {
+	var rv []Export
+	for _, e := range g.config.Exports {
+		if v, ok := availableRenderer[e]; ok {
+			rv = append(rv, Export{Name: v.Name(), Icon: v.Icon(), Key: e})
+			continue
+		}
+		return nil, fmt.Errorf(ErrExport, e)
+	}
+	return rv, nil
+}
+
 // security is a helper to check the grid mode and the config definition to avoid un-allowed calls.
 func (g *grid) security() error {
 	switch g.Mode() {
@@ -433,15 +480,10 @@ func (g *grid) security() error {
 			return fmt.Errorf(ErrSecurity, "export")
 		}
 
-		exists := false
-		for _, e := range availableRenderer {
-			if e.Name() == t[0] {
-				exists = true
-			}
-		}
-		if !exists {
+		if _, ok := availableRenderer[t[0]]; !ok {
 			return fmt.Errorf(ErrSecurity, "export-"+t[0])
 		}
+
 	case SrcCreate:
 		// TODO: Needed to ensure a filter can be saved also if the create action is disabled.  && !g.config.Filter.Allow
 		if !g.config.Action.AllowCreate {

@@ -45,6 +45,7 @@ can be used.
 | Exports     | `csv`, `pdf`   | Slice of names of render types.                                      |
 | Action      |    | see ACTION                                                        |
 | Filter      |    | see FILTER                                                        |
+| Translation      |`false`     | If set to true, the title will be the orm namespace-title. same goes for the description.                                                    |
 
 **Action**
 
@@ -145,6 +146,16 @@ grid.Field("ID").SetTitle(grid.NewValue("ID").SetDetails("Identifier"))
 
 **Options**
 
+| Name        |  value |  Description |
+|-------------|-----|-----|
+| `DecoratorOption`   | `string`,`boolean` | a field name can be used {{Name}}. If the second parameter is set to true, HTML will not be escaped in the frontend.   |
+
+**Callbacks**
+
+| Name        |  value |  Description |
+|-------------|-----|-----|
+| `Select`   | `?` |   |
+
 TODO: Validate
 
 ## Scope
@@ -197,6 +208,7 @@ Will render the grid by the actual grid mode.
 
 | Mode        | set in frontend data |  Description | 
 |-------------|-----|-----|
+| `grid.SrcCallback`   | `data`  | The source callback function is called. as first param the requested callback will be set as string. |
 | `grid.SrcCreate`   |   | The source create function is called. | 
 | `grid.SrcUpdate`     || The source update function is called. | 
 | `grid.SrcDelete`     || The condition first will be called to ensure the correct primary key. The source delete function is called.| 

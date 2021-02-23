@@ -7,8 +7,10 @@ package options
 
 // pre defined options.
 const (
-	SELECT = "select"
-	UNIQUE = "unique"
+	FILEPATH  = "filepath"
+	SELECT    = "select"
+	UNIQUE    = "unique"
+	DECORATOR = "decorator"
 )
 
 // Select will represent a frontend Select or MultiSelect.
@@ -16,13 +18,13 @@ const (
 type Select struct {
 	Items []SelectItem `json:",omitempty"`
 
-	API          string `json:"api,omitempty"` // backend api link
-	TextField    string `json:",omitempty"`    // name of the text field
-	ValueField   string `json:",omitempty"`    // name of the value field
-	Condition    string `json:",omitempty"`    // additional conditions
-	OrmField     string `json:"-"`             // Orm field
-	Multiple     bool   `json:",omitempty"`    // multiselect
-	ReturnObject bool   `json:",omitempty"`    // return object or value only.
+	API        string `json:"api,omitempty"` // backend api link
+	TextField  string `json:",omitempty"`    // name of the text field
+	ValueField string `json:",omitempty"`    // name of the value field
+	Condition  string `json:",omitempty"`    // additional conditions
+	OrmField   string `json:"-"`             // Orm field
+	Multiple   bool   `json:",omitempty"`    // multiselect
+	ReturnID   bool   `json:",omitempty"`    // return object or value only.
 }
 
 // SelectItem represents a HTML select Option.

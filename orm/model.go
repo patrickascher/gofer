@@ -347,7 +347,6 @@ func (m *Model) Update() (err error) {
 		}
 
 		err = m.strategy.First(&snapshot.model().scope, c, Permission{Write: true})
-
 		if err != nil {
 			return
 		}
@@ -464,7 +463,7 @@ func (m *Model) Init(caller Interface) error {
 		}
 		*m = item.Value().(Model)
 		m.caller = caller
-		//m.parentModel = nil       // TODO check if needed
+		m.parentModel = nil       // needed - otherwise parent will be set and will cause problems if the child model is shared between more models.
 		m.scope = scope{model: m} // needed
 	} else {
 		// setting the default values, builder, table name, database name.

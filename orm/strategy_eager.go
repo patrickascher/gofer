@@ -6,6 +6,7 @@ package orm
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"reflect"
 
@@ -119,13 +120,16 @@ func createOrUpdate(relModel Interface, relation Relation, selfReference bool) e
 		}
 	}
 
-	if !relScope.PrimaryKeysSet() {
-		return relModel.Create()
+	if root, err := relScope.Parent(RootStruct); err == nil {
+		fmt.Println("ROOT CFG", root.scope.Name(true), root.config[RootStruct].updateReferencesOnly, root.config)
 	}
-
 	// if only the belongsTo foreign key and the manyToMany join table should be updated.
 	if root, err := relScope.Parent(RootStruct); err == nil && root.config[RootStruct].updateReferencesOnly {
 		return nil
+	}
+
+	if !relScope.PrimaryKeysSet() {
+		return relModel.Create()
 	}
 
 	// on self reference there is a problem with a loop, so the changed value is not checked again.

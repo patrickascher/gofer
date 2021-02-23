@@ -177,9 +177,9 @@ type Role struct {
 	Name        string           `json:",omitempty"`
 	Description query.NullString `json:",omitempty"`
 
-	Children []Role `json:",omitempty"`
-	//Backend  []Route `orm:"relation:m2m;join_table:role_backends" json:",omitempty"`
-	//Frontend []Route `orm:"relation:m2m;join_table:role_frontends" json:",omitempty"`
+	Children []Role         `json:",omitempty"`
+	Backend  []server.Route `orm:"relation:m2m;poly:Route;poly_value:Backend;join_table:role_routes;join_fk:role_id" json:",omitempty"`
+	Frontend []server.Route `orm:"relation:m2m;poly:Route;poly_value:Frontend;join_table:role_routes;join_fk:role_id" json:",omitempty"`
 }
 
 // UserByLogin will return the user.

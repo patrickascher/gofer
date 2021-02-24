@@ -19,7 +19,7 @@ require (
 	github.com/onsi/gomega v1.10.5 // indirect
 	github.com/patrickascher/gofw v0.1.10
 	github.com/peterhellberg/duration v0.0.0-20191119133758-ec6baeebcd10
-	github.com/rs/cors v1.7.0 // indirect
+	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/sirupsen/logrus v1.7.0

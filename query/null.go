@@ -123,6 +123,8 @@ func SanitizeInterfaceValue(value interface{}) (interface{}, error) {
 	case NullInt:
 		if value.(NullInt).Valid {
 			return value.(NullInt).Int64, nil
+		} else {
+			return int64(0), nil
 		}
 	case NullString:
 		if value.(NullString).Valid {

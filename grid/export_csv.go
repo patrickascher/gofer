@@ -38,7 +38,7 @@ func (cw *csvWriter) Write(r *context.Response) error {
 	// TODO define separator
 	// TODO define CRLF
 
-	r.Writer().Header().Set("Content-Type", "text/csv")
+	r.Writer().Header().Set("Content-Type", "text/csv; charset=utf-8")
 	r.Writer().Header().Set("Content-Disposition", "attachment; filename=\"export.csv\"")
 
 	w := csv.NewWriter(r.Writer())
@@ -70,7 +70,11 @@ func (cw *csvWriter) Write(r *context.Response) error {
 
 		for _, head := range header {
 			if rData.Index(i).Type().Kind().String() == "struct" {
-				body = append(body, fmt.Sprint(rData.Index(i).FieldByName(head.name).Interface()))
+				if rData.Index(i).FieldByName(head.name).Type().String() == "query.NullString" {
+					body = append(body, fmt.Sprint(rData.Index(i).FieldByName(head.name).FieldByName("String").Interface()))
+				} else {
+					body = append(body, fmt.Sprint(rData.Index(i).FieldByName(head.name).Interface()))
+				}
 			} else {
 				body = append(body, fmt.Sprint(reflect.ValueOf(rData.Index(i).Interface()).MapIndex(reflect.ValueOf(head.name)).Interface()))
 			}

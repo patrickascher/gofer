@@ -413,6 +413,11 @@ func (t *NullTime) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (t NullTime) String() string {
+	x, _ := t.Time.MarshalText()
+	return string(x)
+}
+
 // MarshalText implements encoding.TextMarshaler.
 // It returns an empty string if invalid, otherwise time.Time's MarshalText.
 func (t NullTime) MarshalText() ([]byte, error) {

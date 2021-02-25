@@ -2,6 +2,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/patrickascher/gofer)](https://goreportcard.com/report/github.com/patrickascher/gofer)
 [![Build Status](https://travis-ci.com/patrickascher/gofer.svg?branch=master)](https://travis-ci.com/patrickascher/gofer)
 [![codecov](https://codecov.io/gh/patrickascher/gofer/branch/master/graph/badge.svg?token=HRNFEI9NKZ)](https://codecov.io/gh/patrickascher/gofer)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpatrickascher%2Fgofer.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpatrickascher%2Fgofer?ref=badge_shield)
 <!--
 
 docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
@@ -19,3 +20,7 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpatrickascher%2Fgofer.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpatrickascher%2Fgofer?ref=badge_large)

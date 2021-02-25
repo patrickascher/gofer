@@ -123,12 +123,12 @@ func TestField(t *testing.T) {
 
 	//Options
 	asserts.IsType(new(grid.Field), field.SetOption("testing", true))
-	asserts.Equal(true, field.Option("testing").(bool))
+	asserts.Equal(true, field.Option("testing")[0].(bool))
 	// does not exist
 	asserts.Nil(field.Option("testings"))
 	// get all defined options
 	asserts.Equal(1, len(field.Options()))
-	asserts.Equal(true, field.Options()["testing"].(bool))
+	asserts.Equal(true, field.Options()["testing"][0].(bool))
 
 	//Relation
 	asserts.IsType(new(grid.Field), field.SetRelation(true))
@@ -148,6 +148,6 @@ func TestField(t *testing.T) {
 	//MarshalJSON
 	j, err := json.Marshal(field)
 	asserts.NoError(err)
-	exp := "{\"description\":\"Desc-export\",\"fields\":[{\"name\":\"SubField\",\"position\":0,\"title\":\"\",\"type\":\"\"}],\"filterable\":true,\"groupable\":true,\"hidden\":true,\"name\":\"Test\",\"options\":{\"testing\":true},\"position\":10,\"primary\":true,\"readOnly\":true,\"remove\":true,\"sortable\":true,\"title\":\"Title-export\",\"type\":\"Integer\",\"view\":\"custom-export\"}"
+	exp := "{\"description\":\"Desc-export\",\"fields\":[{\"name\":\"SubField\",\"position\":0,\"title\":\"\",\"type\":\"\"}],\"filterable\":true,\"groupable\":true,\"hidden\":true,\"name\":\"Test\",\"options\":{\"testing\":[true]},\"position\":10,\"primary\":true,\"readOnly\":true,\"remove\":true,\"sortable\":true,\"title\":\"Title-export\",\"type\":\"Integer\",\"view\":\"custom-export\"}"
 	asserts.Equal(exp, string(j[:]))
 }

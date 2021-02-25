@@ -302,7 +302,7 @@ func TestModel_createRelation(t *testing.T) {
 		{typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyPoly", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "poly_id"}}, "OrmRel"}, Join: Join{Table: "relation_tests_polies", ReferencesColumnName: "relation_test_id", ForeignColumnName: "poly_id"}}}},
 		{typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyPolyTag", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "OrmRel"}, Join: Join{Table: "relation_tests_tags", ReferencesColumnName: "relation_test_id", ForeignColumnName: "tag_id"}}}},
 		{typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyPolyTagValue", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "ORM"}, Join: Join{Table: "relation_tests_tags", ReferencesColumnName: "relation_test_id", ForeignColumnName: "tag_id"}}}},
-		{typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyPolyTags", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "ORM"}, Join: Join{Table: "jtable", ReferencesColumnName: "tableRefs", ForeignColumnName: "tag_id"}}}},
+		{typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyPolyTags", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "ORM"}, Join: Join{Table: "jtable", ReferencesColumnName: "tableRefs", ForeignColumnName: "tableFK"}}}},
 		{error: true, errMsg: fmt.Sprintf(ErrJoinTable, []string{"notExisting", "tableRefs"}, "jtable"), typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyJoinTagsErr", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "ORM"}, Join: Join{Table: "jtable", ReferencesColumnName: "tableRefs", ForeignColumnName: "tag_id"}}}},
 		{error: true, errMsg: "an error", typeName: "[]orm.RelationTests", relation: Relation{Field: "ManyToManyErrDescribe", Kind: ManyToMany, NoSQLColumn: false, Permission: Permission{Read: true, Write: true}, Validator: validator{config: nil}, Mapping: Mapping{ForeignKey: Field{Name: "ID"}, References: Field{Name: "ID"}, Polymorphic: Polymorphic{Field{Information: query.Column{Name: "tag_type"}}, "ORM"}, Join: Join{Table: "jtable", ReferencesColumnName: "tableRefs", ForeignColumnName: "tag_id"}}}},
 
@@ -360,8 +360,6 @@ func TestModel_createRelation(t *testing.T) {
 					asserts.Equal(test.relation.Mapping.Join.Table, model.relations[0].Mapping.Join.Table)
 					asserts.Equal(test.relation.Mapping.Join.ForeignColumnName, model.relations[0].Mapping.Join.ForeignColumnName)
 					asserts.Equal(test.relation.Mapping.Join.ReferencesColumnName, model.relations[0].Mapping.Join.ReferencesColumnName)
-					//asserts.Equal(test.relation.Mapping.Join.PolyTypeColumnName, model.relations[0].Mapping.Join.PolyTypeColumnName)
-					//asserts.Equal(test.relation.Mapping.Join.PolyValue, model.relations[0].Mapping.Join.PolyValue)
 				}
 			}
 		})
@@ -662,7 +660,7 @@ func (r *ormRel) DefaultBuilder() query.Builder {
 		{Name: "tableRefs", Type: types.NewInt("int")},
 		{Name: "tag_type", Type: types.NewInt("int")},
 	}
-	mInformation.On("Describe", "tag_id", "tableRefs", "tag_type").Return(cols, nil)
+	mInformation.On("Describe", "tableFK", "tableRefs", "tag_type").Return(cols, nil)
 
 	mProvider.On("Information", "orm_rels").Return(mInformation)
 	cols = []query.Column{

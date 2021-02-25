@@ -238,31 +238,32 @@ func TestGrid_Render(t *testing.T) {
 			switch test.name {
 			case "export":
 				g.Scope().Config().Exports = []string{}
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export")).Once()
 			case "export-csv":
 				g.Scope().Config().Exports = []string{}
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export-csv"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export-csv")).Once()
 			case "create":
 				g.Scope().Config().Action.AllowCreate = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create")).Once()
 			case "create-src":
 				g.Scope().Config().Action.AllowCreate = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create")).Once()
 			case "update":
 				g.Scope().Config().Action.AllowUpdate = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update")).Once()
 			case "update-src":
 				g.Scope().Config().Action.AllowUpdate = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update")).Once()
 			case "delete-src":
 				g.Scope().Config().Action.AllowDelete = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "delete"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "delete")).Once()
 			case "details":
 				g.Scope().Config().Action.AllowDetails = false
-				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "details"))
+				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "details")).Once()
 			}
 
 			g.Render()
+
 		})
 	}
 
@@ -278,6 +279,9 @@ func TestGrid_Render(t *testing.T) {
 	testFeCreate(t)
 	// Fe details, update
 	testFeDetailsFeUpdate(t)
+
+	mockSource.AssertExpectations(t)
+	mockController.AssertExpectations(t)
 }
 
 // testSrcCreate tests if the src create is called and the primary gets set as response.
@@ -443,6 +447,8 @@ func testRenderFeTableFeExport(t *testing.T) {
 	mockSource.On("All", mock.AnythingOfType("*condition.condition"), mock.AnythingOfType("*grid.grid")).Return("srcdata", nil).Once()
 	mockController.On("Set", "config", mock.AnythingOfType("grid.config")).Once()
 	mockController.On("Set", "data", "srcdata").Once()
+	mockController.On("Set", "export", mock.Anything).Once()
+
 	g.Render()
 
 	// TODO export types when registered

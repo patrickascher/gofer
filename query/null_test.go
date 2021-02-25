@@ -123,8 +123,8 @@ func TestSanitizeValue(t *testing.T) {
 
 	// its not a valid value
 	v, err = query.SanitizeInterfaceValue(query.NewNullInt(1, false))
-	asserts.Error(err)
-	asserts.Equal(fmt.Sprintf(query.ErrSanitize, query.NewNullInt(1, false), "query.NullInt"), err.Error())
+	asserts.NoError(err)
+	asserts.Equal(int64(0), v)
 
 	v, err = query.SanitizeInterfaceValue("test")
 	asserts.NoError(err)

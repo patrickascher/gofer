@@ -97,3 +97,12 @@ CREATE TABLE `refresh_tokens`
     CONSTRAINT `refresh_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+
+CREATE TABLE `role_routes` (
+                               `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                               `role_id` int(11) unsigned NOT NULL,
+                               `route_id` int(10) unsigned NOT NULL,
+                               `route_type` varchar(100) NOT NULL DEFAULT '',
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4;

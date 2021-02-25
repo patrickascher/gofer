@@ -7,6 +7,9 @@ go:
   - "1.16"
   - master
 
+env:
+  - GO111MODULE=on
+
 services:
   - mysql
 
@@ -14,13 +17,12 @@ matrix:
   fast_finish: true
 
 before_script:
-  - env GO111MODULE=on
   - mysql -e 'USE mysql;update user set authentication_string=password("root") where user="root";FLUSH PRIVILEGES'
 
 script:
-  - env GO111MODULE=on go get -t -v ./...
-  - env GO111MODULE=on go vet ./...
-  - env GO111MODULE=on go test -race -p 1 -coverpkg=github.com/patrickascher/gofer/... -coverprofile=coverage.txt -covermode=atomic ./...
+  - go get -t -v ./...
+  - go vet ./...
+  - go test -race -p 1 -coverpkg=github.com/patrickascher/gofer/... -coverprofile=coverage.txt -covermode=atomic ./...
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

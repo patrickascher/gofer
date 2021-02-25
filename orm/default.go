@@ -25,7 +25,7 @@ const (
 type TimeFields struct {
 	CreatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
 	UpdatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
-	DeletedAt query.NullTime `orm:"permission:w"json:",omitempty"`
+	DeletedAt query.NullTime `orm:"permission:w" json:",omitempty"`
 }
 
 // SoftDelete should return the field and value.

@@ -2,7 +2,10 @@ sudo: false
 language: go
 
 go:
-  - 1.x
+  - "1.14"
+  - "1.15"
+  - "1.16"
+  - master
 
 services:
   - mysql
@@ -14,9 +17,9 @@ before_script:
   - mysql -e 'USE mysql;update user set authentication_string=password("root") where user="root";FLUSH PRIVILEGES'
 
 script:
-  - go get -t -v ./...
-  - go vet ./...
-  - go test -race -p 1 -coverpkg=github.com/patrickascher/gofer/... -coverprofile=coverage.txt -covermode=atomic ./...
+  - env GO111MODULE=on go get -t -v ./...
+  - env GO111MODULE=on go vet ./...
+  - env GO111MODULE=on go test -race -p 1 -coverpkg=github.com/patrickascher/gofer/... -coverprofile=coverage.txt -covermode=atomic ./...
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/patrickascher/gofer/controller/context"
+	_ "github.com/patrickascher/gofer/grid" // render type gridCSV
 	"github.com/patrickascher/gofer/registry"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,7 +40,7 @@ func TestRegisterRenderer(t *testing.T) {
 	// ok: get all render types
 	types, err := context.RenderTypes()
 	asserts.NoError(err)
-	asserts.Equal(3, len(types)) // json is automatically added.
+	asserts.Equal(4, len(types))
 
 	// ok: register render type error
 	err = context.RegisterRenderer("mock-err", func() (context.Renderer, error) { return nil, errors.New("renderer error") })

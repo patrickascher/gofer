@@ -5,11 +5,58 @@
 package structer_test
 
 import (
-	"testing"
-
 	"github.com/patrickascher/gofer/structer"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
+
+// TestMerge tests the mergo.Merge wrapper.
+func TestMerge(t *testing.T) {
+	asserts := assert.New(t)
+
+	type Foo struct {
+		A string
+		B int
+	}
+
+	src := Foo{
+		A: "one",
+		B: 2,
+	}
+	dest := Foo{
+		A: "two",
+	}
+
+	err := structer.Merge(&dest, src)
+	asserts.NoError(err)
+	asserts.Equal(Foo{A: "two", B: 2}, dest)
+}
+
+// TestMergeByMap tests the mergo.Map wrapper.
+// - test map merge
+// - override and overrideZeroValue
+func TestMergeByMap(t *testing.T) {
+	asserts := assert.New(t)
+
+	type Foo struct {
+		A string
+		B int
+	}
+
+	dest := Foo{
+		A: "two",
+	}
+
+	// override with none zero value.
+	err := structer.MergeByMap(&dest, map[string]interface{}{"A": "three", "B": 5}, structer.Override)
+	asserts.NoError(err)
+	asserts.Equal(Foo{A: "three", B: 5}, dest)
+
+	// override with zero value.
+	err = structer.MergeByMap(&dest, map[string]interface{}{"A": "three", "B": 0}, structer.OverrideWithZeroValue)
+	asserts.NoError(err)
+	asserts.Equal(Foo{A: "three", B: 0}, dest)
+}
 
 func TestParseTag(t *testing.T) {
 	asserts := assert.New(t)

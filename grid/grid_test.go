@@ -41,7 +41,7 @@ func TestNew(t *testing.T) {
 	mockSource.On("Cache").Once().Return(nil, time.Duration(0))
 	mockController.On("Name").Once().Return("TestCtrl")
 	mockController.On("Action").Once().Return("TestAction")
-	g, err := grid.New(mockController, mockSource, nil)
+	g, err := grid.New(mockController, mockSource)
 	asserts.Nil(g)
 	asserts.Error(err)
 	asserts.Equal(fmt.Errorf(grid.ErrCache, "TestCtrl:TestAction"), err)
@@ -57,7 +57,7 @@ func TestNew(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := context.New(w, httptest.NewRequest("GET", "https://localhost/users?limit=5&page=2", strings.NewReader("")))
 	mockController.On("Context").Once().Return(ctx)
-	gOk, err := grid.New(mockController, mockSource, nil)
+	gOk, err := grid.New(mockController, mockSource)
 	asserts.NotNil(gOk)
 	asserts.NoError(err)
 
@@ -67,7 +67,7 @@ func TestNew(t *testing.T) {
 	mockController.On("Action").Once().Return("TestAction")
 	mockCache.On("Get", "grid_", "TestCtrl:TestAction").Once().Return(nil, errors.New("does not exist"))
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(errors.New("source init error"))
-	g, err = grid.New(mockController, mockSource, nil)
+	g, err = grid.New(mockController, mockSource)
 	asserts.Nil(g)
 	asserts.Error(err)
 	asserts.Equal("source init error", errors.Unwrap(err).Error())
@@ -79,7 +79,7 @@ func TestNew(t *testing.T) {
 	mockCache.On("Get", "grid_", "TestCtrl:TestAction").Once().Return(nil, errors.New("does not exist"))
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	mockSource.On("Fields", mock.AnythingOfType("*grid.grid")).Once().Return(nil, errors.New("source field error"))
-	g, err = grid.New(mockController, mockSource, nil)
+	g, err = grid.New(mockController, mockSource)
 	asserts.Nil(g)
 	asserts.Error(err)
 	asserts.Equal("source field error", errors.Unwrap(err).Error())
@@ -92,7 +92,7 @@ func TestNew(t *testing.T) {
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	mockSource.On("Fields", mock.AnythingOfType("*grid.grid")).Once().Return(nil, nil)
 	mockCache.On("Set", "grid_", "TestCtrl:TestAction", mock.AnythingOfType("grid.grid"), time.Duration(cache.NoExpiration)).Once().Return(errors.New("cache set error"))
-	g, err = grid.New(mockController, mockSource, nil)
+	g, err = grid.New(mockController, mockSource)
 	asserts.Nil(g)
 	asserts.Error(err)
 	asserts.Equal("cache set error", errors.Unwrap(err).Error())
@@ -107,7 +107,7 @@ func TestNew(t *testing.T) {
 	w = httptest.NewRecorder()
 	ctx = context.New(w, httptest.NewRequest("GET", "https://localhost/users?limit=5&page=2", strings.NewReader("")))
 	mockController.On("Context").Once().Return(ctx)
-	g, err = grid.New(mockController, mockSource, nil)
+	g, err = grid.New(mockController, mockSource)
 	asserts.NotNil(g)
 	asserts.NoError(err)
 
@@ -118,7 +118,7 @@ func TestNew(t *testing.T) {
 	mockCache.On("Get", "grid_", "TestCtrl:TestAction").Once().Return(mockItem, nil)
 	mockItem.On("Value").Once().Return(reflect.ValueOf(gOk).Elem().Interface()) // needed to fake it because the cache returns grid.grid.
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(errors.New("source init error"))
-	g, err = grid.New(mockController, mockSource, nil)
+	g, err = grid.New(mockController, mockSource)
 	asserts.Nil(g)
 	asserts.Error(err)
 	asserts.Equal("source init error", errors.Unwrap(err).Error())
@@ -148,7 +148,7 @@ func TestGrid_Scope(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := context.New(w, httptest.NewRequest("GET", "https://localhost/users?limit=5&page=2", strings.NewReader("")))
 	mockController.On("Context").Once().Return(ctx)
-	g, err := grid.New(mockController, mockSource, nil)
+	g, err := grid.New(mockController, mockSource)
 	asserts.NotNil(g)
 	asserts.NoError(err)
 
@@ -237,28 +237,28 @@ func TestGrid_Render(t *testing.T) {
 
 			switch test.name {
 			case "export":
-				g.Scope().Config().Exports = []string{}
+				g.Scope().Config().Exports = []grid.ExportType{}
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export")).Once()
 			case "export-csv":
-				g.Scope().Config().Exports = []string{}
+				g.Scope().Config().Exports = []grid.ExportType{}
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "export-csv")).Once()
 			case "create":
-				g.Scope().Config().Action.AllowCreate = false
+				g.Scope().Config().Action.DisableCreate = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create")).Once()
 			case "create-src":
-				g.Scope().Config().Action.AllowCreate = false
+				g.Scope().Config().Action.DisableCreate = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "create")).Once()
 			case "update":
-				g.Scope().Config().Action.AllowUpdate = false
+				g.Scope().Config().Action.DisableUpdate = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update")).Once()
 			case "update-src":
-				g.Scope().Config().Action.AllowUpdate = false
+				g.Scope().Config().Action.DisableUpdate = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "update")).Once()
 			case "delete-src":
-				g.Scope().Config().Action.AllowDelete = false
+				g.Scope().Config().Action.DisableDelete = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "delete")).Once()
 			case "details":
-				g.Scope().Config().Action.AllowDetails = false
+				g.Scope().Config().Action.DisableDetail = true
 				mockController.On("Error", 500, fmt.Errorf(grid.ErrSecurity, "details")).Once()
 			}
 
@@ -371,7 +371,7 @@ func testFeDetailsFeUpdate(t *testing.T) {
 
 	// error because no primary key is set in href.
 	g, mockController, mockSource, _, _ := mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?mode=details", strings.NewReader("")))
-	g.Scope().Config().Action.AllowDetails = true
+	g.Scope().Config().Action.DisableDetail = false
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	mockController.On("Set", "title", "controller:action-title").Once()
 	mockController.On("Set", "description", "controller:action-description").Once()
@@ -380,7 +380,7 @@ func testFeDetailsFeUpdate(t *testing.T) {
 
 	// error src first returns one.
 	g, mockController, mockSource, _, _ = mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?mode=details&ID=1", strings.NewReader("")))
-	g.Scope().Config().Action.AllowDetails = true
+	g.Scope().Config().Action.DisableDetail = false
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	mockController.On("Set", "title", "controller:action-title").Once()
 	mockController.On("Set", "description", "controller:action-description").Once()
@@ -390,7 +390,7 @@ func testFeDetailsFeUpdate(t *testing.T) {
 
 	// ok
 	g, mockController, mockSource, _, _ = mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?mode=details&ID=1", strings.NewReader("")))
-	g.Scope().Config().Action.AllowDetails = true
+	g.Scope().Config().Action.DisableDetail = false
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	mockController.On("Set", "title", "controller:action-title").Once()
 	mockController.On("Set", "description", "controller:action-description").Once()
@@ -410,8 +410,6 @@ func testRenderFeTableFeExport(t *testing.T) {
 	// error because src count returns on
 	g, mockController, mockSource, _, _ := mockGrid(t, httptest.NewRequest("GET", "https://localhost/users", strings.NewReader("")))
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
-	mockController.On("Set", "title", "controller:action-title").Once()
-	mockController.On("Set", "description", "controller:action-description").Once()
 	mockSource.On("Count", mock.AnythingOfType("*condition.condition"), mock.AnythingOfType("*grid.grid")).Once().Return(0, errors.New("an error"))
 	mockController.On("Error", 500, mock.AnythingOfType("*fmt.wrapError")).Once()
 	g.Render()
@@ -419,16 +417,13 @@ func testRenderFeTableFeExport(t *testing.T) {
 	// error because conditionAll returns one
 	g, mockController, mockSource, _, _ = mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?sort=NotExisting", strings.NewReader("")))
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
-	mockController.On("Set", "title", "controller:action-title").Once()
-	mockController.On("Set", "description", "controller:action-description").Once()
 	mockController.On("Error", 500, mock.AnythingOfType("*fmt.wrapError")).Once()
 	g.Render()
 
 	// src all returns an error
 	g, mockController, mockSource, _, _ = mockGrid(t, httptest.NewRequest("GET", "https://localhost/users", strings.NewReader("")))
 	mockSource.On("UpdatedFields", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
-	mockController.On("Set", "title", "controller:action-title").Once()
-	mockController.On("Set", "description", "controller:action-description").Once()
+	mockController.On("Set", "config", mock.AnythingOfType("grid.Config")).Once()
 	mockSource.On("Count", mock.AnythingOfType("*condition.condition"), mock.AnythingOfType("*grid.grid")).Once().Return(10, nil)
 	mockController.On("Set", "pagination", mock.AnythingOfType("*grid.pagination")).Once()
 	mockController.On("Set", "head", mock.AnythingOfType("[]grid.Field")).Once()
@@ -448,6 +443,7 @@ func testRenderFeTableFeExport(t *testing.T) {
 	mockController.On("Set", "config", mock.AnythingOfType("grid.config")).Once()
 	mockController.On("Set", "data", "srcdata").Once()
 	mockController.On("Set", "export", mock.Anything).Once()
+	mockController.On("Set", "config", mock.AnythingOfType("grid.Config")).Once()
 
 	g.Render()
 

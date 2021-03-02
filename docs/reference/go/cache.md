@@ -72,7 +72,8 @@ item,err := mem.All()    // ([]Item, error)
 Set a cache item by prefix, name, value and expiration.
 
 !!! info "Infinity live time"
-If you need no expiration for a cache item, use `cache.NoExpiration`.
+
+    If you need no expiration for a cache item, use `cache.NoExpiration`.
 
 ```go 
 // the managers default expiration time. 

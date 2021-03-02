@@ -104,7 +104,7 @@ func (g *grid) conditionAll() (condition.Condition, error) {
 // Error will return if the field does not exist or the field has no permission for filter.
 func addFilterCondition(g *grid, field string, params []string, c condition.Condition) error {
 
-	if gridField := g.Field(field); gridField.error == nil && gridField.filterAble {
+	if gridField := g.Field(field); gridField.error == nil && gridField.filterAble && !g.config.Filter.Disable {
 
 		args := strings.Split(escape(params[0]), conditionFilterSeparator)
 

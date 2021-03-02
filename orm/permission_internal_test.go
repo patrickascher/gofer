@@ -45,7 +45,7 @@ func Test_setFieldPermission(t *testing.T) {
 			err = c.scope.setFieldPermission()
 			if asserts.NoError(err) {
 				// Address.Street and Address.Zip got removed because the whole relation was added.
-				asserts.Equal(&permissionList{policy: 1, fields: []string{"Name", "Species.Name", "Address", "does not exist", "ID", "DeletedAt", "Species.ID", "SpeciesID"}}, c.permissionList)
+				asserts.Equal(&permissionList{policy: WHITELIST, fields: []string{"Name", "Species.Name", "Address", "does not exist", "ID", "DeletedAt", "Species.ID", "SpeciesID"}}, c.permissionList)
 				fields := c.scope.SQLFields(Permission{Read: true})
 				asserts.Equal(4, len(fields)) // Name,ID,SpeciesID,DeletedAt
 				relations := c.scope.SQLRelations(Permission{Read: true})
@@ -57,7 +57,7 @@ func Test_setFieldPermission(t *testing.T) {
 			err = c.scope.setFieldPermission()
 			if asserts.NoError(err) {
 				// Other fields were removed because they are mandatory
-				asserts.Equal(&permissionList{policy: 0, fields: []string{"Name", "Species.Name", "Address"}}, c.permissionList)
+				asserts.Equal(&permissionList{policy: BLACKLIST, fields: []string{"Name", "Species.Name", "Address"}}, c.permissionList)
 				fields := c.scope.SQLFields(Permission{Read: true})
 				asserts.Equal(3, len(fields)) // ID,SpeciesID,DeletedAt
 				relations := c.scope.SQLRelations(Permission{Read: true})

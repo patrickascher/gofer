@@ -140,7 +140,6 @@ func (u *User) IsInactive() bool {
 func (u *User) ComparePassword(hash string, pw string) error {
 	incoming := []byte(pw)
 	existing := []byte(hash)
-
 	return bcrypt.CompareHashAndPassword(existing, incoming)
 }
 

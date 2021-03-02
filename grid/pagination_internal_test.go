@@ -156,9 +156,16 @@ func TestPagination_generate(t *testing.T) {
 func TestPagination_paginationParam(t *testing.T) {
 	asserts := assert.New(t)
 
-	// link param set.
+	// link param set, the config limit should be taken.
+	// reason because its a init call - no onlyData variable is set.
 	g, _, _, _, _ := mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?limit=5&page=2", strings.NewReader("")))
 	p := pagination{}
+	asserts.Equal(15, p.paginationParam(g.(*grid), "limit"))
+	asserts.Equal(2, p.paginationParam(g.(*grid), "page"))
+
+	// link param set.
+	g, _, _, _, _ = mockGrid(t, httptest.NewRequest("GET", "https://localhost/users?limit=5&onlyData=1&page=2", strings.NewReader("")))
+	p = pagination{}
 	asserts.Equal(5, p.paginationParam(g.(*grid), "limit"))
 	asserts.Equal(2, p.paginationParam(g.(*grid), "page"))
 
@@ -203,7 +210,7 @@ func mockGrid(t *testing.T, req *http.Request) (Grid, *mocks.Interface, *SourceM
 	ctx := context.New(w, req)
 	mockController.On("Context").Return(ctx)
 
-	g, err := New(mockController, mockSource, nil)
+	g, err := New(mockController, mockSource)
 	asserts.NoError(err)
 
 	mockController.AssertExpectations(t)

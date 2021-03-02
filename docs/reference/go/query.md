@@ -65,7 +65,9 @@ The following null type are defined for dealing with nullable SQL and JSON value
 Following helper functions are defined `NewNullString(string,valid)`, `NewNullBool(bool,valid)`
 ,`NewNullInt(int64,valid)`,`NewNullFloat(float64,valid)` and `NewNullTime(time.Time,valid)`.
 
-!!! info It' s a type alias for [https://pkg.go.dev/github.com/guregu/null](https://pkg.go.dev/github.com/guregu/null)
+!!! info 
+    
+    It' s a type alias for [https://pkg.go.dev/github.com/guregu/null](https://pkg.go.dev/github.com/guregu/null)
 
 * query.NullString
 * query.NullBool

@@ -5,10 +5,17 @@
 package grid
 
 import (
+	"fmt"
+	"github.com/patrickascher/gofer/slicer"
 	"math"
 	"strconv"
 
 	"github.com/patrickascher/gofer/query/condition"
+)
+
+// Error messages
+var (
+	ErrPaginationLimit = "the limit %d is not allowed"
 )
 
 // pagination holds information about the source rows.
@@ -25,6 +32,10 @@ type pagination struct {
 func (g *grid) newPagination(c condition.Condition) (*pagination, error) {
 
 	p := &pagination{}
+	limit := p.paginationParam(g, paginationLimit)
+	if _, exists := slicer.IntExists(g.config.Filter.AllowedRowsPerPage, limit); !exists {
+		return nil, fmt.Errorf(ErrPaginationLimit, p.Limit)
+	}
 
 	if c == nil {
 		c = condition.New()
@@ -37,7 +48,7 @@ func (g *grid) newPagination(c condition.Condition) (*pagination, error) {
 	}
 
 	p.Total = count
-	p.Limit = p.paginationParam(g, paginationLimit)
+	p.Limit = limit
 	p.TotalPages = p.totalPages()
 	p.CurrentPage = p.paginationParam(g, paginationPage)
 	p.Next = p.next()
@@ -105,7 +116,13 @@ func (p *pagination) paginationParam(g *grid, q string) int {
 	switch q {
 	case paginationLimit:
 		param, err = g.controller.Context().Request.Param(paginationLimit)
-		rv = g.config.Filter.DefaultRowsPerPage
+		// the first data request is made of the frontend, but at this state the grid-config is not passed from the backend.
+		// So only if "onlyData" flag is set, the frontend limit should be used, otherwise its the init call with the grid backend config.
+		_, noExisting := g.controller.Context().Request.Param(paramOnlyData)
+		if noExisting != nil {
+			param = nil
+		}
+		rv = g.config.Filter.RowsPerPage
 	case paginationPage:
 		param, err = g.controller.Context().Request.Param(paginationPage)
 		rv = 1

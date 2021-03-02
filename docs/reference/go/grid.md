@@ -25,10 +25,11 @@ func (c MyController) User(){
 Creates a new grid instance. The first argument must be the `controller`, the second is the `grid.Source` and the third
 is the `grid.config` which is optional.
 
-The grid will be cached, to avoid re-creating the grid fields. The cache key will be the configured grid ID.
+The grid will be cached, to avoid re-creating the grid fields. The cache key will be the configured grid ID. Be aware
+that the config will be cached. If you need dynamic configuration, use `grid.Scope().Config` for it, after init.
 
 ```go
-g := grid.New(c, grid.Orm(model), nil)
+g := grid.New(c, grid.Orm(model))
 ```
 
 ## Config
@@ -42,7 +43,7 @@ can be used.
 | Title       | `{ID}-title`   |  Title of the grid.                 |
 | Description | `{ID}-description`   | Description of the grid.              |
 | Policy      | `orm.WHITELIST`   | If the Policy is `WHITELIST`, the fields have to be set explicit. |
-| Exports     | `csv`, `pdf`   | Slice of names of render types.                                      |
+| Exports     | `csv`  | Slice of names of render types.                                      |
 | Action      |    | see ACTION                                                        |
 | Filter      |    | see FILTER                                                        |
 | Translation      |`false`     | If set to true, the title will be the orm namespace-title. same goes for the description.                                                    |
@@ -51,21 +52,22 @@ can be used.
 
 | Name        |  Default |  Description                                                       |
 |-------------|-----|----------------------------------------------------------------|
-| Right          | `true`   | Defines where the action (details,edit,delete) column should be displayed on the grid table.            |
-| AllowDetails       | `false` |  Allow details mode.                     |
-| AllowCreate | `true`  |  Allow create mode.                 |
-| AllowUpdate      | `true`  |  Allow update mode. |
-| AllowDelete      | `true`  |  Allow delete mode.                                                       |
+| PositionLeft          | `false`   | Defines where the action (details,edit,delete) column should be displayed on the grid table.            |
+| DisableDetails       | `true` |  Disables the details mode. It is disabled because its not implemented yet!                   |
+| DisableCreate | `false`  |  Disables the create mode.                 |
+| DisableUpdate      | `false`  |  Disables the update mode. |
+| DisableDelete      | `false`  |  Disables the delete mode.                                                       |
 
 **Filter**
 
 | Name        |  Default |  Description                                                       |
 |-------------|-----|----------------------------------------------------------------|
-| Allow          | `true`   | Allow filter.            |
-| ShowQuickFilter       | `true` |  Show the quick filter bar.                        |
-| ShowCustomFilter | `true`  |  Show the custom filter button/view.                  |
-| AllowedRowsPerPage      | `-1`,`5`,`10`,`15`,`25`,`50`  |  The allowed rows per page. |
-| DefaultRowsPerPage      | `15`  |  Default rows per page.                                                     |
+| Disable          | `false`   | Disable filter.            |
+| DisableQuickFilter       | `false` |  Disable the quick filter.                    |
+| DisableCustomFilter | `false`  |  Disable the custom filter.                 |
+| OpenQuickFilter      | `false` |  The quick filter will be opened by default |
+| AllowedRowsPerPage | `-1`,`5`,`10`,`15`,`25`,`50`  | The allowed rows per page. | 
+| RowsPerPage | `15`  | Default rows per page. |
 
 ## Mode
 
@@ -96,7 +98,13 @@ A field can be configured by the following functions. Each function returns itse
 error occures, the fields error will be set. Error will be handled in `grid.Render`.
 
 The configuration for `SetPosition`, `SetTitle`, `SetDescription`, `SetRemove`, `SetHidden` and `SetView` must be set
-with `grid.NewValue()`. Like this, values can be defined for different grid modes.
+with `grid.NewValue()` or native go type.
+
+* `string` for `SetTitle`, `SetDescription`, `SetView`
+* `bool` for `SetRemove`, `SetHidden`
+* `int` for `SetPosition`
+
+If the native type is different, an error will be set.
 
 ```go
 grid.Field("ID").SetTitle(grid.NewValue("ID").SetDetails("Identifier"))

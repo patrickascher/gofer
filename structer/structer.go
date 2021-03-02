@@ -4,13 +4,38 @@
 
 package structer
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/imdario/mergo"
+)
 
 // internals
 const (
 	tagSeparator = ";"
 	tagKeyValue  = ":"
 )
+
+const (
+	Override = iota
+	OverrideWithZeroValue
+)
+
+// Merge a struct by struct.
+// Is just a wrapper for the awesome mergo (https://github.com/imdario/mergo).
+// For more details and options check out the github page.
+func Merge(dst, src interface{}, option ...int) error {
+	return mergo.Merge(dst, src, mergoOption(option...)...)
+}
+
+// MergeByMap - merges a struct by map.
+// Is just a wrapper for the awesome mergo (https://github.com/imdario/mergo).
+// For more details and options check out the github page.
+func MergeByMap(dst, src interface{}, option ...int) error {
+	fmt.Println(mergoOption(option...))
+	return mergo.Map(dst, src, mergoOption(option...)...)
+}
 
 // ParseTag will return a map with the configuration.
 // If the value is empty, an empty string will be added.
@@ -48,4 +73,18 @@ func ParseTag(tag string) map[string]string {
 		values[tag[0]] = tag[1]
 	}
 	return values
+}
+
+// mergoOption is a helper to return the ride transformer function.
+func mergoOption(option ...int) []func(config *mergo.Config) {
+	var options []func(config *mergo.Config)
+	if len(option) > 0 {
+		switch option[0] {
+		case Override:
+			options = append(options, mergo.WithOverride)
+		case OverrideWithZeroValue:
+			options = append(options, mergo.WithOverwriteWithEmptyValue)
+		}
+	}
+	return options
 }

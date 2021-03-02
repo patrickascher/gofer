@@ -5,82 +5,66 @@
 package grid
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/orm"
 )
 
-type config struct {
-	ID          string
-	Title       string
-	Description string
-	Policy      int
+type Config struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Policy      int    `json:"-"`
 
-	Action  Action
-	Filter  Filter
-	Exports []string `json:"-"`
+	Action  Action       `json:"action,omitempty"`
+	Filter  Filter       `json:"filter,omitempty"`
+	Exports []ExportType `json:"export,omitempty"`
 
-	Translation bool
+	Translation bool `json:"-"`
 }
+
+// ExportType is an alias for string.
+// The value will be converted to a grid.export type on json marshal.
+type ExportType string
 
 // Action configuration.
 type Action struct {
-	Right        bool
-	AllowDetails bool
-	AllowCreate  bool
-	AllowUpdate  bool
-	AllowDelete  bool
-}
-
-// Export render types.
-type Export struct {
-	Key  string
-	Name string
-	Icon string
+	PositionLeft  bool `json:"positionLeft,omitempty"`
+	DisableDetail bool `json:"disableDetail,omitempty"`
+	DisableCreate bool `json:"disableCreate,omitempty"`
+	DisableUpdate bool `json:"disableUpdate,omitempty"`
+	DisableDelete bool `json:"disableDelete,omitempty"`
 }
 
 // Filter configuration.
 type Filter struct {
-	Allow            bool
-	ShowQuickFilter  bool
-	OpenQuickFilter  bool
-	ShowCustomFilter bool
-
-	AllowedRowsPerPage []int
-	DefaultRowsPerPage int
+	Disable             bool  `json:"disable,omitempty"`
+	DisableQuickFilter  bool  `json:"disableQuickFilter,omitempty"`
+	DisableCustomFilter bool  `json:"disableCustomFilter,omitempty"`
+	OpenQuickFilter     bool  `json:"openQuickFilter,omitempty"`
+	AllowedRowsPerPage  []int `json:"allowedRowsPerPage,omitempty"`
+	RowsPerPage         int   `json:"rowsPerPage,omitempty"`
 }
-
-// NewConfig will be created.
-func NewConfig() *config {
-	return nil
-}
-
-// TODO create functions to manipulate config
 
 // defaultConfig for the grid with mandatory settings.
 // ID will be controller name:action
 // title will be the grid id + -title
 // description will be the grid id + -description
-func defaultConfig(ctrl controller.Interface) config {
-	cfg := config{
+func defaultConfig(ctrl controller.Interface) Config {
+	cfg := Config{
 		ID:          "",
 		Title:       "",
 		Description: "",
 		Policy:      orm.WHITELIST,
 		Action: Action{
-			Right:        true,
-			AllowCreate:  true,
-			AllowDetails: false,
-			AllowUpdate:  true,
-			AllowDelete:  true,
+			DisableDetail: true,
 		},
 		Filter: Filter{
-			Allow:              true,
-			ShowQuickFilter:    true,
-			ShowCustomFilter:   true,
 			AllowedRowsPerPage: []int{-1, 5, 10, 15, 25, 50},
-			DefaultRowsPerPage: 15,
+			RowsPerPage:        15,
 		},
-		Exports: []string{CSV},
+		Exports: nil,
 	}
 
 	cfg.ID = ctrl.Name() + ":" + ctrl.Action()
@@ -88,4 +72,20 @@ func defaultConfig(ctrl controller.Interface) config {
 	cfg.Description = cfg.ID + "-description"
 
 	return cfg
+}
+
+// MarshalJSON converts the string to an export type.
+// needed for the frontend for the key,name and icon.
+func (e ExportType) MarshalJSON() ([]byte, error) {
+	if v, ok := availableRenderer[string(e)]; ok {
+		return json.Marshal(export{Name: v.Name(), Icon: v.Icon(), Key: string(e)})
+	}
+	return nil, fmt.Errorf(ErrExport, e)
+}
+
+// export render types.
+type export struct {
+	Key  string `json:"key,omitempty"`
+	Name string `json:"name,omitempty"`
+	Icon string `json:"icon,omitempty"`
 }

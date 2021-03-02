@@ -42,7 +42,7 @@ func TestOrm_All(t *testing.T) {
 	// ok - exclude ID 4
 	w := httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("GET", "https://localhost/users?filter_ID="+url.QueryEscape("1;2;3"), strings.NewReader(""))))
-	g, err := grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	// configure fields
 	g.Field("Name").SetRemove(grid.NewValue(false))
@@ -53,14 +53,14 @@ func TestOrm_All(t *testing.T) {
 	asserts.Equal(3, len(ctrl.Context().Response.Value("data").([]Role)))
 	pagination, err := json.Marshal(ctrl.Context().Response.Value("pagination"))
 	asserts.Equal("{\"Limit\":15,\"Prev\":0,\"Next\":0,\"CurrentPage\":1,\"Total\":3,\"TotalPages\":1}", string(pagination))
-	asserts.Equal(":-title", ctrl.Context().Response.Value("title").(string))
-	asserts.Equal(":-description", ctrl.Context().Response.Value("description").(string))
+	asserts.Equal(":-title", ctrl.Context().Response.Value("config").(grid.Config).Title)
+	asserts.Equal(":-description", ctrl.Context().Response.Value("config").(grid.Config).Description)
 	asserts.Equal(http.StatusOK, w.Code)
 
 	// ok - exclude ID 4
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("GET", "https://localhost/users?filter_ID="+url.QueryEscape("99"), strings.NewReader(""))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	// configure fields
 	g.Field("Name").SetRemove(grid.NewValue(false))
@@ -71,8 +71,8 @@ func TestOrm_All(t *testing.T) {
 	asserts.Equal(0, len(ctrl.Context().Response.Value("data").([]Role)))
 	pagination, err = json.Marshal(ctrl.Context().Response.Value("pagination"))
 	asserts.Equal("{\"Limit\":15,\"Prev\":0,\"Next\":0,\"CurrentPage\":1,\"Total\":0,\"TotalPages\":1}", string(pagination))
-	asserts.Equal(":-title", ctrl.Context().Response.Value("title").(string))
-	asserts.Equal(":-description", ctrl.Context().Response.Value("description").(string))
+	asserts.Equal(":-title", ctrl.Context().Response.Value("config").(grid.Config).Title)
+	asserts.Equal(":-description", ctrl.Context().Response.Value("config").(grid.Config).Description)
 	asserts.Equal(http.StatusOK, w.Code)
 
 }
@@ -90,7 +90,7 @@ func TestOrm_First(t *testing.T) {
 	// ok - entry exists
 	w := httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("GET", "https://localhost/users?mode=update&ID=1", strings.NewReader(""))))
-	g, err := grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
@@ -105,7 +105,7 @@ func TestOrm_First(t *testing.T) {
 	// error - entry not existing
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("GET", "https://localhost/users?mode=update&ID=99", strings.NewReader(""))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
@@ -127,7 +127,7 @@ func TestOrm_Delete(t *testing.T) {
 	// ok - entry exists
 	w := httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))))
-	g, err := grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Render()
 	asserts.Equal("", w.Body.String())
@@ -136,7 +136,7 @@ func TestOrm_Delete(t *testing.T) {
 	// error id 1 does not exist anymore - entry exists
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Render()
 	asserts.Equal("{\"error\":\"grid: sql: no rows in result set\"}", w.Body.String())
@@ -157,7 +157,7 @@ func TestOrm_Update(t *testing.T) {
 	// ok - entry exists
 	w := httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("PUT", "https://localhost/users", strings.NewReader("{\"ID\":1,\"Name\":\"RoleA-updated\"}"))))
-	g, err := grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Render()
@@ -169,7 +169,7 @@ func TestOrm_Update(t *testing.T) {
 	// error unknown field Names
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("PUT", "https://localhost/users", strings.NewReader("{\"ID\":1,\"Names\":\"RoleA-updated\"}"))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Render()
@@ -181,7 +181,7 @@ func TestOrm_Update(t *testing.T) {
 	// name is not getting updated because of the permissions.
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("PUT", "https://localhost/users", strings.NewReader("{\"ID\":1,\"Name\":\"RoleA-changed\"}"))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Roles").SetRemove(grid.NewValue(false))
 	g.Render()
@@ -208,7 +208,7 @@ func TestOrm_Create(t *testing.T) {
 	// ok - entry exists
 	w := httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("POST", "https://localhost/users", strings.NewReader("{\"Name\":\"NewRole\"}"))))
-	g, err := grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Render()
@@ -222,7 +222,7 @@ func TestOrm_Create(t *testing.T) {
 	// error field Names does not exist
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("POST", "https://localhost/users", strings.NewReader("{\"Names\":\"NewRole\"}"))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Field("Name").SetRemove(grid.NewValue(false))
 	g.Render()
@@ -232,7 +232,7 @@ func TestOrm_Create(t *testing.T) {
 	// error no permissions are set
 	w = httptest.NewRecorder()
 	ctrl.SetContext(context.New(w, httptest.NewRequest("POST", "https://localhost/users", strings.NewReader("{\"Names\":\"NewRole\"}"))))
-	g, err = grid.New(&ctrl, grid.Orm(&Role{}), nil)
+	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Render()
 	asserts.Equal("{\"error\":\"grid: no fields are configured\"}", w.Body.String())

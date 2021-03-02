@@ -12,8 +12,8 @@ import (
 
 // permission policy
 const (
-	BLACKLIST = 0
-	WHITELIST = 1
+	BLACKLIST = 1
+	WHITELIST = 2
 )
 
 // permissionList struct

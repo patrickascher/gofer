@@ -36,6 +36,35 @@ func TestField(t *testing.T) {
 	asserts.IsType(new(grid.Field), field.SetType("Integer"))
 	asserts.Equal("Integer", field.Type())
 
+	// test direct type inputs
+	f := field.SetTitle("title").SetPosition(1).SetRemove(true).SetHidden(true).SetView("view").SetDescription("desc")
+	// manipulation table mode
+	rs := reflect.ValueOf(&f).Elem()
+	rf := rs.Elem().FieldByName("mode")
+	rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
+	rf.Set(reflect.ValueOf(grid.FeTable))
+	// check entries
+	asserts.Equal("title", field.Title())
+	asserts.Equal("desc", field.Description())
+	asserts.Equal("view", field.View())
+	asserts.Equal(1, field.Position())
+	asserts.Equal(true, field.Removed())
+	asserts.Equal(true, field.Hidden())
+
+	// check error if wrong type is added
+	f = field.SetTitle(1)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "string", 1), f.Error().Error())
+	f = field.SetDescription(1)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "string", 1), f.Error().Error())
+	f = field.SetView(1)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "string", 1), f.Error().Error())
+	f = field.SetHidden(1)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "bool", 1), f.Error().Error())
+	f = field.SetRemove(1)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "bool", 1), f.Error().Error())
+	f = field.SetPosition(true)
+	asserts.Equal(fmt.Sprintf(grid.ErrFieldValue, "int", true), f.Error().Error())
+
 	var tests = []struct {
 		Table   []interface{}
 		Details []interface{}

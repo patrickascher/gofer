@@ -10,9 +10,12 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/guregu/null v4.0.0+incompatible
+	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/inflection v1.0.0
 	github.com/julienschmidt/httprouter v1.3.1-0.20200921135023-fe77dd05ab5a
 	github.com/nicksnyder/go-i18n/v2 v2.1.2 // indirect
+	github.com/onsi/ginkgo v1.15.0 // indirect
+	github.com/onsi/gomega v1.10.5 // indirect
 	github.com/patrickascher/gofw v0.1.10
 	github.com/peterhellberg/duration v0.0.0-20191119133758-ec6baeebcd10
 	github.com/rs/cors v1.7.0

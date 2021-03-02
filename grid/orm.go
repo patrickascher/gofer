@@ -58,9 +58,6 @@ func (g *gridSource) Init(grid Grid) error {
 		return err
 	}
 	scope.SetConfig(orm.NewConfig().SetUpdateReferenceOnly(true))
-
-	fmt.Println("init set config-->", scope.Config())
-
 	return nil
 }
 
@@ -401,7 +398,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		// field.SetHidden(NewValue(false))
 		// field.SetView(g.NewValue(""))
 		field.SetSort(true, f.Information.Name)
-		field.SetFilter(true, query.EQ, f.Information.Name)
+		field.SetFilter(true, query.LIKE, f.Information.Name)
 		field.SetGroupAble(true)
 		// set validation tag
 		if f.Validator.Config() != "" {
@@ -731,8 +728,6 @@ func selectCallback(g Grid) (interface{}, error) {
 		reqFields = append(reqFields, strings.Trim(tf, " "))
 	}
 
-	fmt.Println(relation.Type, rRes)
-
 	_, err = g.Scope().Controller().Context().Request.Param("allFields")
 	if err != nil {
 		fmt.Println("not all fields")
@@ -740,7 +735,6 @@ func selectCallback(g Grid) (interface{}, error) {
 	} else {
 		fmt.Println("all field not all fields")
 		fmt.Println(g.Scope().Controller().Context().Request.Param("allFields"))
-
 	}
 
 	// request the data

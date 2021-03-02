@@ -164,7 +164,9 @@ All pre-defined middleware:
 Provides a middleware for the `logger.Manager`. The logged information is remoteAddr, HTTP Method, URL, Proto, HTTP
 Status, Response size and requested time. On HTTP status < 400 a `log.Info()` will be called otherwise `log.Error()`.
 
-!!!Info The logger middleware should used before all other middlewares, otherwise the request time will be incorrect.
+!!!Info 
+
+    The logger middleware should used before all other middlewares, otherwise the request time will be incorrect.
 
 ```go 
 // the middleware
@@ -211,7 +213,9 @@ Provides a role based access control list. It is build on top of the JWT middlew
 A RoleService must be set, to check against the custom logic. Simply implement the `RoleService` interface. The
 arguments `pattern` `HTTP method` and `claim` will be passed to the `Allowed` function.
 
-!!!Info The JWT middleware must be set before the RBAC middleware.
+!!!Info 
+
+    The JWT middleware must be set before the RBAC middleware.
 
 ```go 
 roleService := CustomService{};

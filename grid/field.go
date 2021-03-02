@@ -7,13 +7,15 @@ package grid
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/patrickascher/gofer/query"
 )
 
 // Error messages.
 var (
-	ErrOperator = "grid: filter operator %s is not allowed in field %s"
+	ErrOperator   = "grid: filter operator %s is not allowed in field %s"
+	ErrFieldValue = "grid: field value must be a %s, given %v"
 )
 
 // Field struct.
@@ -93,9 +95,11 @@ func (f Field) Title() string {
 }
 
 // SetTitle of the field.
-// The argument must be a grid.NewValue() because the title can have different values between the grid modes.
-func (f *Field) SetTitle(title *value) *Field {
-	f.title = *title
+// The argument must be a grid.NewValue() or string.
+// Title can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or string.
+func (f *Field) SetTitle(title interface{}) *Field {
+	setValuerByInterface(f, &f.title, title, "string")
 	return f
 }
 
@@ -109,9 +113,12 @@ func (f Field) Description() string {
 }
 
 // SetDescription of the field.
-// The argument must be a grid.NewValue() because the description can have different values between the grid modes.
-func (f *Field) SetDescription(desc *value) *Field {
-	f.description = *desc
+// The argument must be a grid.NewValue() or string.
+// Description can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or string.
+func (f *Field) SetDescription(desc interface{}) *Field {
+	setValuerByInterface(f, &f.description, desc, "string")
+
 	return f
 }
 
@@ -124,9 +131,11 @@ func (f Field) Position() int {
 }
 
 // SetPosition of the field.
-// The argument must be a grid.NewValue() because the title can have different values between the grid modes.
-func (f *Field) SetPosition(pos *value) *Field {
-	f.position = *pos
+// The argument must be a grid.NewValue() or int.
+// Position can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or int.
+func (f *Field) SetPosition(pos interface{}) *Field {
+	setValuerByInterface(f, &f.position, pos, "int")
 	return f
 }
 
@@ -139,9 +148,11 @@ func (f Field) Removed() bool {
 }
 
 // SetRemove identifier of the field.
-// The argument must be a grid.NewValue() because the title can have different values between the grid modes.
-func (f *Field) SetRemove(remove *value) *Field {
-	f.remove = *remove
+// The argument must be a grid.NewValue() or bool.
+// Remove can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or bool.
+func (f *Field) SetRemove(remove interface{}) *Field {
+	setValuerByInterface(f, &f.remove, remove, "bool")
 	return f
 }
 
@@ -154,9 +165,11 @@ func (f Field) Hidden() bool {
 }
 
 // SetHidden identifier of the field.
-// The argument must be a grid.NewValue() because the title can have different values between the grid modes.
-func (f *Field) SetHidden(hidden *value) *Field {
-	f.hidden = *hidden
+// The argument must be a grid.NewValue() or bool.
+// Hidden can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or bool.
+func (f *Field) SetHidden(hidden interface{}) *Field {
+	setValuerByInterface(f, &f.hidden, hidden, "bool")
 	return f
 }
 
@@ -169,9 +182,11 @@ func (f Field) View() string {
 }
 
 // SetView of the field.
-// The argument must be a grid.NewValue() because the title can have different values between the grid modes.
-func (f *Field) SetView(view *value) *Field {
-	f.view = *view
+// The argument must be a grid.NewValue() or string.
+// View can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or string.
+func (f *Field) SetView(view interface{}) *Field {
+	setValuerByInterface(f, &f.view, view, "string")
 	return f
 }
 
@@ -349,4 +364,19 @@ func (f Field) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(rv)
+}
+
+func setValuerByInterface(field *Field, fieldValue *value, v interface{}, allowedType string) {
+	tpe := reflect.TypeOf(v)
+	switch tpe.String() {
+	case "*grid.value":
+		*fieldValue = *v.(*value)
+		return
+	default:
+		if tpe.Kind().String() == allowedType {
+			*fieldValue = *NewValue(v)
+			return
+		}
+		field.error = fmt.Errorf(ErrFieldValue, allowedType, v)
+	}
 }

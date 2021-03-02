@@ -144,7 +144,7 @@ func (c *Controller) Navigation() {
 // TODO i have to think about a solution because of the vue.components because they are locally registered which is the main problem.
 func (c *Controller) Routes() {
 
-	g, err := grid.New(c, grid.Orm(&server.Route{}), nil)
+	g, err := grid.New(c, grid.Orm(&server.Route{}))
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -164,7 +164,7 @@ func (c *Controller) Routes() {
 
 func (c *Controller) Roles() {
 	// Roles will display all added roles and there backend/frontend permissions.
-	g, err := grid.New(c, grid.Orm(&Role{}), nil)
+	g, err := grid.New(c, grid.Orm(&Role{}))
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -192,7 +192,7 @@ func (c *Controller) Roles() {
 // TODO: Simplyfy the Route.Pattern, also change the belongsTo logic?
 func (c *Controller) Nav() {
 
-	g, err := grid.New(c, grid.Orm(&Navigation{}), nil)
+	g, err := grid.New(c, grid.Orm(&Navigation{}))
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -216,7 +216,7 @@ func (c *Controller) Nav() {
 // Accounts
 func (c *Controller) Accounts() {
 
-	g, err := grid.New(c, grid.Orm(&User{}), nil)
+	g, err := grid.New(c, grid.Orm(&User{}))
 	if err != nil {
 		c.Error(500, err)
 		return

@@ -52,3 +52,14 @@ func StringUnique(slice []string) []string {
 	}
 	return list
 }
+
+// IntExists checks if the given int exists in the int slice.
+// If it exists, the position and a boolean `true` will return
+func IntExists(slice []int, search int) (int, bool) {
+	for i, s := range slice {
+		if s == search {
+			return i, true
+		}
+	}
+	return 0, false
+}

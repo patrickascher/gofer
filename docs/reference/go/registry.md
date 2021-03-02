@@ -83,8 +83,9 @@ err := registry.Set("test_bar",false)
 You can add any type as value, as long as it is not nil. In the following example we are going to add a function as
 value.
 
-!!! tip If you are adding a function as reference (without braces), the variables/objects of the function will only be
-allocated on function call. Like this, the memory will only be allocated, when needed!
+!!! tip 
+
+    If you are adding a function as reference (without braces), the variables/objects of the function will only be allocated on function call. Like this, the memory will only be allocated, when needed!
 
 ```go 
 import "github.com/patrickascher/gofer/registry"

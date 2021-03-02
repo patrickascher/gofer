@@ -37,7 +37,7 @@ func TestUserByLogin(t *testing.T) {
 	asserts.NoError(err)
 
 	now := time.Now().UTC()
-	last3Months := now.AddDate(0, -3, 0)
+	last3Months := now.AddDate(0, -4, 0) // 4 months because of the test calculation.
 	last15Minutes := now.Add(-16 * time.Minute)
 
 	var tests = []struct {

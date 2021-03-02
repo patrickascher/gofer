@@ -99,11 +99,11 @@ func mockGrid(t *testing.T, req *http.Request, src ...grid.Source) (grid.Grid, *
 	var g grid.Grid
 	var err error
 	if src != nil {
-		g, err = grid.New(mockController, src[0], nil)
+		g, err = grid.New(mockController, src[0])
 		asserts.NoError(err)
 
 	} else {
-		g, err = grid.New(mockController, mockSource, nil)
+		g, err = grid.New(mockController, mockSource)
 		asserts.NoError(err)
 	}
 

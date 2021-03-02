@@ -86,7 +86,8 @@ log.Panic("msg")
 Sometimes a log message is not enough and some additional information is required.
 
 !!! info
-`WithFields` will create a new instance.
+
+    `WithFields` will create a new instance.
 
 ```go 
 log.WithFields(logger.Fields{"foo":"bar"}).Info("msg")
@@ -98,7 +99,8 @@ Sometimes it is useful for debugging to see the required time of a function.
 `WithTimer` can be combined `WithFields` or vis-a-vis.
 
 !!! info
-`WithTimer` will create a new instance.
+
+    `WithTimer` will create a new instance.
 
 ```go 
 ltimer := log.WithTimer()

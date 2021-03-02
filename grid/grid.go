@@ -7,6 +7,7 @@ package grid
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/structer"
 	"net/http"
 	"sort"
 	"strings"
@@ -45,18 +46,16 @@ const (
 	paramModeDetails  = "details"
 	paramModeExport   = "export"
 	paramExportType   = "type"
-	paramNoHeader     = "noHeader"
+	paramOnlyData     = "onlyData"
 	// pagination
 	paginationLimit = "limit"
 	paginationPage  = "page"
 	// controller keys
-	ctrlPagination  = "pagination"
-	ctrlHead        = "head"
-	ctrlData        = "data"
-	ctrlPrimary     = "id"
-	ctrlTitle       = "title"
-	ctrlDescription = "description"
-	ctrlConfig      = "config"
+	ctrlPagination = "pagination"
+	ctrlHead       = "head"
+	ctrlData       = "data"
+	ctrlPrimary    = "id"
+	ctrlConfig     = "config"
 )
 
 // Pre-defined exports
@@ -101,7 +100,7 @@ type Grid interface {
 // Scope interface.
 type Scope interface {
 	Source() interface{}
-	Config() *config
+	Config() *Config
 	Fields() []Field
 	PrimaryFields() []Field
 	Controller() controller.Interface
@@ -133,17 +132,22 @@ type grid struct {
 	controller   controller.Interface
 	fields       []Field
 
-	config       config
-	configExport []Export
+	config Config
 }
 
 // New creates a new grid instance.
 // The source and config is required.
 // By default the grid id will be the controller:action name.
-func New(ctrl controller.Interface, src Source, conf *config) (Grid, error) {
+func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 
-	// TODO merge user config
+	// merge configs
 	cfg := defaultConfig(ctrl)
+	if len(conf) > 0 {
+		err := structer.Merge(&cfg, conf[0], structer.Override)
+		if err != nil {
+			return nil, fmt.Errorf(errWrap, err)
+		}
+	}
 
 	// check if cache is defined
 	cacheMgr := src.Cache()
@@ -175,8 +179,8 @@ func New(ctrl controller.Interface, src Source, conf *config) (Grid, error) {
 			return nil, fmt.Errorf(errWrap, err)
 		}
 
-		// TODO create a SET,GET Export for dynamic config per user/role?
-		g.configExport, err = g.getExportTypes()
+		// checking config export types
+		err = g.checkExportTypes()
 		if err != nil {
 			return nil, err
 		}
@@ -360,49 +364,44 @@ func (g *grid) Render() {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
 		}
-		g.controller.Set(ctrlTitle, g.config.Title)
-		g.controller.Set(ctrlDescription, g.config.Description)
 
-		// TODO if export no pagination and no limit!
-
-		// add header as long as the param noHeader is not given.
-		if _, err := g.controller.Context().Request.Param(paramNoHeader); err != nil {
+		// pagination only on table vied
+		if g.Mode() == FeTable {
 			pagination, err := g.newPagination(c)
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
 				return
 			}
 			g.controller.Set(ctrlPagination, pagination)
+		}
+		// add header as long as the param noHeader is not given.
+		if _, err := g.controller.Context().Request.Param(paramOnlyData); err != nil {
 			g.controller.Set(ctrlHead, g.sortFields())
+			g.controller.Set(ctrlConfig, g.config)
 		}
 
-		values, err := g.src.All(c, g)
-		if err != nil {
-			g.controller.Error(500, fmt.Errorf(errWrap, err))
-			return
-		}
-
-		// TODO limit config?
-		g.controller.Set(ctrlConfig, g.config)
-		g.controller.Set(ctrlData, values)
+		// export, reset render type and reset limits.
 		if g.Mode() == FeExport {
+			c.Reset(condition.LIMIT)
+			c.Reset(condition.OFFSET)
 			t, err := g.Controller().Context().Request.Param(paramExportType)
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
 				return
 			}
 			g.controller.SetRenderType(t[0])
-		} else {
-			g.controller.Set("export", g.configExport)
 		}
-		// default render type by controller.
+
+		// fetch data.
+		values, err := g.src.All(c, g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		g.controller.Set(ctrlData, values)
 	case FeCreate:
-		g.controller.Set(ctrlTitle, g.config.Title)
-		g.controller.Set(ctrlDescription, g.config.Description)
 		g.controller.Set(ctrlHead, g.sortFields())
 	case FeDetails, FeUpdate:
-		g.controller.Set(ctrlTitle, g.config.Title)
-		g.controller.Set(ctrlDescription, g.config.Description)
 		c, err := g.conditionFirst()
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
@@ -459,16 +458,14 @@ func (g *grid) setFieldModeRecursively(mode int, fields []Field) {
 	}
 }
 
-func (g *grid) getExportTypes() ([]Export, error) {
-	var rv []Export
+func (g *grid) checkExportTypes() error {
 	for _, e := range g.config.Exports {
-		if v, ok := availableRenderer[e]; ok {
-			rv = append(rv, Export{Name: v.Name(), Icon: v.Icon(), Key: e})
+		if _, ok := availableRenderer[string(e)]; ok {
 			continue
 		}
-		return nil, fmt.Errorf(ErrExport, e)
+		return fmt.Errorf(ErrExport, e)
 	}
-	return rv, nil
+	return nil
 }
 
 // security is a helper to check the grid mode and the config definition to avoid un-allowed calls.
@@ -486,23 +483,23 @@ func (g *grid) security() error {
 
 	case SrcCreate:
 		// TODO: Needed to ensure a filter can be saved also if the create action is disabled.  && !g.config.Filter.Allow
-		if !g.config.Action.AllowCreate {
+		if g.config.Action.DisableCreate {
 			return fmt.Errorf(ErrSecurity, "create")
 		}
 	case FeCreate:
-		if !g.config.Action.AllowCreate {
+		if g.config.Action.DisableCreate {
 			return fmt.Errorf(ErrSecurity, "create")
 		}
 	case SrcUpdate, FeUpdate:
-		if !g.config.Action.AllowUpdate {
+		if g.config.Action.DisableUpdate {
 			return fmt.Errorf(ErrSecurity, "update")
 		}
 	case SrcDelete:
-		if !g.config.Action.AllowDelete {
+		if g.config.Action.DisableDelete {
 			return fmt.Errorf(ErrSecurity, "delete")
 		}
 	case FeDetails:
-		if !g.config.Action.AllowDetails {
+		if g.config.Action.DisableDetail {
 			return fmt.Errorf(ErrSecurity, "details")
 		}
 	}

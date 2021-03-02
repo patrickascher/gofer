@@ -12,7 +12,7 @@ func (g *grid) Source() interface{} {
 }
 
 // Config will return a ptr to the configuration.
-func (g *grid) Config() *config {
+func (g *grid) Config() *Config {
 	return &g.config
 }
 

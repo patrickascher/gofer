@@ -4,12 +4,12 @@ title: Getting started
 
 # Getting started
 
-The easiest way to create a simple web app, is to use the `gofer-skeleton` app. 
-The skeleton app should give you an idea how to create a web apps with `gofer`.
+The easiest way to create a simple web app, is to use the [gofer-skeleton](https://github.com/patrickascher/gofer-skeleton) app. 
+The skeleton app should give you an idea how to create a web app with the `gofer` framework.
 
 ## Install for development
 
-gofer-skeleton offers two ways to install a dev env on your system.
+gofer-skeleton offers two ways to install a dev env.
 Both ways offer a backend and frontend hot reload.
 For performance reasons I would suggest the local env.
 

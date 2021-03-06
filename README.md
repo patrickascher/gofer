@@ -3,6 +3,9 @@
 [![Build Status](https://travis-ci.com/patrickascher/gofer.svg?branch=master)](https://travis-ci.com/patrickascher/gofer)
 [![codecov](https://codecov.io/gh/patrickascher/gofer/branch/master/graph/badge.svg?token=HRNFEI9NKZ)](https://codecov.io/gh/patrickascher/gofer)
 
+
+`Requires go 1.16`
+
 <!--
 docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
 

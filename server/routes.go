@@ -10,16 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickascher/gofer/cache"
-	"github.com/patrickascher/gofer/orm"
-	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/router"
 )
 
 // Route struct for frontend and backend routes.
 type Route struct {
-	orm.Model
+	Orm
 
 	ID       int
 	Name     string `json:",omitempty"`
@@ -27,24 +24,6 @@ type Route struct {
 	Public   bool   `validate:"omitempty"`
 	Frontend bool   `validate:"omitempty"`
 	Method   string
-}
-
-// DefaultCache for route.
-func (b *Route) DefaultCache() (cache.Manager, time.Duration) {
-	c, err := Caches()
-	if err != nil {
-		return nil, 0
-	}
-	return c[0], cache.NoExpiration
-}
-
-// DefaultBuilder for route.
-func (b *Route) DefaultBuilder() query.Builder {
-	db, err := Databases()
-	if err != nil {
-		return nil
-	}
-	return db[0]
 }
 
 // createRouteDatabaseEntries will create a db entry if configured.

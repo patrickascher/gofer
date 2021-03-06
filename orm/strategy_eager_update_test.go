@@ -93,7 +93,7 @@ func TestEager_Update(t *testing.T) {
 	err = animal.First(condition.New().SetWhere("id = ?", 1))
 	asserts.NoError(err)
 	helperTestResults(asserts, err, testCasesUpdate()[0], animal, false)
-	asserts.False(animal.UpdatedAt.Valid) // test updatedAt
+	asserts.Nil(animal.UpdatedAt) // test updatedAt
 
 	// update
 	animal.Name = testCasesUpdate()[1].animal.Name
@@ -153,7 +153,7 @@ func TestEager_Update_HasOne_BelongsTo(t *testing.T) {
 	err = animal.First(condition.New().SetWhere("id = ?", 1))
 	asserts.NoError(err)
 	helperTestResults(asserts, err, testCasesUpdate()[0], animal, false)
-	asserts.False(animal.UpdatedAt.Valid) // test updatedAt
+	asserts.Nil(animal.UpdatedAt) // test updatedAt
 
 	// delete hasOne, belongsTo
 	animal.Name = testCasesUpdate()[1].animal.Name

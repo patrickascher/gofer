@@ -13,6 +13,7 @@ The following hooks will be called:
 | router    | If a router provider is defined by config, a new router manager will be created. The Favicon, PublicDir(s) and PublicFile(s)s will be added if defined. |
 | databases | All defined databases will be saved globally and opened.                                                                                                |
 | caches    | All defined caches will be created and saved globally.|
+| translation    | If a translation provider is defined by config, a new translation manger will be created.|
 
 If the configuration `Router.CreateDBRoutes` is set to `true`, for each route an db entry will be made.
 
@@ -117,6 +118,16 @@ is called before a server instance exists.
 dbs, err := server.Databases()
 // ...
 ```
+
+## Translation
+
+Will return a `translation.Manager`.
+
+```go
+i18n, err := server.Translation()
+// ...
+```
+
 
 
 

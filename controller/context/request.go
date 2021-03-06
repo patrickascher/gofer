@@ -16,13 +16,20 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
-	"github.com/patrickascher/gofw/locale"
 )
 
 // Error messages.
 var (
 	ErrParam = "context: the param %#v does not exist"
+)
+
+// Localizer of the request.
+// Its added by the server.Translation.
+// The controller can not call the server package (import cycle), thats why its here.
+var (
+	DefaultLang string
 )
 
 // Request struct.
@@ -33,7 +40,7 @@ type Request struct {
 	params map[string][]string
 	files  map[string][]*multipart.FileHeader
 
-	localizer locale.LocalizerI
+	locale translation.Locale
 }
 
 // Body reads the raw body data.
@@ -52,9 +59,9 @@ func (r *Request) SetBody(body []byte) {
 	r.body = body
 }
 
-// Localizer of the request.
-func (r *Request) Localizer() locale.LocalizerI {
-	return r.localizer
+// Locale is used to translate message ids in the controller.
+func (r *Request) Locale() translation.Locale {
+	return r.locale
 }
 
 // Pattern returns the router url pattern.
@@ -294,11 +301,14 @@ func (r *Request) Referer() string {
 func newRequest(r *http.Request) *Request {
 	req := &Request{r: r}
 
-	lang := r.Header.Get("Accept-Language")
-	if lang == "" { // TODO get server default?  :registry default_lang?
-		lang = "en"
+	if DefaultLang != "" {
+		lang := r.Header.Get("Accept-Language")
+		if lang == "" {
+			lang = DefaultLang
+		}
+		req.locale = translation.Localizer(lang)
 	}
-	req.localizer, _ = locale.NewLocalizer(lang)
+
 	return req
 }
 

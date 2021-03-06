@@ -9,8 +9,7 @@ will be shown.
 
 Used translation keys:
 
-Keys |
------- |
+Keys |------ |
 `APPLICATION`.`Name`      |
 `APPLICATION`.`Description`      |
 `COMMON`.`Login`      |

@@ -7,7 +7,6 @@
 package cache
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -26,7 +25,7 @@ const (
 
 const (
 	// RegistryPrefix for the providers registry name.
-	registryPrefix = "gofloat:cache:"
+	registryPrefix = "gofer:cache:"
 	// allowedFnType is used to check against the allowed function type.
 	allowedFnType = "func(interface {}) (cache.Interface, error)"
 )
@@ -40,9 +39,6 @@ type providerFn func(opt interface{}) (Interface, error)
 
 // managerCache of initialized providers.
 var managerCache = make(map[string]Manager)
-
-// ErrProviderType error message for wrong provider registration.
-var ErrProviderType = errors.New("cache: the type does not implement cache.Interface or is not type of " + allowedFnType)
 
 // Interface description for cache providers.
 type Interface interface {

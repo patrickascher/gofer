@@ -5,6 +5,7 @@
 package server
 
 import (
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
 )
@@ -20,9 +21,14 @@ type Configuration struct {
 }
 
 type ConfigurationServer struct {
-	Domain   string
-	Language string
-	HTTPPort int
+	Domain      string
+	HTTPPort    int
+	Translation I18n
+}
+
+type I18n struct {
+	Provider string
+	translation.Config
 }
 
 type ConfigurationAuth struct {

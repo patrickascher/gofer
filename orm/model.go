@@ -245,7 +245,8 @@ func (m *Model) Create() (err error) {
 
 	// set the CreatedAt info if exists
 	// it only gets saved if the field exists in the db (permission is set)
-	m.CreatedAt = query.NewNullTime(time.Now(), true)
+	createdAt := query.NewNullTime(time.Now(), true)
+	m.CreatedAt = &createdAt
 
 	// if the model is empty no need for creating.
 	if m.scope.IsEmpty(Permission{Write: true}) {
@@ -366,7 +367,8 @@ func (m *Model) Update() (err error) {
 
 	// set the UpdatedAt info if exists
 	// it only gets saved if the field exists in the db (permission is set)
-	m.UpdatedAt = query.NewNullTime(time.Now(), true)
+	updatedAt := query.NewNullTime(time.Now(), true)
+	m.UpdatedAt = &updatedAt
 
 	err = m.strategy.Update(&m.scope, c)
 	if err != nil {

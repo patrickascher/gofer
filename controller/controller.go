@@ -15,7 +15,6 @@ import (
 
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/controller/context"
-	"github.com/patrickascher/gofw/locale"
 )
 
 // Error messages
@@ -67,8 +66,7 @@ type Base struct {
 	renderType string
 	actionName string
 
-	localizer locale.LocalizerI
-	err       bool
+	err bool
 }
 
 // Initialize the controller.
@@ -138,7 +136,7 @@ func (c *Base) Redirect(status int, url string) {
 
 // T is a helper to translate a string.
 func (c *Base) T(name string, template ...map[string]interface{}) string {
-	l := c.Context().Request.Localizer()
+	l := c.Context().Request.Locale()
 	if l == nil {
 		return name
 	}
@@ -150,7 +148,7 @@ func (c *Base) T(name string, template ...map[string]interface{}) string {
 
 // TP is a helper to translate a plural string.
 func (c *Base) TP(name string, count int, template ...map[string]interface{}) string {
-	l := c.Context().Request.Localizer()
+	l := c.Context().Request.Locale()
 	if l == nil {
 		return name
 	}

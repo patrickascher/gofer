@@ -55,7 +55,7 @@ func TestProvider(t *testing.T) {
 	mgr, err = cache.New("mockNotExisting", nil)
 	asserts.Error(err)
 	asserts.Nil(mgr)
-	asserts.Equal(fmt.Sprintf(registry.ErrUnknownEntry, "gofloat:cache:mockNotExisting"), errors.Unwrap(err).Error())
+	asserts.Equal(fmt.Sprintf(registry.ErrUnknownEntry, "gofer:cache:mockNotExisting"), errors.Unwrap(err).Error())
 
 	// needed because GC() is a goroutine
 	time.Sleep(10 * time.Millisecond)

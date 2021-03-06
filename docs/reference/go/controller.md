@@ -54,6 +54,28 @@ Set a custom render type.
 
 Is a helper to set controller variables. It wraps the [context.Response.SetValue](controller.md#setvalue).
 
+## Translation (T, TP)
+
+If configured, a i18n translation can be used like this.
+
+```go
+// for single messages
+ctrl.T("MessageID")
+
+// for plural or count depending messages
+ctrl.TP("MessageID",2)
+
+// if in your message you are using placeholders, you can add the data as map:
+//  MessageID -> One: "{{.Name}} has {{.Count}} cat.",
+//  MessageID -> Other: "{{.Name}} has {{.Count}} cats.",
+
+ctrl.TP("MessageID",1,map[string]interface{}{"Name":"John","Count":1})
+// will return: John has 1 cat. 
+
+ctrl.TP("MessageID",2,map[string]interface{}{"Name":"John","Count":2})
+// will return: John has 2 cats. 
+```
+
 ## Error
 
 Is a helper to set an error. If an error ist set, all defined values will be deleted. It wraps

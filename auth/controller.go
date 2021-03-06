@@ -228,7 +228,8 @@ func (c *Controller) Accounts() {
 	g.Field("Surname").SetRemove(grid.NewValue(false))
 	g.Field("State").SetRemove(grid.NewValue(false))
 	g.Field("LastLogin").SetRemove(grid.NewValue(false))
-	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Name}}").SetOption(options.SELECT, options.Select{TextField: "Name"})
+
+	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Name}} {{ID}}").SetOption(options.SELECT, options.Select{TextField: "Name"})
 	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
 
 	g.Render()

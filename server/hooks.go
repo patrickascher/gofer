@@ -6,6 +6,8 @@ package server
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/controller/context"
+	"github.com/patrickascher/gofer/locale/translation"
 	"time"
 
 	"github.com/patrickascher/gofer/cache"
@@ -37,7 +39,26 @@ func (s *server) initHooks() error {
 		return err
 	}
 
+	err = s.i18nHook()
+	if err != nil {
+		return err
+	}
+
 	return err
+}
+
+// i18nHook will add the translation.Manager.
+// hook is optional.
+func (s *server) i18nHook() error {
+	if s.cfg.Server.Translation.Provider != "" {
+		var err error
+		s.i18n, err = translation.New(s.cfg.Server.Translation.Provider, nil, s.cfg.Server.Translation.Config)
+		if s.cfg.Server.Translation.Controller {
+			context.DefaultLang = s.cfg.Server.Translation.DefaultLanguage
+		}
+		return err
+	}
+	return nil
 }
 
 // routerHook will add the router provider.

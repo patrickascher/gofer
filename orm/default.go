@@ -23,9 +23,9 @@ const (
 // If the fields exists in the DB, the will be filled automatically.
 // But they are excluded from First and All. This behaviour can be changed by permission.
 type TimeFields struct {
-	CreatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
-	UpdatedAt query.NullTime `orm:"permission:w" json:",omitempty"`
-	DeletedAt query.NullTime `orm:"permission:w" json:",omitempty"`
+	CreatedAt *query.NullTime `orm:"permission:w" json:",omitempty"`
+	UpdatedAt *query.NullTime `orm:"permission:w" json:",omitempty"`
+	DeletedAt *query.NullTime `orm:"permission:w" json:",omitempty"`
 }
 
 // SoftDelete should return the field and value.
@@ -61,6 +61,7 @@ func (m Model) DefaultCache() (cache.Manager, time.Duration) {
 // DefaultBuilder will return nil by default and will cause an error.
 // It must get overwritten by the struct.
 func (m Model) DefaultBuilder() query.Builder {
+
 	return nil
 }
 

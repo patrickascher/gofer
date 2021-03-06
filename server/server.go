@@ -8,6 +8,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/peterhellberg/duration"
 	"github.com/rs/cors"
 	"net/http"
@@ -37,6 +38,7 @@ type server struct {
 	databases []query.Builder
 	caches    []cache.Manager
 	jwt       *jwt.Token
+	i18n      translation.Manager
 }
 
 // New creates a new server instance with the given configuration.
@@ -159,6 +161,15 @@ func Router() (router.Manager, error) {
 	return webserver.router, nil
 }
 
+// Translation of the webserver.
+// Error will return if the server instance was not created yet.
+func Translation() (translation.Manager, error) {
+	if !isInit() {
+		return nil, ErrInit
+	}
+	return webserver.i18n, nil
+}
+
 // Caches of the webserver.
 // Error will return if the server instance was not created yet.
 func Caches() ([]cache.Manager, error) {
@@ -184,12 +195,12 @@ func isInit() bool {
 
 // checkConfig will check the given interface if the server.Configuration was embedded.
 // Error will return if the server.Configuration was not found.
-func checkConfig(config interface{}) (Configuration, error) {
-	rv := reflect.Indirect(reflect.ValueOf(config))
+func checkConfig(c interface{}) (Configuration, error) {
+	rv := reflect.Indirect(reflect.ValueOf(c))
 	if rv.IsValid() {
 		// check if its the the server config struct
 		if rv.Type().String() == "server.Configuration" {
-			return config.(Configuration), nil
+			return c.(Configuration), nil
 		}
 
 		// check if the server config struct is embedded

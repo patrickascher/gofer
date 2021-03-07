@@ -32,6 +32,8 @@ var (
 	ErrResultPtr = "orm: result variable must be a ptr in %s (All)"
 )
 
+var registerdModels map[string]Interface
+
 // Interface of the orm model.
 type Interface interface {
 	Init(Interface) error
@@ -104,10 +106,20 @@ type Model struct {
 	TimeFields
 }
 
-// PreInit is a function to pre-initialize models.
-// This can be used on application start to boost the performance.
-func PreInit(orm Interface) error {
-	return orm.Init(orm)
+// RegisterModel is a function to register a models.
+// This can be used on application start to pre-cache all models and boost the performance.
+func RegisterModel(orm ...Interface) {
+	if registerdModels == nil {
+		registerdModels = make(map[string]Interface)
+	}
+	for _, m := range orm {
+		registerdModels[reflect.TypeOf(m).Elem().String()] = m
+	}
+}
+
+// RegisterModels will return all registered models.
+func RegisterModels() map[string]Interface {
+	return registerdModels
 }
 
 // Count the existing rows by the given condition.

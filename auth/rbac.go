@@ -18,7 +18,6 @@ type Rbac struct {
 }
 
 func (r Rbac) Allowed(pattern string, HTTPMethod string, claims interface{}) bool {
-
 	// check user roles against guard
 	jwtClaim := claims.(*Claim)
 	if guard, ok := routeGuard[pattern][HTTPMethod]; ok {
@@ -37,7 +36,7 @@ func (r Rbac) Allowed(pattern string, HTTPMethod string, claims interface{}) boo
 // BuildRouteGuard is creating a map[PATTERN][HTTPMethod][]roles.
 // The map is used in the RBAC Allowed method.
 func BuildRouteGuard() error {
-	// TODO when backend ready
+	// router cache
 	if routeGuard != nil {
 		return nil
 	}
@@ -89,7 +88,6 @@ func BuildRouteGuard() error {
 
 // addActionToMap is a helper to create the pattern-role mapping.
 func addActionToMap(pattern string, HTTPMethod string, role string) {
-
 	if _, ok := routeGuard[pattern][HTTPMethod]; !ok {
 		routeGuard[pattern][HTTPMethod] = nil
 	}

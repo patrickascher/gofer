@@ -23,13 +23,9 @@ func TestEager_Update_SelfRef(t *testing.T) {
 	helperCreateDatabaseAndTable(asserts)
 	insertUserData(asserts)
 
-	// Test preCache.
-	err := orm.PreInit(&Role{})
-	asserts.NoError(err)
-
 	// Init user model.
 	role := Role{}
-	err = role.Init(&role)
+	err := role.Init(&role)
 	asserts.NoError(err)
 
 	// fetch id 1
@@ -79,10 +75,6 @@ func TestEager_Update(t *testing.T) {
 		err = c.Delete("orm_", "orm_test.Animal")
 		asserts.NoError(err)
 	}
-
-	// Test preCache.
-	err = orm.PreInit(&Animal{})
-	asserts.NoError(err)
 
 	// Init user model.
 	animal := Animal{}

@@ -8,7 +8,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/patrickascher/gofer/grid/options"
+	"github.com/patrickascher/gofer/locale/translation"
+	"golang.org/x/text/language/display"
 	"net/http"
 
 	"github.com/patrickascher/gofer/controller"
@@ -17,6 +20,16 @@ import (
 	"github.com/patrickascher/gofer/router/middleware/jwt"
 	"github.com/patrickascher/gofer/server"
 )
+
+func init() {
+	translation.AddRawMessage(
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordLength", Other: "Password length min 7 chars."},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordRequired", Other: "Password is mandatory"},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrLoginRequired", Other: "Login is mandatory"},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Privacy", Other: "user admin,pw admin123"},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Impress", Other: " "},
+	)
+}
 
 // Error messages.
 var (
@@ -134,8 +147,28 @@ func (c *Controller) Navigation() {
 		return
 	}
 
-	//TODO translate (recursive)
 	c.Set(KeyNavigation, res)
+
+	// set available translations
+	t, err := server.Translation()
+	if err != nil {
+		c.Error(http.StatusInternalServerError, err)
+		return
+	}
+	languages, err := t.Languages()
+	if err != nil {
+		c.Error(http.StatusInternalServerError, err)
+		return
+	}
+	type ls struct {
+		BCP      string
+		SelfName string
+	}
+	var rv []ls
+	for _, lang := range languages {
+		rv = append(rv, ls{BCP: lang.String(), SelfName: display.Self.Name(lang)})
+	}
+	c.Set(KeyLanguages, rv)
 }
 
 // Routes are displayed.
@@ -202,7 +235,7 @@ func (c *Controller) Nav() {
 	g.Field("Icon").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(1)).SetView(grid.NewValue("").SetTable("IconView")).SetDescription(grid.NewValue("Visit https://materialdesignicons.com/ to view all icons!"))
 	g.Field("Position").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(2))
 
-	g.Field("Children").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Title}}<br/>").SetOption(options.SELECT, options.Select{TextField: "Title"})
+	g.Field("Children").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Title}}<br/>", true).SetOption(options.SELECT, options.Select{TextField: "Title"})
 	g.Field("Children.Title").SetRemove(grid.NewValue(false))
 
 	g.Field("Route").SetRemove(grid.NewValue(true).SetTable(false)).SetOption(options.DECORATOR, "{{Pattern}}").SetPosition(grid.NewValue(3))

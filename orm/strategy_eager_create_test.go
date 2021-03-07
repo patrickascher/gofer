@@ -22,13 +22,9 @@ func TestEager_Create_SelfRef(t *testing.T) {
 	asserts := assert.New(t)
 	helperCreateDatabaseAndTable(asserts)
 
-	// test preCache.
-	err := orm.PreInit(&Role{})
-	asserts.NoError(err)
-
 	// Init user model.
 	role := Role{}
-	err = role.Init(&role)
+	err := role.Init(&role)
 	asserts.NoError(err)
 
 	// Set roles.
@@ -87,10 +83,6 @@ func TestEager_Create(t *testing.T) {
 		err = c.Delete("orm_", "orm_test.Animal")
 		asserts.NoError(err)
 	}
-
-	// Test preCache.
-	err = orm.PreInit(&Animal{})
-	asserts.NoError(err)
 
 	// Run test cases
 	for i := 0; i <= 8; i++ {

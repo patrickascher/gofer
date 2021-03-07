@@ -137,7 +137,7 @@ type grid struct {
 
 // New creates a new grid instance.
 // The source and config is required.
-// By default the grid id will be the controller:action name.
+// By default the grid id will be the controller.action name.
 func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 
 	// merge configs
@@ -413,6 +413,7 @@ func (g *grid) Render() {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
 		}
+		g.controller.Set(ctrlConfig, g.config)
 		g.controller.Set(ctrlHead, g.sortFields())
 		g.controller.Set(ctrlData, values)
 	case FeFilter:

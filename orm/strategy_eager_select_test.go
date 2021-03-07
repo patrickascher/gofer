@@ -28,13 +28,9 @@ func TestEager_First_DBLoopDetection(t *testing.T) {
 	helperCreateDatabaseAndTable(asserts)
 	insertUserData(asserts)
 
-	// Test preCache.
-	err := orm.PreInit(&Role{})
-	asserts.NoError(err)
-
 	// Init user model.
 	role := Role{}
-	err = role.Init(&role)
+	err := role.Init(&role)
 	asserts.NoError(err)
 
 	// ok - no loop exists RoleA has Role B has Role C.
@@ -62,13 +58,9 @@ func TestEager_All_DBLoopDetection(t *testing.T) {
 	helperCreateDatabaseAndTable(asserts)
 	insertUserData(asserts)
 
-	// Test preCache.
-	err := orm.PreInit(&Role{})
-	asserts.NoError(err)
-
 	// Init user model.
 	role := Role{}
-	err = role.Init(&role)
+	err := role.Init(&role)
 	asserts.NoError(err)
 
 	// ok - no loop for id 1,2
@@ -118,13 +110,9 @@ func TestEager_First(t *testing.T) {
 	helperCreateDatabaseAndTable(asserts)
 	insertUserData(asserts)
 
-	// Test preCache.
-	err := orm.PreInit(&Animal{})
-	asserts.NoError(err)
-
 	animal := Animal{}
 	// Init user model.
-	err = animal.Init(&animal)
+	err := animal.Init(&animal)
 	asserts.NoError(err)
 
 	// 2nd init test.

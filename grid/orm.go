@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/patrickascher/gofer/locale/translation"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -386,12 +387,10 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		}
 		field.SetPrimary(f.Information.PrimaryKey)
 		field.SetType(f.Information.Type.Kind())
-		if g.Scope().Config().Translation {
-			field.SetTitle(NewValue(scope.Name(true) + ":" + f.Name + "-title"))
-			field.SetDescription(NewValue(scope.Name(true) + ":" + f.Name + "-description"))
-		} else {
-			field.SetTitle(NewValue(f.Name))
-		}
+
+		field.SetTitle(NewValue(translation.ORM + scope.Name(true) + "." + f.Name))
+		// TODO translate desc
+		//field.SetDescription(NewValue(translation.ORM+scope.Name(true) + "." + f.Name + "-Description"))
 
 		field.SetPosition(NewValue(i))
 		// field.SetRemove(NewValue(false))
@@ -484,12 +483,10 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			continue
 		}
 		field.SetType(relation.Kind)
-		if g.Scope().Config().Translation {
-			field.SetTitle(NewValue(scope.Name(true) + ":" + relation.Field + "-title"))
-			field.SetDescription(NewValue(scope.Name(true) + ":" + relation.Field + "-description"))
-		} else {
-			field.SetTitle(NewValue(relation.Field))
-		}
+		field.SetTitle(NewValue(translation.ORM + scope.Name(true) + "." + relation.Field))
+		// TODO desc translation
+		//	field.SetDescription(NewValue(scope.Name(true) + ":" + relation.Field + "-description"))
+
 		field.SetPosition(NewValue(i))
 		//field.SetRemove(NewValue(false))
 		//field.SetHidden(false)

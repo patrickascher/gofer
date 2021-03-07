@@ -10,6 +10,7 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -91,29 +92,35 @@ type dbBundle struct {
 
 // Languages return all defined db languages.
 func (d *dbBundle) Languages() ([]language.Tag, error) {
-	var messages []Message
 
-	msg := Message{}
-	err := msg.Init(&msg)
+	b, err := server.Databases()
 	if err != nil {
 		return nil, err
 	}
 
-	err = msg.All(&messages, condition.New().SetWhere("lang != ?", translation.RAW).SetGroup("lang"))
+	rows, err := b[0].Query().Select("translations").Columns("lang").Where("lang != ?", translation.RAW).Group("lang").All()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	lang := make([]language.Tag, len(messages))
-	for i, m := range messages {
-		l, err := language.Parse(m.Lang)
+	var languages []language.Tag
+	for rows.Next() {
+		var lang string
+		err = rows.Scan(&lang)
 		if err != nil {
 			return nil, err
 		}
-		lang[i] = l
+
+		l, err := language.Parse(lang)
+		if err != nil {
+			return nil, err
+		}
+
+		languages = append(languages, l)
 	}
 
-	return lang, nil
+	return languages, nil
 }
 
 // Bundle generates a i18n.Bundle with all the existing translations.
@@ -155,29 +162,44 @@ func (d *dbBundle) DefaultMessage(id string) *i18n.Message {
 }
 
 // JSON will create a json file for every defined language.
+// if a string is not translated, the raw will be used (if others is set).
 func (d *dbBundle) JSON(path string) error {
-	messages, err := d.getData()
+
+	// get languages
+	languages, err := d.Languages()
 	if err != nil {
 		return err
 	}
 
-	langs := map[string]map[string]interface{}{}
-	for _, msg := range messages {
-		if _, ok := langs[msg.Lang]; !ok {
-			langs[msg.Lang] = make(map[string]interface{}, 0)
-		}
-		langs[msg.Lang][msg.MessageID] = msg.Other.String
-	}
+	for _, lang := range languages {
+		jsonData := make(map[string]interface{})
 
-	for lang, msg := range langs {
-		b, err := json.MarshalIndent(msg, "", " ")
+		//load all messages
+		messages, err := d.getData(lang.String())
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(path+"/"+lang+".json", b, 0644)
+
+		for _, message := range messages {
+			jsonData[message.MessageID] = message.Other
+		}
+
+		for name, raw := range d.raw {
+			if _, ok := jsonData[name]; !ok && raw.Other != "" {
+				jsonData[name] = raw.Other
+			}
+		}
+
+		b, err := json.MarshalIndent(jsonData, "", " ")
 		if err != nil {
 			return err
 		}
+		err = os.WriteFile(path+"/"+lang.String()+".json", b, 0644)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("----", lang.String())
 	}
 
 	return nil
@@ -266,7 +288,7 @@ func (d *dbBundle) AddRawMessage(messages []i18n.Message) error {
 }
 
 // getData is a helper to load all translations except translation.RAW.
-func (d *dbBundle) getData() ([]Message, error) {
+func (d *dbBundle) getData(lang ...string) ([]Message, error) {
 	// init message orm.
 	var messages []Message
 	model := &Message{}
@@ -275,8 +297,13 @@ func (d *dbBundle) getData() ([]Message, error) {
 		return nil, err
 	}
 
+	c := condition.New().SetWhere("lang != ?", translation.RAW).SetOrder("lang")
+	if len(lang) > 0 {
+		c.SetWhere("lang = ?", lang[0])
+	}
+
 	// fetch all translated messages.
-	err = model.All(&messages, condition.New().SetWhere("lang != ?", translation.RAW).SetOrder("lang"))
+	err = model.All(&messages, c)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}

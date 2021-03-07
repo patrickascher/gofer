@@ -31,11 +31,11 @@ import (
 
 // init defines the needed raw message.
 func init() {
-	translation.AddRawMessage(i18n.Message{ID: translation.CTRL + reflect.TypeOf(Controller{}).String() + ".Title", Description: ""})
-	translation.AddRawMessage(i18n.Message{ID: translation.CTRL + reflect.TypeOf(Controller{}).String() + ".Description", Description: ""})
-	translation.AddRawMessage(i18n.Message{ID: translation.CTRL + reflect.TypeOf(Controller{}).String() + ".AddLanguage", Description: ""})
-	translation.AddRawMessage(i18n.Message{ID: translation.CTRL + reflect.TypeOf(Controller{}).String() + ".Translation", Description: ""})
-	translation.AddRawMessage(i18n.Message{ID: translation.CTRL + reflect.TypeOf(Controller{}).String() + ".ID", Description: ""})
+	ctrl := translation.CTRL + reflect.TypeOf(Controller{}).String()
+	translation.AddRawMessage(
+		i18n.Message{ID: ctrl + ".Translation.AddLanguage", Description: "", Other: "Add language"},
+		i18n.Message{ID: ctrl + ".Translation.Translation", Description: "", Other: "Translation"},
+		i18n.Message{ID: ctrl + ".Translation.ID", Description: "", Other: "ID"})
 }
 
 // SEPARATOR is used to split the message into groups.
@@ -286,6 +286,7 @@ func translations(lang string, groupPrefix string) ([]db.Message, error) {
 type raw struct {
 	MessageID   string
 	Description string `json:",omitempty"`
+	Other       string `json:",omitempty"`
 }
 
 // rawMessages convert the i18n.Messages rawMessages to []raw, which will only return the MessageID and Description to the frontend.
@@ -293,7 +294,7 @@ func rawMessages() ([]raw, error) {
 	m, err := server.Translation()
 	var x []raw
 	for _, msg := range m.RawMessages() {
-		x = append(x, raw{MessageID: msg.ID, Description: msg.Description})
+		x = append(x, raw{MessageID: msg.ID, Description: msg.Description, Other: msg.Other})
 	}
 	return x, err
 }

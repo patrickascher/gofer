@@ -27,6 +27,7 @@ const (
 	CTRL   = "CONTROLLER."
 	ORM    = "ORM."
 	NAV    = "NAVIGATION."
+	GRID   = "GRID."
 )
 
 // predefined translation providers.
@@ -136,8 +137,8 @@ func New(provider string, providerOption interface{}, config Config) (Manager, e
 // AddRawMessage provides an option to define all the RAW messages of the application.
 // This can be used in the init() function for the packages.
 // Raw messages will be sorted by ID.
-func AddRawMessage(m i18n.Message) {
-	t.rawMessages = append(t.rawMessages, m)
+func AddRawMessage(m ...i18n.Message) {
+	t.rawMessages = append(t.rawMessages, m...)
 	sort.Slice(t.rawMessages, func(i, j int) bool { return t.rawMessages[i].ID < t.rawMessages[j].ID })
 }
 

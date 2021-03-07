@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/patrickascher/gofer/controller"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
 )
 
@@ -20,8 +21,6 @@ type Config struct {
 	Action  Action       `json:"action,omitempty"`
 	Filter  Filter       `json:"filter,omitempty"`
 	Exports []ExportType `json:"export,omitempty"`
-
-	Translation bool `json:"-"`
 }
 
 // ExportType is an alias for string.
@@ -67,9 +66,9 @@ func defaultConfig(ctrl controller.Interface) Config {
 		Exports: nil,
 	}
 
-	cfg.ID = ctrl.Name() + ":" + ctrl.Action()
-	cfg.Title = cfg.ID + "-title"
-	cfg.Description = cfg.ID + "-description"
+	cfg.ID = ctrl.Name() + "." + ctrl.Action()
+	cfg.Title = translation.CTRL + cfg.ID + ".Title"
+	cfg.Description = translation.CTRL + cfg.ID + ".Description"
 
 	return cfg
 }

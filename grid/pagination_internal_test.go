@@ -187,7 +187,7 @@ func mockGrid(t *testing.T, req *http.Request) (Grid, *mocks.Interface, *SourceM
 	mockController.On("Name").Once().Return("controller")
 	mockController.On("Action").Once().Return("action")
 	mockSource.On("Cache").Once().Return(mockCache)
-	mockCache.On("Get", "grid_", "controller:action").Once().Return(nil, errors.New("does not exist"))
+	mockCache.On("Get", "grid_", "controller.action").Once().Return(nil, errors.New("does not exist"))
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	var fields []Field
 	f := Field{}
@@ -203,7 +203,7 @@ func mockGrid(t *testing.T, req *http.Request) (Grid, *mocks.Interface, *SourceM
 	f.SetName("NotFilterable")
 	fields = append(fields, f)
 	mockSource.On("Fields", mock.AnythingOfType("*grid.grid")).Once().Return(fields, nil)
-	mockCache.On("Set", "grid_", "controller:action", mock.AnythingOfType("grid.grid"), time.Duration(-1)).Once().Return(nil)
+	mockCache.On("Set", "grid_", "controller.action", mock.AnythingOfType("grid.grid"), time.Duration(-1)).Once().Return(nil)
 
 	//Mode
 	w := httptest.NewRecorder()

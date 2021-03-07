@@ -21,38 +21,63 @@ var (
 	ErrConfig = "server: config %#v is mandatory"
 )
 
+const (
+	ROUTER = iota + 1
+	DB
+	CACHE
+	TRANSLATION
+)
+
 // initHooks will initialize all pre-defined server hooks.
-func (s *server) initHooks() error {
+func (s *server) initHooks(hooks ...int) error {
 
-	err := s.routerHook()
-	if err != nil {
-		return err
+	for _, hook := range hooks {
+		switch hook {
+		case ROUTER:
+			err := s.routerHook()
+			if err != nil {
+				return err
+			}
+
+		case DB:
+			err := s.dbHook()
+			if err != nil {
+				return err
+			}
+		case CACHE:
+			err := s.cacheHook()
+			if err != nil {
+				return err
+			}
+		case TRANSLATION:
+			err := s.translationHook()
+			if err != nil {
+				return err
+			}
+		}
 	}
 
-	err = s.dbHook()
-	if err != nil {
-		return err
-	}
-
-	err = s.cacheHook()
-	if err != nil {
-		return err
-	}
-
-	err = s.i18nHook()
-	if err != nil {
-		return err
-	}
-
-	return err
+	return nil
 }
 
-// i18nHook will add the translation.Manager.
+// translationHook will add the translation.Manager.
 // hook is optional.
-func (s *server) i18nHook() error {
+func (s *server) translationHook() error {
 	if s.cfg.Server.Translation.Provider != "" {
-		var err error
-		s.i18n, err = translation.New(s.cfg.Server.Translation.Provider, nil, s.cfg.Server.Translation.Config)
+		// loader for orm, nav, ctrl.
+		err := ormTranslation()
+		if err != nil {
+			return err
+		}
+		err = navTranslation()
+		if err != nil {
+			return err
+		}
+		err = ctrlTranslation()
+		if err != nil {
+			return err
+		}
+		s.translation, err = translation.New(s.cfg.Server.Translation.Provider, nil, s.cfg.Server.Translation.Config)
 		if s.cfg.Server.Translation.Controller {
 			context.DefaultLang = s.cfg.Server.Translation.DefaultLanguage
 		}

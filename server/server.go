@@ -31,14 +31,14 @@ var (
 
 // server struct.
 type server struct {
-	server    http.Server
-	config    interface{}
-	cfg       Configuration
-	router    router.Manager
-	databases []query.Builder
-	caches    []cache.Manager
-	jwt       *jwt.Token
-	i18n      translation.Manager
+	server      http.Server
+	config      interface{}
+	cfg         Configuration
+	router      router.Manager
+	databases   []query.Builder
+	caches      []cache.Manager
+	jwt         *jwt.Token
+	translation translation.Manager
 }
 
 // New creates a new server instance with the given configuration.
@@ -64,8 +64,7 @@ func New(config interface{}) error {
 		webserver = &server{config: config, cfg: cfg}
 	}
 
-	// init web hooks.
-	return webserver.initHooks()
+	return webserver.initHooks(ROUTER, DB, CACHE)
 }
 
 // Start the webserver.
@@ -75,12 +74,18 @@ func Start() error {
 		return ErrInit
 	}
 
+	// init web hooks.
+	err := webserver.initHooks(TRANSLATION)
+	if err != nil {
+		return err
+	}
+
 	// server logo
 	// TODO init logger.
 	ascii()
 
 	// create routes db entry
-	err := createRouteDatabaseEntries(webserver.router)
+	err = createRouteDatabaseEntries(webserver.router)
 	if err != nil {
 		return err
 	}
@@ -167,7 +172,7 @@ func Translation() (translation.Manager, error) {
 	if !isInit() {
 		return nil, ErrInit
 	}
-	return webserver.i18n, nil
+	return webserver.translation, nil
 }
 
 // Caches of the webserver.

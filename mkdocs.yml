@@ -30,6 +30,7 @@ nav:
           - reference/frontend/alert.md
           - reference/frontend/login.md
           - reference/frontend/translate.md
+          - reference/frontend/grid.md
 
 theme:
   name: material

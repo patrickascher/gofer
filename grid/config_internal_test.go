@@ -23,7 +23,7 @@ func TestGrid_config(t *testing.T) {
 	mockController.On("Action").Once().Return("action")
 
 	cfg := defaultConfig(mockController)
-	asserts.Equal("controller:action", cfg.ID)
+	asserts.Equal("controller.action", cfg.ID)
 
 	//asserts.Nil(NewConfig())
 }

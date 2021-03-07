@@ -29,7 +29,7 @@ manager, err = translation.New(translation.DB, nil, translation.Confgi{DefaultLa
 ## Add raw messages
 
 To add a raw message, simply use the `translation.AddRawMessage` function.
-This must be added at an early stage of the application. One way is to add it by the `init` function or before the server is started.
+This must be added at an early stage of the application (before server.Start()). One way is to add it by the `init` function or before the server is started.
 
 ```go 
 func init() {

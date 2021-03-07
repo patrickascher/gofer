@@ -7,10 +7,16 @@ package auth
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/orm"
+	"github.com/patrickascher/gofer/server"
 
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/registry"
 )
+
+func init() {
+	orm.RegisterModel(&Role{}, &Navigation{}, &User{}, &server.Route{})
+}
 
 // registryPrefix for the provider registration.
 const registryPrefix = "auth_"
@@ -22,6 +28,7 @@ const (
 	ParamProvider = "provider"
 	KeyClaim      = "claim"
 	KeyNavigation = "navigation"
+	KeyLanguages  = "languages"
 )
 
 // Error messages.

@@ -53,8 +53,8 @@ func TestOrm_All(t *testing.T) {
 	asserts.Equal(3, len(ctrl.Context().Response.Value("data").([]Role)))
 	pagination, err := json.Marshal(ctrl.Context().Response.Value("pagination"))
 	asserts.Equal("{\"Limit\":15,\"Prev\":0,\"Next\":0,\"CurrentPage\":1,\"Total\":3,\"TotalPages\":1}", string(pagination))
-	asserts.Equal(":-title", ctrl.Context().Response.Value("config").(grid.Config).Title)
-	asserts.Equal(":-description", ctrl.Context().Response.Value("config").(grid.Config).Description)
+	asserts.Equal("CONTROLLER...Title", ctrl.Context().Response.Value("config").(grid.Config).Title) // controller package,method is not set, thats why  ...
+	asserts.Equal("CONTROLLER...Description", ctrl.Context().Response.Value("config").(grid.Config).Description)
 	asserts.Equal(http.StatusOK, w.Code)
 
 	// ok - exclude ID 4
@@ -71,8 +71,8 @@ func TestOrm_All(t *testing.T) {
 	asserts.Equal(0, len(ctrl.Context().Response.Value("data").([]Role)))
 	pagination, err = json.Marshal(ctrl.Context().Response.Value("pagination"))
 	asserts.Equal("{\"Limit\":15,\"Prev\":0,\"Next\":0,\"CurrentPage\":1,\"Total\":0,\"TotalPages\":1}", string(pagination))
-	asserts.Equal(":-title", ctrl.Context().Response.Value("config").(grid.Config).Title)
-	asserts.Equal(":-description", ctrl.Context().Response.Value("config").(grid.Config).Description)
+	asserts.Equal("CONTROLLER...Title", ctrl.Context().Response.Value("config").(grid.Config).Title)
+	asserts.Equal("CONTROLLER...Description", ctrl.Context().Response.Value("config").(grid.Config).Description)
 	asserts.Equal(http.StatusOK, w.Code)
 
 }

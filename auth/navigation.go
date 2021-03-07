@@ -2,6 +2,8 @@ package auth
 
 import (
 	"fmt"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/patrickascher/gofer/locale/translation"
 	"sort"
 	"strings"
 
@@ -33,7 +35,7 @@ type Navigation struct {
 // EndpointsByRoles will return all nav endpoints which are allowed for the given roles.
 // The nav-points are fetched from the navigation database table.
 // Additional navigation points can be added manually - see AddNavigationPoint function.
-// The manually added navigation points have to be added on an early stage (server init).
+// The manually added navigation points have to be added on an early stage (before server.Start()).
 func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Interface) ([]Navigation, error) {
 	var res []Navigation
 	nav := Navigation{}
@@ -109,5 +111,9 @@ func mergeNavigation(navPoints []Navigation, name string, addNav []Navigation) [
 // To access a child navigation point use a dot notation.
 // Example: Settings.Accounts
 func AddNavigationPoint(name string, fn func([]string, controller.Interface) ([]Navigation, error)) {
+	Desc := "Navigation endpoint of %s%s"
+	MessageID := translation.NAV + "%s"
+	nav := strings.Split(name, ".")
+	translation.AddRawMessage(i18n.Message{ID: fmt.Sprintf(MessageID, nav[len(nav)-1]), Description: fmt.Sprintf(Desc, nav[len(nav)-1], "")})
 	manNavigationPoints[name] = fn
 }

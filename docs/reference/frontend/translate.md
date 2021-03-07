@@ -20,7 +20,6 @@ Pattern | Method |Description |
 | `/lang/{lang}` | `DELETE`  | will delete the language. The json files will be deleted.|
 | `/lang/{lang}.json` | `GET`  | return the json content.|
 
-
 ## used tranlsation keys:
 
 Key |
@@ -32,11 +31,11 @@ Key |
 |COMMON.Save |
 |COMMON.NoChanges |
 |COMMON.DeleteItem |
-|CONTROLLER.locale.Controller.AddLanguage |
-|CONTROLLER.locale.Controller.Translation |
-|CONTROLLER.locale.Controller.ID |
-|CONTROLLER.locale.Controller.Title |
-|CONTROLLER.locale.Controller.Description |
+|CONTROLLER.locale.Controller.Translation.AddLanguage |
+|CONTROLLER.locale.Controller.Translation.Translation |
+|CONTROLLER.locale.Controller.Translation.ID |
+|CONTROLLER.locale.Controller.Translation.Title |
+|CONTROLLER.locale.Controller.Translation.Description |
 
 ## I18nService
 

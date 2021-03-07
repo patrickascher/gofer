@@ -46,7 +46,6 @@ can be used.
 | Exports     | `csv`  | Slice of names of render types.                                      |
 | Action      |    | see ACTION                                                        |
 | Filter      |    | see FILTER                                                        |
-| Translation      |`false`     | If set to true, the title will be the orm namespace-title. same goes for the description.                                                    |
 
 **Action**
 

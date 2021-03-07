@@ -25,7 +25,7 @@ func TestGrid_Config(t *testing.T) {
 	asserts := assert.New(t)
 	g, _, _, _, _ := mockGrid(t, httptest.NewRequest("GET", "https://example.com", nil))
 	cfg := g.Scope().Config()
-	asserts.Equal("controller:action", cfg.ID)
+	asserts.Equal("controller.action", cfg.ID)
 }
 
 // TestGrid_Controller tests if the controller of the grid factory gets returned.
@@ -73,7 +73,7 @@ func mockGrid(t *testing.T, req *http.Request, src ...grid.Source) (grid.Grid, *
 	mockController.On("Name").Return("controller")
 	mockController.On("Action").Return("action")
 	mockSource.On("Cache").Once().Return(mockCache)
-	mockCache.On("Get", "grid_", "controller:action").Once().Return(nil, errors.New("does not exist"))
+	mockCache.On("Get", "grid_", "controller.action").Once().Return(nil, errors.New("does not exist"))
 	mockSource.On("Init", mock.AnythingOfType("*grid.grid")).Once().Return(nil)
 	var fields []grid.Field
 	f := grid.Field{}
@@ -89,7 +89,7 @@ func mockGrid(t *testing.T, req *http.Request, src ...grid.Source) (grid.Grid, *
 	fields = append(fields, f)
 
 	mockSource.On("Fields", mock.AnythingOfType("*grid.grid")).Once().Return(fields, nil)
-	mockCache.On("Set", "grid_", "controller:action", mock.AnythingOfType("grid.grid"), time.Duration(-1)).Once().Return(nil)
+	mockCache.On("Set", "grid_", "controller.action", mock.AnythingOfType("grid.grid"), time.Duration(-1)).Once().Return(nil)
 
 	//Mode
 	w := httptest.NewRecorder()

@@ -400,6 +400,7 @@ func (g *grid) Render() {
 		}
 		g.controller.Set(ctrlData, values)
 	case FeCreate:
+		g.controller.Set(ctrlConfig, g.config)
 		g.controller.Set(ctrlHead, g.sortFields())
 	case FeDetails, FeUpdate:
 		c, err := g.conditionFirst()

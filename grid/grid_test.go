@@ -292,6 +292,7 @@ func testSrcCreate(t *testing.T) {
 	mockController.On("Set", "title", "controller.action-title").Once()
 	mockController.On("Set", "description", "controller.action-description").Once()
 	mockSource.On("Create", mock.AnythingOfType("*grid.grid")).Once().Return(1, nil)
+	mockController.On("Set", "config", mock.AnythingOfType("grid.Config")).Once()
 	mockController.On("Set", "id", 1).Once()
 	g.Render()
 
@@ -363,6 +364,7 @@ func testFeCreate(t *testing.T) {
 	mockController.On("Set", "description", "controller.action-description").Once()
 	mockController.On("Set", "pagination", mock.AnythingOfType("*grid.pagination")).Once()
 	mockController.On("Set", "head", mock.AnythingOfType("[]grid.Field")).Once()
+	mockController.On("Set", "config", mock.AnythingOfType("grid.Config")).Once()
 	g.Render()
 }
 

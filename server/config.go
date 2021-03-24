@@ -21,13 +21,13 @@ type Configuration struct {
 
 // Webserver configuration
 type ConfigurationWebserver struct {
-	App            ConfigurationApp
-	Domain         string `frontend:""`
-	HTTPPort       int
-	FrontendConfig string
-	Translation    I18n
-	Auth           ConfigurationAuth
-	Router         ConfigurationRouter
+	App                ConfigurationApp
+	Domain             string `frontend:""`
+	HTTPPort           int
+	FrontendConfigFile string
+	Translation        I18n
+	Auth               ConfigurationAuth
+	Router             ConfigurationRouter
 }
 
 type ConfigurationApp struct {

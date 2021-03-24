@@ -13,7 +13,7 @@ The following hooks will be called:
 | router    | If a router provider is defined by config, a new router manager will be created. The Favicon, PublicDir(s) and PublicFile(s)s will be added if defined. |
 | databases | All defined databases will be saved globally and opened.                                                                                                |
 | caches    | All defined caches will be created and saved globally.|
-| translation    | If a translation provider is defined by config, a new translation manger will be created. By default the translation raw messages for all registered modules, navigations, and controller will be generated.|
+| translation    | If a translation provider is defined by config, a new translation manger will be created. By default the translation raw messages for all registered modules, navigations, and controller will be generated. If the `JSONFilePath` is configured, a JSON file for each defined language will be generated on start.|
 
 If the configuration `Router.CreateDBRoutes` is set to `true`, for each route an db entry will be made.
 
@@ -53,6 +53,17 @@ before a server instance exists.
 ```go
 srvConfig, err := server.ServerConfig() 
 ```
+
+
+### Frontend config
+
+If the config `config.Webserver.FrontendConfigFile` has no zero value, all the config field which have the field tag `frontend:""` will be added.
+
+If the tag is present on a struct, all struct fields will be added. To exclude a single field, `frontend:"-"` can be used.
+
+A different field name can be definen with `frontend:"yourName"`.
+
+A JSON file will be generated with all the defined Fields.
 
 ## Start
 

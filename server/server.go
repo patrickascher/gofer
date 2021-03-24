@@ -64,20 +64,20 @@ func New(config interface{}) error {
 		}
 		webserver = &server{config: config, cfg: cfg}
 		// create frontend json file
-		if cfg.Webserver.FrontendConfig != "" {
+		if cfg.Webserver.FrontendConfigFile != "" {
 			if frontendCfg := FrontendConfigConverter(config); frontendCfg != nil {
 				b, err := json.Marshal(frontendCfg)
 				if err != nil {
 					return err
 				}
-				err = os.WriteFile(cfg.Webserver.FrontendConfig, b, 0644)
+				err = os.WriteFile(cfg.Webserver.FrontendConfigFile, b, 0644)
 				if err != nil {
 					return err
 				}
-			} else if cfg.Webserver.FrontendConfig != "" {
-				_, err := os.Stat(cfg.Webserver.FrontendConfig)
+			} else if cfg.Webserver.FrontendConfigFile != "" {
+				_, err := os.Stat(cfg.Webserver.FrontendConfigFile)
 				if !os.IsNotExist(err) {
-					err = os.Remove(cfg.Webserver.FrontendConfig)
+					err = os.Remove(cfg.Webserver.FrontendConfigFile)
 					if err != nil {
 						return err
 					}

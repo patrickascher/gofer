@@ -187,7 +187,7 @@ For more details about the tags, [see ParseTag](structer.md#parsetag)
 | permission        | A field can be defined as Write or Read only. If the permission is empty read and write will be set to `false`. If a read permission is false, it the column will not be fetched by first and all. If a write permission is false, the column will not be saved on create or update. | r,w or empty.    | `orm:"permission:rw"` |   |
 | sql         | Set a custom select for the column. Only supported for `First` and `All`.                                       | string         | `orm:"sql:CONCAT(name,surname)"`    |   |
 | primary           | Defines a column as primary.                                                                                    |          | `orm:"primary"`       |   |
-| relation           | Defines a relation   | `hasOne`, `belongsTo`, `hasMany`, `m2m`          | `orm:"relations:belongsTo"`       |   |
+| relation           | Defines a relation   | `hasOne`, `belongsTo`, `hasMany`, `m2m`          | `orm:"relation:belongsTo"`       |   |
 | fk           | Defines a custom foreign key | string         | `orm:"fk:CustomID"`       |   |
 | refs           | Defines a custom references key.                                                                                    |string          | `orm:"refs:UserID"`       |   |
 | join_table           | Defines a custom  join table name.                                                                                    | string         | `orm:"join_table:user_mapping"`       |   |

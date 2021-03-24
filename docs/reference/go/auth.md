@@ -16,6 +16,11 @@ provider, err := auth.New("native")
 
 ## ConfigureProvider
 
+!!! warning
+
+    A provider must have a map value in the json config. Maps with only a defined key will be irgnored at the moment. If you dont have any options, define `{foo:"bar"}` or something. The error has to get fixed in the config package.
+
+
 Must be used to configure the provider on webserver start. Because there can be different providers with different
 configurations, a map is passed as second argument. Please see the provider section for the different configuration
 parameters.

@@ -26,6 +26,7 @@ nav:
           - reference/go/server.md
           - reference/go/auth.md
           - reference/go/translation.md
+          - reference/go/scheduler.md
       - Frontend:
           - reference/frontend/alert.md
           - reference/frontend/login.md

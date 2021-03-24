@@ -16,10 +16,11 @@ const (
 	RefreshedToken        = "RefreshToken"
 	RefreshedTokenInvalid = "RefreshTokenInvalid"
 	LOGOUT                = "Logout"
-	PasswordRecover       = ""
+	ResetPasswordToken    = "ResetPasswordToken"
 	LOCKED                = "Locked"
 	INACTIVE              = "Inactive"
 	WrongPassword         = "WrongPassword"
+	ChangedPassword       = "ChangedPassword"
 )
 
 // Protocol struct to log user actions.

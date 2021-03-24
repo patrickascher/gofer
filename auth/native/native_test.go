@@ -8,8 +8,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -120,18 +120,20 @@ func TestNative_Login(t *testing.T) {
 // TODO: copied from auth. better solution is to make a testing package for the framework.
 func serverConfig(dbname string) server.Configuration {
 	return server.Configuration{
-		Router:    server.ConfigurationRouter{Provider: router.JSROUTER},
 		Databases: []query.Config{{Provider: "mysql", Database: dbname, Username: "root", Password: "root", Port: 3306}},
 		Caches:    []server.ConfigurationCache{{Provider: "memory", GCInterval: 360}},
-		Auth: server.ConfigurationAuth{
-			Providers:            map[string]map[string]interface{}{"native": nil},
-			JWT:                  jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute},
-			BcryptCost:           12,
-			AllowedFailedLogin:   5,
-			LockDuration:         "PT15M",
-			InactiveDuration:     "P3M",
-			TokenDuration:        "PT15M",
-			RefreshTokenDuration: "P1M",
+		Webserver: server.ConfigurationWebserver{
+			Router: server.ConfigurationRouter{Provider: router.JSROUTER},
+			Auth: server.ConfigurationAuth{
+				Providers:            map[string]map[string]interface{}{"native": nil},
+				JWT:                  jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute},
+				BcryptCost:           12,
+				AllowedFailedLogin:   5,
+				LockDuration:         "PT15M",
+				InactiveDuration:     "P3M",
+				TokenDuration:        "PT15M",
+				RefreshTokenDuration: "P1M",
+			},
 		},
 	}
 }
@@ -160,7 +162,7 @@ func loadSQLFile(sqlFile string) error {
 	}
 
 	// delete db if exists
-	file, err := ioutil.ReadFile(sqlFile)
+	file, err := os.ReadFile(sqlFile)
 	if err != nil {
 		return err
 	}

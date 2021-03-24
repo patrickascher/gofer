@@ -2,13 +2,14 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package auth_test
+package controller_test
 
 import (
 	context2 "context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/patrickascher/gofer/auth/controller"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
@@ -16,6 +17,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -51,7 +54,7 @@ func TestController_Login(t *testing.T) {
 	}
 	r.SetSecureMiddleware(router.NewMiddleware(mw))
 	asserts.NoError(err)
-	err = auth.AddRoutes(r)
+	err = controller.AddRoutes(r)
 	asserts.NoError(err)
 
 	// create the test server
@@ -60,10 +63,10 @@ func TestController_Login(t *testing.T) {
 
 	// mock provider
 	mockProvider := new(mocks.Interface)
-	cfg := goferServer.Configuration{Router: goferServer.ConfigurationRouter{Provider: router.JSROUTER}, Auth: goferServer.ConfigurationAuth{JWT: jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute}}}
+	cfg := goferServer.Configuration{Webserver: goferServer.ConfigurationWebserver{Router: goferServer.ConfigurationRouter{Provider: router.JSROUTER}, Auth: goferServer.ConfigurationAuth{JWT: jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute}}}}
 	cbk := func(i int) func() error {
 		return func() error {
-			jToken, err := jwt.New(cfg.Auth.JWT, &auth.Claim{})
+			jToken, err := jwt.New(cfg.Webserver.Auth.JWT, &auth.Claim{})
 			asserts.NoError(err)
 			jToken.CallbackGenerate = func(http.ResponseWriter, *http.Request, jwt.Claimer, string) error {
 				if i == 0 {
@@ -87,25 +90,25 @@ func TestController_Login(t *testing.T) {
 		errorMsg string
 		fn       func() error
 	}{
-		{name: "provider missing", data: url.Values{}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf(context.ErrParam, auth.ParamProvider)).Error()},
-		{name: "provider not-existing", data: url.Values{auth.ParamProvider: {"not-existing"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf(auth.ErrProvider, "not-existing")).Error()},
-		{name: "provider not configured", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf(auth.ErrProvider, "mockController")).Error(), fn: func() error {
+		{name: "provider missing", data: url.Values{}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf(context.ErrParam, auth.ParamProvider)).Error()},
+		{name: "provider not-existing", data: url.Values{auth.ParamProvider: {"not-existing"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf(auth.ErrProvider, "not-existing")).Error()},
+		{name: "provider not configured", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf(auth.ErrProvider, "mockController")).Error(), fn: func() error {
 			return auth.Register("mockController", func(options map[string]interface{}) (auth.Interface, error) { return mockProvider, nil })
 		}},
-		{name: "provider returns error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, errors.New("an error")).Error(), fn: func() error {
+		{name: "provider returns error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, errors.New("an error")).Error(), fn: func() error {
 			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, errors.New("an error"))
 			return auth.ConfigureProvider("mockController", nil)
 		}},
-		{name: "server is not configured", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, goferServer.ErrInit).Error(), fn: func() error {
+		{name: "server is not configured", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, goferServer.ErrInit).Error(), fn: func() error {
 			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, nil)
 			return auth.ConfigureProvider("mockController", nil)
 		}},
-		{name: "server jwt is not defined", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, goferServer.ErrJWT).Error(), fn: func() error {
+		{name: "server jwt is not defined", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, goferServer.ErrJWT).Error(), fn: func() error {
 			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, nil)
 			return goferServer.New(cfg)
 		}},
-		{name: "jwt callback error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, errors.New("jwt: an error")).Error(), fn: cbk(1)},
-		{name: "ok", data: url.Values{auth.ParamProvider: {"mockController"}}, error: false, errorMsg: fmt.Errorf(auth.ErrWrap, errors.New("jwt: an error")).Error(), fn: cbk(0)},
+		{name: "jwt callback error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, errors.New("jwt: an error")).Error(), fn: cbk(1)},
+		{name: "ok", data: url.Values{auth.ParamProvider: {"mockController"}}, error: false, errorMsg: fmt.Errorf(controller.ErrWrap, errors.New("jwt: an error")).Error(), fn: cbk(0)},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -150,16 +153,16 @@ func TestController_Login(t *testing.T) {
 // - that in each time the cookies gets deleted.
 func TestController_Logout(t *testing.T) {
 	asserts := assert.New(t)
-	c := auth.Controller{}
+	c := controller.Auth{}
 
 	// helper test middleware, provider registration and router definition.
 	claimMW := func(h http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if _, err := r.Cookie("WithClaim"); err == nil {
-				r = r.WithContext(context2.WithValue(r.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Provider: "mockLogout"}))
+				r = r.WithContext(context2.WithValue(r.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Options: map[string]string{"provider": "mockLogout"}}))
 			}
 			if _, err := r.Cookie("WithWrongProvider"); err == nil {
-				r = r.WithContext(context2.WithValue(r.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Provider: "not-existing"}))
+				r = r.WithContext(context2.WithValue(r.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Options: map[string]string{"provider": "not-existing"}}))
 			}
 			h(w, r)
 		}
@@ -187,13 +190,13 @@ func TestController_Logout(t *testing.T) {
 		errorMsg string
 		fn       func()
 	}{
-		{name: "no refresh cookie is set", cookies: nil, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, http.ErrNoCookie).Error()},
-		{name: "no claim data", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, auth.ErrNoClaim).Error()},
-		{name: "provider does not exist", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithWrongProvider"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf(auth.ErrProvider, "not-existing")).Error()},
-		{name: "provider returns error", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithClaim"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf("an error")).Error()},
-		{name: "no orm cache", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithClaim"}}, error: true, errorMsg: fmt.Errorf(auth.ErrWrap, fmt.Errorf(orm.ErrMandatory, "cache", "auth.User")).Error()},
+		{name: "no refresh cookie is set", cookies: nil, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, http.ErrNoCookie).Error()},
+		{name: "no claim data", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, controller.ErrNoClaim).Error()},
+		{name: "provider does not exist", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithWrongProvider"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf(auth.ErrProvider, "not-existing")).Error()},
+		{name: "provider returns error", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithClaim"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf("an error")).Error()},
+		{name: "no orm cache", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithClaim"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, fmt.Errorf(orm.ErrMandatory, "cache", "auth.User")).Error()},
 		{name: "ok", cookies: []*http.Cookie{{Name: jwt.CookieRefresh, Value: "123456"}, {Name: "WithClaim"}}, fn: func() {
-			err = loadSQLFile("schema.sql")
+			err = loadSQLFile("./schema.sql")
 			asserts.NoError(err)
 			// insert data
 			u := auth.User{}
@@ -249,4 +252,82 @@ func TestController_Logout(t *testing.T) {
 			}
 		})
 	}
+}
+
+func serverConfig(dbname string) goferServer.Configuration {
+	return goferServer.Configuration{
+		Databases: []query.Config{{Provider: "mysql", Database: dbname, Username: "root", Password: "root", Port: 3306}},
+		Caches:    []goferServer.ConfigurationCache{{Provider: "memory", GCInterval: 360}},
+		Webserver: goferServer.ConfigurationWebserver{
+			Router: goferServer.ConfigurationRouter{Provider: router.JSROUTER},
+			Auth: goferServer.ConfigurationAuth{
+				Providers:            map[string]map[string]interface{}{"native": nil},
+				JWT:                  jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute},
+				BcryptCost:           12,
+				AllowedFailedLogin:   5,
+				LockDuration:         "PT15M",
+				InactiveDuration:     "P3M",
+				TokenDuration:        "PT15M",
+				RefreshTokenDuration: "P1M",
+			},
+		},
+	}
+}
+
+func loadSQLFile(sqlFile string) error {
+
+	err := goferServer.New(serverConfig(""))
+	if err != nil {
+		return err
+	}
+
+	b, err := goferServer.Databases()
+	if err != nil {
+		return err
+	}
+
+	db := b[0].Query().DB()
+	// drop db if exists:
+	_, err = db.Exec("DROP DATABASE IF EXISTS `tests`")
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("CREATE DATABASE `tests` DEFAULT CHARACTER SET = `utf8`")
+	if err != nil {
+		return err
+	}
+
+	// delete db if exists
+	file, err := os.ReadFile(sqlFile)
+	if err != nil {
+		return err
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("USE `tests`")
+	if err != nil {
+		return err
+	}
+	defer func() {
+		tx.Rollback()
+	}()
+	for _, q := range strings.Split(string(file), ";") {
+		q := strings.TrimSpace(q)
+		if q == "" {
+			continue
+		}
+		if _, err := tx.Exec(q); err != nil {
+			return err
+		}
+	}
+
+	err = goferServer.New(serverConfig("tests"))
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+
 }

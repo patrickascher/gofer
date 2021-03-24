@@ -91,7 +91,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 								return err
 							}
 						}
-						rel.model().scope.SetChangedValues(changes.ChangedValue)
+						rel.model().scope.SetChangedValues(changes.Children)
 						err = rel.Update()
 						if err != nil {
 							return err
@@ -167,7 +167,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 							return err
 						}
 
-						relationScope.SetChangedValues(cV.ChangedValue)
+						relationScope.SetChangedValues(cV.Children)
 						err = relationModel.Update()
 					case DELETE:
 						deleteModel := relationScope.Builder().Query(relationScope.model.tx).Delete(relationScope.FqdnTable())
@@ -214,7 +214,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 					}
 				case UPDATE:
 					var deleteID []interface{}
-					for _, subChange := range change.ChangedValue {
+					for _, subChange := range change.Children {
 						switch subChange.Operation {
 						case CREATE:
 							// set parent ID + poly to relation model
@@ -246,7 +246,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 								return err
 							}
 
-							tmpUpdate.model().scope.SetChangedValues(subChange.ChangedValue)
+							tmpUpdate.model().scope.SetChangedValues(subChange.Children)
 							err = tmpUpdate.Update()
 							if err != nil {
 								return err
@@ -316,7 +316,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 
 					var deleteID []interface{}
 					var createID []map[string]interface{}
-					for _, changes := range cV.ChangedValue {
+					for _, changes := range cV.Children {
 
 						switch changes.Operation {
 						case CREATE:
@@ -353,7 +353,7 @@ func (e *eager) Update(scope Scope, c condition.Condition) error {
 
 							// no need for poly, because its already set.
 
-							tmpUpdate.model().scope.SetChangedValues(changes.ChangedValue)
+							tmpUpdate.model().scope.SetChangedValues(changes.Children)
 							err = tmpUpdate.Update()
 							if err != nil {
 								return err

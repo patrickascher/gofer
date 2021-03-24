@@ -3,10 +3,11 @@
 package mocks
 
 import (
-	http "net/http"
-
 	controller "github.com/patrickascher/gofer/controller"
 	context "github.com/patrickascher/gofer/controller/context"
+
+	http "net/http"
+
 	mock "github.com/stretchr/testify/mock"
 )
 

@@ -46,6 +46,7 @@ can be used.
 | Exports     | `csv`  | Slice of names of render types.                                      |
 | Action      |    | see ACTION                                                        |
 | Filter      |    | see FILTER                                                        |
+| History      |    | see HISTORY                                                  |
 
 **Action**
 
@@ -56,6 +57,7 @@ can be used.
 | DisableCreate | `false`  |  Disables the create mode.                 |
 | DisableUpdate      | `false`  |  Disables the update mode. |
 | DisableDelete      | `false`  |  Disables the delete mode.                                                       |
+| CreateLinks      | `nil`  |  You can add params to the grid Add button. IF multiple entries exist, a menu will be generated.                                                      |
 
 **Filter**
 
@@ -68,6 +70,13 @@ can be used.
 | AllowedRowsPerPage | `-1`,`5`,`10`,`15`,`25`,`50`  | The allowed rows per page. | 
 | RowsPerPage | `15`  | Default rows per page. |
 
+**History**
+
+| Name        |  Default |  Description                                                       |
+|-------------|-----|----------------------------------------------------------------|
+| Disable          | `false`   | Disable the history.            |
+| AdditionalIDs          | `[]string{}`   | Additional grid IDs can be added to show in the history content.          |
+
 ## Mode
 
 The grid mode is defined by the `http.Method` and `controller.Params`.
@@ -75,6 +84,7 @@ The grid mode is defined by the `http.Method` and `controller.Params`.
 | Mode        |  http.Method |  Param                                                       |
 |-------------|-----|----------------------------------------------------------------|
 | `grid.FeTable`          | `GET`   |             |
+| `grid.FeHistory`          | `GET`   | `mode=history`            |
 | `grid.FeFilter`          | `GET`   | `mode=filter`            |
 | `grid.SrcCallback`          | `GET`   | `mode=callback`            |
 | `grid.FeDetails`          | `GET`   | `mode=details`            |
@@ -155,7 +165,7 @@ grid.Field("ID").SetTitle(grid.NewValue("ID").SetDetails("Identifier"))
 
 | Name        |  value |  Description |
 |-------------|-----|-----|
-| `DecoratorOption`   | `string`,`boolean` | a field name can be used {{Name}}. If the second parameter is set to true, HTML will not be escaped in the frontend.   |
+| `DecoratorOption`   | `string`,`string` | a field name can be used {{Name}}. As second param a separator can be set - if set the FE escaping will be disabled.  |
 
 **Callbacks**
 
@@ -224,13 +234,82 @@ Will render the grid by the actual grid mode.
 | `grid.FeCreate`    |`head` | add header data. | 
 | `grid.FeDetails`,`grid.FeUpdate`    | `head`, `data`| add header data. call conditionFirst. fetch the entry by the given id and set the controller data. | 
 | `grid.FeFilter`    | | TODO | 
+| `grid.FeHistory`    |`histories`, `users` | all history entries and user data to the given sourceID will be fetched. | 
 
 ## Orm
 
 With the orm function an `orm.Interface` will be converted to a `grid.Source` and can be used out of the box.
 
+History is implemented.
+
 ```go
 g := grid.New(ctrl, grid.Orm(model), nil)
+```
+
+## History
+
+!!! info
+
+    Must be implmented by the source.
+
+The data will be saved in the `histories` table by the `grid.Histroy` struct. The following Fields are available
+defined:
+
+*grid.History* saves the entries in the database with all the needed information.
+
+| Field        | value |  Description | 
+|-------------|-----|-----|
+| GridID | `string`|The grid id. There can be multiple IDs set. The will get separated through `,`|
+| UserID | `string`|The users id as a string.|
+| SrcID | `string`|The ID of the source struct.|
+| Type | `enum`|Can have the value `Created`, `Updated` or `Deleted`|
+| Value | `text`| `orm.ChangeValue` as json.|
+| CratedAt | `datetime`| The current datetime when it was created.|
+
+!!! info
+
+    If the `UserID` is `0`, it will be displayed as a SYSTEM user. This can be used for cronjobs or other automated changes.
+
+*orm.ChangeValue* will be used to describe the source changes.
+
+| Field        | value |  Description | 
+|-------------|-----|-----|
+| Field| `string`|The name of the struct field.|
+| Operation| `string`| Value of `create`, `update` or `delete`|
+| New| `string`|The new value of the field. Can be empty if zero value.|
+| Old| `string`|The old value of the field. Can be empty if zero value. |
+| Index| `int`| Only used for `hasMany` relations. |
+| Children| `[]orm.ChangeValue`| Same fields as described before in a deeper level. |
+
+*Create:* Fields will only be added if they have no zero value.
+
+| Type        |  Description | 
+|-------------|-----|
+|normal field|  `New` will be the value of the field.|
+|belongsTo, m2m| `New` field will be the value of the select `TextValue` field. To guarantee the correct value in the future, also if the ID got deleted.|
+|HasOne|  Every field will be in the `Childeren` slice if the value is not zero.|
+|HasMany|  Same as `hasOne` but a the `Index` field will be set.|
+
+*Update* Only changed values will be added.
+
+| Type        |  Description | 
+|-------------|-----|
+|normal field|  `New` and `Old` will have the fields value. If one of it has a zero value, it will be omitted.|
+|belongsTo, m2m| `New` and `Old` will be the value of the select `TextValue` field. To guarantee the correct value in the future, also if the ID got deleted. If one of it has a zero value, it will be omitted.|
+|HasOne|  Every field will be in the `Childeren` slice if the value is not zero.|
+|HasMany|  Can have the following state `create`, `update` or `delete`. On `create` only the new value will be set, on `delete` only the old value.|
+
+*Delete*
+
+A `orm.History` entry will be added with the `Type: DELETED`.
+
+### manually add history
+
+```go
+
+err := grid.NewHistory("gridID", "userID", "srcID", grid.HistoryCreated, "New data received.")
+//...
+
 ```
 
 ## Source interface

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package auth
+package controller
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/patrickascher/gofer/auth"
 	"github.com/patrickascher/gofer/grid/options"
 	"github.com/patrickascher/gofer/locale/translation"
 	"golang.org/x/text/language/display"
@@ -23,13 +24,20 @@ import (
 
 func init() {
 	translation.AddRawMessage(
-		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordLength", Other: "Password length min 7 chars."},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ForgotPassword", Other: "Forgot password"},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordLength", Other: "Password length min 6 chars."},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordMatch", Other: "Password does not match"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordRequired", Other: "Password is mandatory"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrLoginRequired", Other: "Login is mandatory"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Privacy", Other: "user admin,pw admin123"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Impress", Other: " "},
 	)
 }
+
+const (
+	pwForgot = "forgot"
+	pwChange = "change"
+)
 
 // Error messages.
 var (
@@ -38,8 +46,26 @@ var (
 )
 
 // Controller is a predefined auth controller.
-type Controller struct {
+type Auth struct {
 	controller.Base
+}
+
+// ChangePassword will call the providers function.
+func (c *Auth) ChangePassword() {
+	err := helperPasswordProvider(c, pwChange)
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return
+	}
+}
+
+// ForgotPassword will call the providers function.
+func (c *Auth) ForgotPassword() {
+	err := helperPasswordProvider(c, pwForgot)
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return
+	}
 }
 
 // Login will check:
@@ -47,17 +73,17 @@ type Controller struct {
 // - call the providers Login function.
 // - generate the jwt token.
 // - return the user claim.
-func (c *Controller) Login() {
+func (c *Auth) Login() {
 
 	// auth type.
-	prov, err := c.Context().Request.Param(ParamProvider)
+	prov, err := c.Context().Request.Param(auth.ParamProvider)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return
 	}
 
 	// get provider
-	provider, err := New(prov[0])
+	provider, err := auth.New(prov[0])
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return
@@ -78,7 +104,7 @@ func (c *Controller) Login() {
 	}
 
 	// set ParamLogin and ParamProvider as context to use it in the jwt generator callback.
-	ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), ParamLogin, schema.Login), ParamProvider, prov[0])
+	ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, schema.Login), auth.ParamProvider, prov[0])
 	claim, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
@@ -86,12 +112,12 @@ func (c *Controller) Login() {
 	}
 
 	// set the user claim.
-	c.Set(KeyClaim, claim.Render())
+	c.Set(auth.KeyClaim, claim.Render())
 }
 
 // Logout will delete the browser cookies and deleted the refresh token.
 // if the token was refreshed, its taken care of because the new refresh token gets set as request.
-func (c *Controller) Logout() {
+func (c *Auth) Logout() {
 	// delete cookies
 	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieJWT, Value: "", MaxAge: -1})
 	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieRefresh, Value: "", MaxAge: -1})
@@ -107,10 +133,10 @@ func (c *Controller) Logout() {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, ErrNoClaim))
 		return
 	}
-	claim := c.Context().Request.JWTClaim().(*Claim)
+	claim := c.Context().Request.JWTClaim().(*auth.Claim)
 
 	// get provider.
-	provider, err := New(claim.Provider)
+	provider, err := auth.New(claim.Options[auth.ParamProvider])
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return
@@ -124,14 +150,14 @@ func (c *Controller) Logout() {
 	}
 
 	// delete user refresh token.
-	err = DeleteUserToken(claim.Login, rt.Value)
+	err = auth.DeleteUserToken(claim.Login, rt.Value)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return
 	}
 
 	// add protocol entry.
-	err = AddProtocol(claim.Login, LOGOUT)
+	err = auth.AddProtocol(claim.Login, auth.LOGOUT)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return
@@ -139,15 +165,15 @@ func (c *Controller) Logout() {
 }
 
 // Navigation fetches all endpoints by the user roles and sets the response data.
-func (c *Controller) Navigation() {
-	nav := Navigation{}
-	res, err := nav.EndpointsByRoles(c.Context().Request.JWTClaim().(*Claim).Roles, c)
+func (c *Auth) Navigation() {
+	nav := auth.Navigation{}
+	res, err := nav.EndpointsByRoles(c.Context().Request.JWTClaim().(*auth.Claim).Roles, c)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.Set(KeyNavigation, res)
+	c.Set(auth.KeyNavigation, res)
 
 	// set available translations
 	t, err := server.Translation()
@@ -168,14 +194,14 @@ func (c *Controller) Navigation() {
 	for _, lang := range languages {
 		rv = append(rv, ls{BCP: lang.String(), SelfName: display.Self.Name(lang)})
 	}
-	c.Set(KeyLanguages, rv)
+	c.Set(auth.KeyLanguages, rv)
 }
 
 // Routes are displayed.
 // The backend routes are added automatically. Frontend routes must be defined.
 // TODO atm frontend routes have to get defined in vue and in go. In the future the added frontend routes should be passed to the frontend.
 // TODO i have to think about a solution because of the vue.components because they are locally registered which is the main problem.
-func (c *Controller) Routes() {
+func (c *Auth) Routes() {
 
 	g, err := grid.New(c, grid.Orm(&server.Route{}))
 	if err != nil {
@@ -195,9 +221,9 @@ func (c *Controller) Routes() {
 	g.Render()
 }
 
-func (c *Controller) Roles() {
+func (c *Auth) Roles() {
 	// Roles will display all added roles and there backend/frontend permissions.
-	g, err := grid.New(c, grid.Orm(&Role{}))
+	g, err := grid.New(c, grid.Orm(&auth.Role{}))
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -207,7 +233,7 @@ func (c *Controller) Roles() {
 	g.Field("Description").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(2))
 	g.Field("Admin").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(3))
 	g.Field("Children").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(4)).
-		SetOption(options.DECORATOR, "{{Name}}<br/>", true).
+		SetOption(options.DECORATOR, "{{Name}}", "<br/>").
 		SetOption(options.SELECT, options.Select{TextField: "Name", ValueField: "ID"})
 	g.Field("Children.Name").SetRemove(grid.NewValue(false))
 
@@ -223,9 +249,9 @@ func (c *Controller) Roles() {
 // Nav configures the frontend vue navigation.
 // BUG: Set Title on RouteID will fuck up the BelongsTo Select
 // TODO: Simplyfy the Route.Pattern, also change the belongsTo logic?
-func (c *Controller) Nav() {
+func (c *Auth) Nav() {
 
-	g, err := grid.New(c, grid.Orm(&Navigation{}))
+	g, err := grid.New(c, grid.Orm(&auth.Navigation{}))
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -235,7 +261,7 @@ func (c *Controller) Nav() {
 	g.Field("Icon").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(1)).SetView(grid.NewValue("").SetTable("IconView")).SetDescription(grid.NewValue("Visit https://materialdesignicons.com/ to view all icons!"))
 	g.Field("Position").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(2))
 
-	g.Field("Children").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Title}}<br/>", true).SetOption(options.SELECT, options.Select{TextField: "Title"})
+	g.Field("Children").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Title}}", "<br/>").SetOption(options.SELECT, options.Select{TextField: "Title"})
 	g.Field("Children.Title").SetRemove(grid.NewValue(false))
 
 	g.Field("Route").SetRemove(grid.NewValue(true).SetTable(false)).SetOption(options.DECORATOR, "{{Pattern}}").SetPosition(grid.NewValue(3))
@@ -247,9 +273,41 @@ func (c *Controller) Nav() {
 }
 
 // Accounts
-func (c *Controller) Accounts() {
+func (c *Auth) Accounts() {
 
-	g, err := grid.New(c, grid.Orm(&User{}))
+	// Provider will be called to add user.
+	if m, err := c.Context().Request.Param("mode"); err == nil && (m[0] == "create") {
+		provider, err := c.Context().Request.Param(auth.ParamProvider)
+		if err != nil {
+			c.Error(500, err)
+			return
+		}
+
+		p, err := auth.New(provider[0])
+		if err != nil {
+			c.Error(500, err)
+			return
+		}
+		err = p.RegisterAccount(c)
+		if err != nil {
+			c.Error(500, err)
+			return
+		}
+		return
+	}
+
+	// get all defined providers to configure the add button (FE).
+	cfg, err := server.ServerConfig()
+	if err != nil {
+		c.Error(500, err)
+		return
+	}
+	createLinks := map[string]string{}
+	for i := range cfg.Webserver.Auth.Providers {
+		createLinks[i] = auth.ParamProvider + "/" + i
+	}
+
+	g, err := grid.New(c, grid.Orm(&auth.User{}), grid.Config{Action: grid.Action{CreateLinks: createLinks}})
 	if err != nil {
 		c.Error(500, err)
 		return
@@ -262,7 +320,7 @@ func (c *Controller) Accounts() {
 	g.Field("State").SetRemove(grid.NewValue(false))
 	g.Field("LastLogin").SetRemove(grid.NewValue(false))
 
-	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Name}} {{ID}}").SetOption(options.SELECT, options.Select{TextField: "Name"})
+	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Name}}", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
 	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
 
 	g.Render()
@@ -270,9 +328,24 @@ func (c *Controller) Accounts() {
 
 // AddRoutes is a helper to register all defined auth routes for the auth controller.
 func AddRoutes(r router.Manager) error {
-	a := Controller{}
+	a := Auth{}
 
 	err := r.AddPublicRoute(router.NewRoute("/login", &a, router.NewMapping([]string{http.MethodPost, http.MethodOptions}, a.Login, nil)))
+	if err != nil {
+		return err
+	}
+
+	err = r.AddPublicRoute(router.NewRoute("/pw/forgot", &a, router.NewMapping([]string{http.MethodPost}, a.ForgotPassword, nil)))
+	if err != nil {
+		return err
+	}
+
+	err = r.AddPublicRoute(router.NewRoute("/pw/change", &a, router.NewMapping([]string{http.MethodPost}, a.ChangePassword, nil)))
+	if err != nil {
+		return err
+	}
+
+	err = r.AddSecureRoute(router.NewRoute("/logout", &a, router.NewMapping([]string{http.MethodGet, http.MethodOptions}, a.Logout, nil)))
 	if err != nil {
 		return err
 	}
@@ -302,10 +375,46 @@ func AddRoutes(r router.Manager) error {
 		return err
 	}
 
-	err = r.AddSecureRoute(router.NewRoute("/logout", &a, router.NewMapping([]string{http.MethodGet, http.MethodOptions}, a.Logout, nil)))
+	return nil
+}
+
+// helperPasswordProvider will check if the provider is valid and if the configuration allows the request.
+func helperPasswordProvider(c controller.Interface, action string) error {
+	// auth type.
+	prov, err := c.Context().Request.Param(auth.ParamProvider)
 	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return err
 	}
 
+	//check if it is allowed by config
+	cfg, err := server.ServerConfig()
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return err
+	}
+
+	// get provider
+	provider, err := auth.New(prov[0])
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return err
+	}
+
+	// call provider
+	switch action {
+	case pwForgot:
+		if v, ok := cfg.Webserver.Auth.Providers[prov[0]]["forgotpassword"]; !ok || v != true {
+			c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, fmt.Errorf("forgot password is not allowed for provider %s", prov[0])))
+			return err
+		}
+		return provider.ForgotPassword(c)
+	case pwChange:
+		if v, ok := cfg.Webserver.Auth.Providers[prov[0]]["changepassword"]; !ok || v != true {
+			c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, fmt.Errorf("change password is not allowed for provider %s", prov[0])))
+			return err
+		}
+		return provider.ChangePassword(c)
+	}
 	return nil
 }

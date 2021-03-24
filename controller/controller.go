@@ -22,6 +22,11 @@ var (
 	ErrAction = "controller: action %v does not exist in %v"
 )
 
+const (
+	MSG   = "msg"
+	ERROR = "error"
+)
+
 // predefined render types
 const (
 	RenderJSON = "json"

@@ -127,12 +127,12 @@ func TestUser_Option(t *testing.T) {
 	// ok: option exists
 	val, err := u.Option("Foo")
 	asserts.NoError(err)
-	asserts.Equal("Bar", val)
+	asserts.Equal("Bar", val.Value)
 
 	// error: option does not exists
 	val, err = u.Option("Bar")
 	asserts.Error(err)
-	asserts.Equal("", val)
+	asserts.Nil(val)
 
 }
 
@@ -284,7 +284,6 @@ func TestJWTGenerateCallback(t *testing.T) {
 	asserts.NoError(err)
 	asserts.Equal(auth.LOGIN, p.Key)
 	// check claim
-	asserts.Equal("native", c.Provider)
 	asserts.Equal("John", c.Login)
 	asserts.Equal([]string{"Guest", "Admin"}, c.Roles)
 	asserts.Equal("John", c.Name)

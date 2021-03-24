@@ -23,6 +23,8 @@ type Claimer interface {
 	Nbf() int64
 	SetNbf(int64)
 
+	// UserID should return the user id.
+	UserID() interface{}
 	// Render should return the needed data for the frontend.
 	Render() interface{}
 	// Valid is defined in the jwt-go package but can get overwritten here.

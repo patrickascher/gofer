@@ -7,6 +7,7 @@ package grid
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/patrickascher/gofer/grid/options"
 	"reflect"
 
 	"github.com/patrickascher/gofer/query"
@@ -271,6 +272,13 @@ func (f *Field) SetOption(key string, value ...interface{}) *Field {
 		f.option = map[string][]interface{}{}
 	}
 	f.option[key] = append([]interface{}{}, value...)
+
+	//experimental, on set select the textValue will be set as decorator
+	if key == options.SELECT {
+		sel := value[0].(options.Select)
+		f.SetOption(options.DECORATOR, "{{"+sel.TextField+"}}", ", ")
+	}
+
 	return f
 }
 

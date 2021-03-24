@@ -31,7 +31,7 @@ type Route struct {
 // Not existing routes will be soft deleted.
 func createRouteDatabaseEntries(manager router.Manager) error {
 	// skip if not configured.
-	if !webserver.cfg.Router.CreateDBRoutes {
+	if !webserver.cfg.Webserver.Router.CreateDBRoutes {
 		return nil
 	}
 

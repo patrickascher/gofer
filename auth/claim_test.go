@@ -17,7 +17,6 @@ func TestClaim_Render(t *testing.T) {
 	asserts := assert.New(t)
 
 	claim := auth.Claim{}
-	claim.Provider = "native"
 	claim.Login = "Login"
 	claim.Name = "Name"
 	claim.Surname = "Surname"
@@ -27,8 +26,7 @@ func TestClaim_Render(t *testing.T) {
 	claim.SetExp(now)
 
 	render := claim.Render().(map[string]interface{})
-	asserts.Equal(7, len(render))
-	asserts.Equal(claim.Provider, render["Provider"])
+	asserts.Equal(6, len(render))
 	asserts.Equal(claim.Name, render["Name"])
 	asserts.Equal(claim.Surname, render["Surname"])
 	asserts.Equal(claim.Login, render["Login"])

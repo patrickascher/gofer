@@ -70,7 +70,11 @@ func (g *gridSource) Callback(cbk string, gr Grid) (interface{}, error) {
 
 	switch cbk {
 	case "select":
-		return selectCallback(gr)
+		selectField, err := gr.Scope().Controller().Context().Request.Param("f")
+		if err != nil {
+			return nil, err
+		}
+		return selectCallback(gr, selectField[0])
 	case "upload":
 		return uploadCallback(gr)
 	}
@@ -243,7 +247,7 @@ func (g *gridSource) Create(grid Grid) (interface{}, error) {
 	}
 
 	// return with the pkey(s) value
-	return pkeys, nil
+	return pkeys, historyGridHelper(grid)
 }
 
 // Update the entry
@@ -257,7 +261,8 @@ func (g *gridSource) Update(grid Grid) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return historyGridHelper(grid)
 }
 
 // Delete an entry.
@@ -271,7 +276,8 @@ func (g *gridSource) Delete(c condition.Condition, grid Grid) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return historyGridHelper(grid)
 }
 
 // Count returns a number of existing rows.
@@ -424,11 +430,11 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			field.SetRemove(NewValue(true))
 		}
 
-		// the references key is getting removed.
+		// belongsTo references key is getting removed in grid table and details.
 		for _, relation := range scope.Relations(orm.Permission{Read: true}) {
 			if relation.Kind == orm.BelongsTo {
 				if f.Name == relation.Mapping.ForeignKey.Name {
-					field.SetRemove(NewValue(true))
+					field.SetRemove(NewValue(true).SetCreate(false).SetUpdate(false))
 				}
 			}
 		}
@@ -449,14 +455,13 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		// if its a belongsTo relation and the view is no grid table, only the association field is loaded because this is
 		// a dropdown on the frontend and only the ID is needed.
 		// TODO if this changes to a combobox in the future, this code has to get changed.
-		if relation.Kind == orm.BelongsTo && g.Mode() != FeTable {
+		if relation.Kind == orm.BelongsTo {
 			for k := range rv {
 				if rv[k].referenceName == relation.Mapping.ForeignKey.Name {
 					if parent != "" {
 						parent += "."
 					}
 					rv[k].SetType(relation.Kind)
-					rv[k].SetRemove(NewValue(false))
 					rv[k].SetOption(options.SELECT, options.Select{ReturnID: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
 				}
 			}
@@ -466,9 +471,15 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			// another reason why this is handled like this, the whole belongsTo object has to get loaded for every select item - performance risk.
 			field := Field{}
 			field.referenceName = relation.Field
-
+			field.SetTitle(NewValue(translation.ORM + scope.Name(true) + "." + relation.Field))
 			field.SetName(relation.Field)
-			field.SetRemove(NewValue(true)).SetRelation(true)
+			field.SetRemove(NewValue(true).SetTable(false)).SetRelation(true)
+
+			if relation.Kind == orm.BelongsTo {
+				// display only the text field... experimental
+				field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(2).Name+"}}")
+			}
+
 			rv = append(rv, field)
 
 			continue
@@ -510,6 +521,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 				name = relation.Type.Elem().Field(2).Name
 			}
 			field.SetOption(options.SELECT, options.Select{TextField: name, ValueField: relation.Mapping.References.Name})
+
 		}
 
 		// recursively add fields
@@ -659,16 +671,25 @@ func saveFile(filepath string, header *multipart.FileHeader) (interface{}, error
 	return rv, err
 }
 
-// TODO docu
-func selectCallback(g Grid) (interface{}, error) {
-
-	selectField, err := g.Scope().Controller().Context().Request.Param("f")
+func selectCallbackHistory(g Grid, selectField string, cond condition.Condition) string {
+	v, err := selectCallback(g, selectField, cond)
 	if err != nil {
-		return nil, err
+		return ""
 	}
 
+	var rv []string
+	for i := 0; i < reflect.ValueOf(v).Len(); i++ {
+		rv = append(rv, reflect.ValueOf(v).Index(i).FieldByName(g.Field(selectField).option[options.SELECT][0].(options.Select).TextField).String())
+	}
+	return strings.Join(rv, defaultSeparator)
+}
+
+// TODO docu
+// cond is used for additional condition, needed in history.
+func selectCallback(g Grid, selectField string, cond ...condition.Condition) (interface{}, error) {
+
 	// get the defined grid object
-	selField := g.Field(selectField[0])
+	selField := g.Field(selectField)
 	if selField.Error() != nil {
 		return nil, selField.Error()
 	}
@@ -676,7 +697,7 @@ func selectCallback(g Grid) (interface{}, error) {
 	sel := selX[0].(options.Select)
 
 	var relScope orm.Scope
-	fields := strings.Split(selectField[0], ".")
+	fields := strings.Split(selectField, ".")
 	if sel.OrmField != "" {
 		fields = strings.Split(sel.OrmField, ".")
 	}
@@ -684,7 +705,7 @@ func selectCallback(g Grid) (interface{}, error) {
 	// get relation field of the orm
 	src := g.Scope().Source().(orm.Interface)
 	scope, err := src.Scope()
-	relation, err := scope.SQLRelation(fields[0], orm.Permission{Read: true})
+	relation, err := scope.SQLRelation(fields[0], orm.Permission{})
 	if err != nil {
 		return nil, err
 	}
@@ -735,10 +756,16 @@ func selectCallback(g Grid) (interface{}, error) {
 	}
 
 	// request the data
-	c := condition.New()
-	if sel.Condition != "" {
-		c.SetWhere(sel.Condition)
+	var c condition.Condition
+	if len(cond) == 1 {
+		c = cond[0]
+	} else {
+		c = condition.New()
+		if sel.Condition != "" {
+			c.SetWhere(sel.Condition)
+		}
 	}
+
 	err = relScope.Model().All(rRes.Interface(), c)
 	if err != nil {
 		return nil, err

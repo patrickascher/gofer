@@ -23,11 +23,12 @@ const RAW = "raw"
 
 // Translation groups.
 const (
-	COMMON = "COMMON."
-	CTRL   = "CONTROLLER."
-	ORM    = "ORM."
-	NAV    = "NAVIGATION."
-	GRID   = "GRID."
+	COMMON  = "COMMON."
+	CTRL    = "CONTROLLER."
+	ORM     = "ORM."
+	NAV     = "NAVIGATION."
+	GRID    = "GRID."
+	HISTORY = "HISTORY."
 )
 
 // predefined translation providers.
@@ -77,7 +78,7 @@ type Config struct {
 	// JSONFilePath - if not zero, JSON files will be generated for each defined language.
 	JSONFilePath string
 	// DefaultLanguage - Default language of the application.
-	DefaultLanguage string
+	DefaultLanguage string `frontend:""`
 }
 
 // registry function.

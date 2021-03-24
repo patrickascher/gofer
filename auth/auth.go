@@ -25,6 +25,7 @@ const registryPrefix = "auth_"
 const (
 	ParamLogin    = "login"
 	ParamPassword = "password"
+	ParamToken    = "token"
 	ParamProvider = "provider"
 	KeyClaim      = "claim"
 	KeyNavigation = "navigation"
@@ -46,7 +47,10 @@ type providerFn func(opt map[string]interface{}) (Interface, error)
 type Interface interface {
 	Login(p controller.Interface) (Schema, error)
 	Logout(p controller.Interface) error
-	RecoverPassword(p controller.Interface) error
+
+	ForgotPassword(p controller.Interface) error
+	ChangePassword(p controller.Interface) error
+	RegisterAccount(p controller.Interface) error
 }
 
 // Schema should be used as a return value for the providers.

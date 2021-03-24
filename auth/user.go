@@ -61,6 +61,7 @@ type User struct {
 	Salutation string           `json:",omitempty"`
 	Name       query.NullString `json:",omitempty"`
 	Surname    query.NullString `json:",omitempty"`
+	Email      string           `json:",omitempty"`
 
 	State           string         `json:",omitempty"`
 	LastLogin       query.NullTime `json:",omitempty"`
@@ -69,7 +70,7 @@ type User struct {
 
 	RefreshTokens []RefreshToken `json:",omitempty"`
 	Roles         []Role         `orm:"relation:m2m" json:",omitempty" validate:"min=1"`
-	Options       []Option
+	Options       []Option       `json:",omitempty"`
 
 	// security
 	allowedFailedLogins       int
@@ -99,15 +100,15 @@ func (u *User) SetSecureConfig() error {
 	if err != nil {
 		return err
 	}
-	ld, err := duration.Parse(cfg.Auth.LockDuration)
+	ld, err := duration.Parse(cfg.Webserver.Auth.LockDuration)
 	if err != nil {
 		return err
 	}
-	id, err := duration.Parse(cfg.Auth.InactiveDuration)
+	id, err := duration.Parse(cfg.Webserver.Auth.InactiveDuration)
 	if err != nil {
 		return err
 	}
-	u.allowedFailedLogins = cfg.Auth.AllowedFailedLogin
+	u.allowedFailedLogins = cfg.Webserver.Auth.AllowedFailedLogin
 	u.allowedInactivityDuration = id
 	u.lockDuration = ld
 
@@ -136,6 +137,65 @@ func (u *User) IsInactive() bool {
 	return false
 }
 
+// ChangePasswordTokenValid will check if the token was signed the last 15 minutes and if the user is still valid.
+func ChangePasswordTokenValid(login string, token string) error {
+	u, err := UserByLogin(login)
+	if err != nil {
+		return err
+	}
+
+	option := Option{}
+	err = option.Init(&option)
+	if err != nil {
+		return err
+	}
+	err = option.First(condition.New().SetWhere("`user_id` = ? AND `key` = ? AND `value` = ?", u.ID, ResetPasswordToken, token).SetWhere("IF(updated_At IS NULL, created_at, updated_at) > DATE_SUB(UTC_TIMESTAMP(),INTERVAL 15 MINUTE)"))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ChangePassword will change the password and delete the pw token.
+func ChangePassword(login string, pwUser string) error {
+	u, err := UserByLogin(login)
+	if err != nil {
+		return err
+	}
+
+	pwOption, err := u.Option(ParamPassword)
+	if err != nil {
+		return err
+	}
+
+	cfg, err := server.ServerConfig()
+	if err != nil {
+		return err
+	}
+
+	pwBcrypt, err := bcrypt.GenerateFromPassword([]byte(pwUser), cfg.Webserver.Auth.BcryptCost)
+	if err != nil {
+		return err
+	}
+	pwOption.Value = string(pwBcrypt)
+
+	// delete token
+	for i, option := range u.Options {
+		if option.Key == ResetPasswordToken {
+			u.Options = append(u.Options[:i], u.Options[i+1:]...)
+			break
+		}
+	}
+
+	err = u.Update()
+	if err != nil {
+		return err
+	}
+
+	return AddProtocol(login, ChangedPassword)
+}
+
 // ComparePassword checks the given password with the hashed password.
 func (u *User) ComparePassword(hash string, pw string) error {
 	incoming := []byte(pw)
@@ -145,14 +205,14 @@ func (u *User) ComparePassword(hash string, pw string) error {
 
 // Option will return the option by key.
 // Error will return if the option does not exist.
-func (u *User) Option(key string) (string, error) {
-	for _, o := range u.Options {
-		if o.Key == key {
-			return o.Value, nil
+func (u *User) Option(key string) (*Option, error) {
+	for i := range u.Options {
+		if u.Options[i].Key == key {
+			return &u.Options[i], nil
 		}
 	}
 
-	return "", fmt.Errorf(ErrUserOption, key)
+	return nil, fmt.Errorf(ErrUserOption, key)
 }
 
 // Option model.
@@ -266,7 +326,7 @@ func JWTRefreshCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer) e
 	}
 
 	// add context for the jwt generate callback.
-	*r = *r.WithContext(context2.WithValue(context2.WithValue(context2.WithValue(r.Context(), ParamLogin, c.(*Claim).Login), ParamProvider, c.(*Claim).Provider), "refresh", true))
+	*r = *r.WithContext(context2.WithValue(context2.WithValue(context2.WithValue(r.Context(), ParamLogin, c.(*Claim).Login), ParamProvider, c.(*Claim).Options["provider"]), "refresh", true))
 
 	// Delete the existing token because a new will be generated.
 	return refreshToken.Delete()
@@ -296,7 +356,7 @@ func JWTGenerateCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer, 
 	if err != nil {
 		return err
 	}
-	u.RefreshTokens = append(u.RefreshTokens, RefreshToken{Expire: query.NewNullTime(time.Now().UTC().Add(cfg.Auth.JWT.RefreshToken.Expiration), true), Token: refreshToken})
+	u.RefreshTokens = append(u.RefreshTokens, RefreshToken{Expire: query.NewNullTime(time.Now().UTC().Add(cfg.Webserver.Auth.JWT.RefreshToken.Expiration), true), Token: refreshToken})
 	u.SetPermissions(orm.WHITELIST, "LastLogin", "FailedLogins", "RefreshTokens")
 	err = u.Update()
 	if err != nil {
@@ -304,7 +364,7 @@ func JWTGenerateCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer, 
 	}
 
 	// set claim data.
-	c.(*Claim).Provider = r.Context().Value(ParamProvider).(string)
+	c.(*Claim).UID = u.ID
 	c.(*Claim).Name = u.Name.String
 	c.(*Claim).Surname = u.Surname.String
 	c.(*Claim).Login = u.Login

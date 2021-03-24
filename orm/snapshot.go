@@ -19,12 +19,35 @@ const (
 
 // ChangedValue keeps recursively information of changed values.
 type ChangedValue struct {
-	Field        string
-	Old          interface{}
-	New          interface{}
-	Operation    string      // create, update or delete.
-	Index        interface{} // On delete index is used as ID field.
-	ChangedValue []ChangedValue
+	Field     string
+	Old       interface{}    `json:",omitempty"`
+	New       interface{}    `json:",omitempty"`
+	Operation string         // create, update or delete.
+	Index     interface{}    `json:",omitempty"` // On delete index is used as ID field.
+	Children  []ChangedValue `json:",omitempty"`
+}
+
+// ChangedValues will return all changed values after an update was called.
+func (s scope) ChangedValues(withoutUpdatedAt bool) []ChangedValue {
+	if withoutUpdatedAt {
+		return deleteUpdatedAt(s.model.changedValues)
+	}
+	return s.model.changedValues
+}
+
+// deleteUpdatedAt is a helper to recursively delete the "updatedAt" field.
+// this is required in the changedValue list to update the field.
+func deleteUpdatedAt(changes []ChangedValue) []ChangedValue {
+	for i := 0; i < len(changes); i++ {
+		if changes[i].Field == UpdatedAt {
+			changes = append(changes[:i], changes[i+1:]...)
+			continue
+		}
+		if len(changes[i].Children) > 0 {
+			changes[i].Children = deleteUpdatedAt(changes[i].Children)
+		}
+	}
+	return changes
 }
 
 // AppendChangedValue adds the changedValue if it does not exist yet by the given field name.
@@ -146,7 +169,7 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 						op = CREATE
 					}
 				}
-				cv = append(cv, ChangedValue{Operation: op, Field: relation.Field, ChangedValue: changes})
+				cv = append(cv, ChangedValue{Operation: op, Field: relation.Field, Children: changes})
 			}
 		case HasMany, ManyToMany:
 			var newLength int
@@ -180,6 +203,7 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 				continue
 			}
 
+			deleteEntries := reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field))
 			var changes []ChangedValue
 		newSliceLoop:
 			// iterating over the new entries
@@ -197,7 +221,7 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 				} else {
 
 					// iterating over the relation snapshot
-					for n := 0; n < reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len(); n++ {
+					for n := 0; n < deleteEntries.Len(); n++ {
 						// slice snapshot interface
 						sliceSnapshotModel := reflect.Indirect(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Index(n)).Addr().Interface().(Interface)
 						err := s.InitRelation(sliceSnapshotModel, relation.Field)
@@ -230,17 +254,20 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 								return nil, err
 							}
 							if len(changesSlice) > 0 {
-								changes = append(changes, ChangedValue{Operation: UPDATE, Index: i, Field: relation.Field, ChangedValue: changesSlice})
+								changes = append(changes, ChangedValue{Operation: UPDATE, Index: i, Field: relation.Field, Children: changesSlice})
 							}
 
+							deleteEntries = reflect.AppendSlice(reflect.Indirect(deleteEntries).Slice(0, n), reflect.Indirect(deleteEntries).Slice(n+1, reflect.Indirect(deleteEntries).Len()))
+
+							// TODO if the deleteEntries works, this can be deleted
 							// if there were no changes, delete from snapshot slice. because all existing snapshot slices will get delete at the end.
-							result := reflect.AppendSlice(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Slice(0, n), reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Slice(n+1, reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len()))
+							//result := reflect.AppendSlice(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Slice(0, n), reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Slice(n+1, reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len()))
 							// needed for *[]
-							if snapshot.model().scope.FieldValue(relation.Field).Kind() == reflect.Ptr && result.Kind() == reflect.Slice {
-								snapshot.model().scope.FieldValue(relation.Field).Elem().Set(result)
-							} else {
-								snapshot.model().scope.FieldValue(relation.Field).Set(result)
-							}
+							//if snapshot.model().scope.FieldValue(relation.Field).Kind() == reflect.Ptr && result.Kind() == reflect.Slice {
+							//	snapshot.model().scope.FieldValue(relation.Field).Elem().Set(result)
+							//} else {
+							//	snapshot.model().scope.FieldValue(relation.Field).Set(result)
+							//}
 
 							continue newSliceLoop
 						}
@@ -250,13 +277,32 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 				}
 			}
 
+			/*
+						// TODO if the deleteEntries works, this can be deleted
+				// all still existing snapshot slices, will get deleted. because they are represented in the new relation slice.
+				if reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len() > 0 {
+					for n := 0; n < reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len(); n++ {
+						// TODO check if PK is set correctly - before it was ID hardcoded.
+						// TODO only the first pk is checked, create a function to check all pks.
+						pKeys, err := snapshot.model().scope.PrimaryKeys()
+						index, err := query.SanitizeInterfaceValue(reflect.Indirect(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Index(n)).FieldByName(pKeys[0].Name).Interface())
+						if err != nil {
+							return nil, err
+						}
+						fmt.Println("++++++++++++++++++++++++++++++ DELETED",deleteEntries,index,relation.Field,reflect.Indirect(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Index(n)))
+
+						changes = append(changes, ChangedValue{Operation: DELETE, Index: index, Field: relation.Field})
+					}
+				}
+			*/
+
 			// all still existing snapshot slices, will get deleted. because they are represented in the new relation slice.
-			if reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len() > 0 {
-				for n := 0; n < reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Len(); n++ {
+			if deleteEntries.IsValid() && reflect.Indirect(deleteEntries).Len() > 0 {
+				for n := 0; n < deleteEntries.Len(); n++ {
 					// TODO check if PK is set correctly - before it was ID hardcoded.
 					// TODO only the first pk is checked, create a function to check all pks.
 					pKeys, err := snapshot.model().scope.PrimaryKeys()
-					index, err := query.SanitizeInterfaceValue(reflect.Indirect(reflect.Indirect(snapshot.model().scope.FieldValue(relation.Field)).Index(n)).FieldByName(pKeys[0].Name).Interface())
+					index, err := query.SanitizeInterfaceValue(reflect.Indirect(reflect.Indirect(deleteEntries).Index(n)).FieldByName(pKeys[0].Name).Interface())
 					if err != nil {
 						return nil, err
 					}
@@ -264,9 +310,9 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 				}
 			}
 
-			// if there ware any changes, add it.
+			// if there were any changes, add it.
 			if len(changes) > 0 {
-				cv = append(cv, ChangedValue{Operation: op, Field: relation.Field, ChangedValue: changes})
+				cv = append(cv, ChangedValue{Operation: op, Field: relation.Field, Children: changes})
 			}
 		}
 	}

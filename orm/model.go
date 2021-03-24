@@ -98,7 +98,9 @@ type Model struct {
 
 	permissionList *permissionList
 	snapshot       bool
-	changedValues  []ChangedValue
+	snapshotCaller Interface
+
+	changedValues []ChangedValue
 
 	config        map[string]config
 	loopDetection map[string][]string
@@ -364,6 +366,7 @@ func (m *Model) Update() (err error) {
 			return
 		}
 
+		m.snapshotCaller = snapshot
 		m.changedValues, err = m.scope.EqualWith(snapshot)
 
 		if err != nil {

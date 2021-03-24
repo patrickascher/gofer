@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Patrick Ascher <development@fullhouse-productions.com>. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package grid
 
 import (
@@ -6,7 +10,6 @@ import (
 )
 
 func init() {
-
 	translation.AddRawMessage(
 		i18n.Message{ID: translation.GRID + "LoadingData", Description: "Text while the data is fetched.", Other: "Loading data..."},
 		i18n.Message{ID: translation.GRID + "ItemDeleted", Description: "Alert text after a item got deleted.", Other: "Item deleted!"},

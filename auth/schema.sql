@@ -5,6 +5,7 @@ CREATE TABLE `users`
     `salutation`        enum ('MALE','FEMALE') NOT NULL,
     `name`              varchar(250)                    DEFAULT NULL,
     `surname`           varchar(250)                    DEFAULT NULL,
+    `email`           varchar(250)              NOT NULL DEFAULT '',
     `state`             varchar(250)           NOT NULL DEFAULT '',
     `last_login`        datetime                        DEFAULT NULL,
     `failed_logins`     tinyint(11)                     DEFAULT NULL,

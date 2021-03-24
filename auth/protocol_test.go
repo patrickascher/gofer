@@ -7,7 +7,7 @@ package auth_test
 import (
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -22,18 +22,20 @@ import (
 
 func serverConfig(dbname string) server.Configuration {
 	return server.Configuration{
-		Router:    server.ConfigurationRouter{Provider: router.JSROUTER},
 		Databases: []query.Config{{Provider: "mysql", Database: dbname, Username: "root", Password: "root", Port: 3306}},
 		Caches:    []server.ConfigurationCache{{Provider: "memory", GCInterval: 360}},
-		Auth: server.ConfigurationAuth{
-			Providers:            map[string]map[string]interface{}{"native": nil},
-			JWT:                  jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute},
-			BcryptCost:           12,
-			AllowedFailedLogin:   5,
-			LockDuration:         "PT15M",
-			InactiveDuration:     "P3M",
-			TokenDuration:        "PT15M",
-			RefreshTokenDuration: "P1M",
+		Webserver: server.ConfigurationWebserver{
+			Router: server.ConfigurationRouter{Provider: router.JSROUTER},
+			Auth: server.ConfigurationAuth{
+				Providers:            map[string]map[string]interface{}{"native": nil},
+				JWT:                  jwt.Config{Alg: "HS256", Issuer: "gofer", Audience: "employee", Subject: "webAccess", SignKey: "secret", Expiration: 15 * time.Minute},
+				BcryptCost:           12,
+				AllowedFailedLogin:   5,
+				LockDuration:         "PT15M",
+				InactiveDuration:     "P3M",
+				TokenDuration:        "PT15M",
+				RefreshTokenDuration: "P1M",
+			},
 		},
 	}
 }
@@ -62,7 +64,7 @@ func loadSQLFile(sqlFile string) error {
 	}
 
 	// delete db if exists
-	file, err := ioutil.ReadFile(sqlFile)
+	file, err := os.ReadFile(sqlFile)
 	if err != nil {
 		return err
 	}
@@ -108,7 +110,7 @@ func TestAddProtocol(t *testing.T) {
 	//asserts.Equal(fmt.Sprintf(orm.ErrMandatory, "cache", "auth.User"), err.Error()) // because user is init in the protocol
 
 	// loading the sql data.
-	err := loadSQLFile("schema.sql")
+	err := loadSQLFile("./schema.sql")
 	asserts.NoError(err)
 	p := auth.Protocol{}
 	err = p.Init(&p)

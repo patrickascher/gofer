@@ -10,21 +10,22 @@ import "github.com/patrickascher/gofer/router/middleware/jwt"
 type Claim struct {
 	jwt.Claim
 
-	Provider string `json:"provider"`
+	UID     int
+	Name    string
+	Surname string
+	Login   string
+	Roles   []string
 
-	Name    string   `json:"name"`
-	Surname string   `json:"surname"`
-	Login   string   `json:"login"`
-	Roles   []string `json:"Roles"`
+	Options map[string]string
+}
 
-	Options map[string]string `json:"options"`
+func (c Claim) UserID() interface{} {
+	return c.UID
 }
 
 // Render will only return the needed data to the frontend.
 func (c Claim) Render() interface{} {
 	resp := map[string]interface{}{}
-
-	resp["Provider"] = c.Provider
 
 	resp["Name"] = c.Name
 	resp["Surname"] = c.Surname

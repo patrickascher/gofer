@@ -38,6 +38,7 @@ const prefixCache = "grid_"
 const (
 	// mode
 	paramModeKey      = "mode"
+	paramModeHistory  = "history"
 	paramModeFilter   = "filter"
 	paramModeCallback = "callback"
 	paramTypeCallback = "callback"
@@ -77,6 +78,7 @@ const (
 	FeUpdate
 	FeExport
 	FeFilter
+	FeHistory
 )
 
 // Error messages.
@@ -179,6 +181,11 @@ func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 			return nil, fmt.Errorf(errWrap, err)
 		}
 
+		for _, f := range g.fields {
+			if f.name == "Roles" {
+				fmt.Println(f.option)
+			}
+		}
 		// checking config export types
 		err = g.checkExportTypes()
 		if err != nil {
@@ -204,6 +211,7 @@ func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 // HTTP.ANYTYPE: mode callback = SrcCallback
 // HTTP.GET:
 // 		- no mode param = FeTable
+// 		- mode history = FeHistory
 // 		- mode filter = FeFilter
 // 		- mode export = FeExport
 // 		- mode create = FeCreate
@@ -233,6 +241,8 @@ func (g *grid) Mode() int {
 		switch m[0] {
 		case paramModeFilter:
 			return FeFilter
+		case paramModeHistory:
+			return FeHistory
 		case paramModeCallback:
 			return SrcCallback
 		case paramModeCreate:
@@ -305,6 +315,9 @@ func (g *grid) Scope() Scope {
 //		- fetch the entry by the given id and set the controller data.
 // FeFilter
 // 		- TODO
+// FeHistory
+// 		- add all histories to the given primary key and grid id(s).
+//		- get all linked users.
 func (g *grid) Render() {
 
 	// update the user config in the source
@@ -419,6 +432,17 @@ func (g *grid) Render() {
 		g.controller.Set(ctrlData, values)
 	case FeFilter:
 		//TODO
+	case FeHistory:
+		// fetch history
+		histories, users, err := historiesById(g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+
+		// set controller data.
+		g.controller.Set("history", histories)
+		g.controller.Set("users", users)
 	}
 
 	return
@@ -503,6 +527,10 @@ func (g *grid) security() error {
 	case FeDetails:
 		if g.config.Action.DisableDetail {
 			return fmt.Errorf(ErrSecurity, "details")
+		}
+	case FeHistory:
+		if g.config.History.Disable {
+			return fmt.Errorf(ErrSecurity, "history")
 		}
 	}
 

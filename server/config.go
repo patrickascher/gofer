@@ -13,17 +13,28 @@ import (
 // Configuration for the Webserver.
 // This configuration can be simple embedded in your application config.
 type Configuration struct {
+	Webserver ConfigurationWebserver
 	Databases []query.Config
-	Server    ConfigurationServer
-	Router    ConfigurationRouter
+	Mail      ConfigurationMail
 	Caches    []ConfigurationCache
-	Auth      ConfigurationAuth
 }
 
-type ConfigurationServer struct {
-	Domain      string
-	HTTPPort    int
-	Translation I18n
+// Webserver configuration
+type ConfigurationWebserver struct {
+	App            ConfigurationApp
+	Domain         string `frontend:""`
+	HTTPPort       int
+	FrontendConfig string
+	Translation    I18n
+	Auth           ConfigurationAuth
+	Router         ConfigurationRouter
+}
+
+type ConfigurationApp struct {
+	Name      string `frontend:""`
+	Logo      string `frontend:""`
+	LogoSmall string `frontend:""`
+	BgImg     string `frontend:""`
 }
 
 type I18n struct {
@@ -31,8 +42,18 @@ type I18n struct {
 	translation.Config
 }
 
+// Mail configuration
+type ConfigurationMail struct {
+	Server   string
+	Port     int
+	User     string
+	Password string
+	From     string
+}
+
+// Auth configuration
 type ConfigurationAuth struct {
-	Providers            map[string]map[string]interface{}
+	Providers            map[string]map[string]interface{} `frontend:""`
 	JWT                  jwt.Config
 	BcryptCost           int    `json:"bcryptCost"`
 	AllowedFailedLogin   int    `json:"allowedFailedLogins"` // 0 = infinity
@@ -42,6 +63,7 @@ type ConfigurationAuth struct {
 	RefreshTokenDuration string `json:"refreshTokenDuration"`
 }
 
+// Router configuration
 type ConfigurationRouter struct {
 	Provider       string
 	Favicon        string

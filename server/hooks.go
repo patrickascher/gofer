@@ -38,7 +38,6 @@ func (s *server) initHooks(hooks ...int) error {
 			if err != nil {
 				return err
 			}
-
 		case DB:
 			err := s.dbHook()
 			if err != nil {
@@ -63,7 +62,7 @@ func (s *server) initHooks(hooks ...int) error {
 // translationHook will add the translation.Manager.
 // hook is optional.
 func (s *server) translationHook() error {
-	if s.cfg.Server.Translation.Provider != "" {
+	if s.cfg.Webserver.Translation.Provider != "" {
 		// loader for orm, nav, ctrl.
 		err := ormTranslation()
 		if err != nil {
@@ -77,9 +76,9 @@ func (s *server) translationHook() error {
 		if err != nil {
 			return err
 		}
-		s.translation, err = translation.New(s.cfg.Server.Translation.Provider, nil, s.cfg.Server.Translation.Config)
-		if s.cfg.Server.Translation.Controller {
-			context.DefaultLang = s.cfg.Server.Translation.DefaultLanguage
+		s.translation, err = translation.New(s.cfg.Webserver.Translation.Provider, nil, s.cfg.Webserver.Translation.Config)
+		if s.cfg.Webserver.Translation.Controller {
+			context.DefaultLang = s.cfg.Webserver.Translation.DefaultLanguage
 		}
 		return err
 	}
@@ -90,31 +89,31 @@ func (s *server) translationHook() error {
 // It adds automatically the favicon, directory and files.
 // Error will return if no provider was configured.
 func (s *server) routerHook() error {
-	if s.cfg.Router.Provider != "" {
+	if s.cfg.Webserver.Router.Provider != "" {
 		var err error
 
 		// create router manager
-		s.router, err = router.New(s.cfg.Router.Provider, nil)
+		s.router, err = router.New(s.cfg.Webserver.Router.Provider, nil)
 		if err != nil {
 			return err
 		}
 
 		// add favicon if defined
-		if s.cfg.Router.Favicon != "" {
-			err = s.router.SetFavicon(s.cfg.Router.Favicon)
+		if s.cfg.Webserver.Router.Favicon != "" {
+			err = s.router.SetFavicon(s.cfg.Webserver.Router.Favicon)
 			if err != nil {
 				return err
 			}
 		}
 
-		for _, dir := range s.cfg.Router.Directories {
+		for _, dir := range s.cfg.Webserver.Router.Directories {
 			err = s.router.AddPublicDir(dir.Pattern, dir.Source)
 			if err != nil {
 				return err
 			}
 		}
 
-		for _, file := range s.cfg.Router.Files {
+		for _, file := range s.cfg.Webserver.Router.Files {
 			err = s.router.AddPublicFile(file.Pattern, file.Source)
 			if err != nil {
 				return err

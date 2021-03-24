@@ -6,12 +6,14 @@
 package server
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/peterhellberg/duration"
 	"github.com/rs/cors"
 	"net/http"
+	"os"
 	"reflect"
 
 	"github.com/patrickascher/gofer"
@@ -48,20 +50,40 @@ func New(config interface{}) error {
 		return err
 	} else {
 		// TODO create a standard solution for this.
-		if cfg.Auth.TokenDuration != "" {
-			cfg.Auth.JWT.Expiration, err = duration.Parse(cfg.Auth.TokenDuration)
+		if cfg.Webserver.Auth.TokenDuration != "" {
+			cfg.Webserver.Auth.JWT.Expiration, err = duration.Parse(cfg.Webserver.Auth.TokenDuration)
 			if err != nil {
 				return err
 			}
 		}
-		if cfg.Auth.RefreshTokenDuration != "" {
-			cfg.Auth.JWT.RefreshToken.Expiration, err = duration.Parse(cfg.Auth.RefreshTokenDuration)
+		if cfg.Webserver.Auth.RefreshTokenDuration != "" {
+			cfg.Webserver.Auth.JWT.RefreshToken.Expiration, err = duration.Parse(cfg.Webserver.Auth.RefreshTokenDuration)
 			if err != nil {
 				return err
 			}
 		}
-
 		webserver = &server{config: config, cfg: cfg}
+		// create frontend json file
+		if cfg.Webserver.FrontendConfig != "" {
+			if frontendCfg := FrontendConfigConverter(config); frontendCfg != nil {
+				b, err := json.Marshal(frontendCfg)
+				if err != nil {
+					return err
+				}
+				err = os.WriteFile(cfg.Webserver.FrontendConfig, b, 0644)
+				if err != nil {
+					return err
+				}
+			} else if cfg.Webserver.FrontendConfig != "" {
+				_, err := os.Stat(cfg.Webserver.FrontendConfig)
+				if !os.IsNotExist(err) {
+					err = os.Remove(cfg.Webserver.FrontendConfig)
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
 	}
 
 	return webserver.initHooks(ROUTER, DB, CACHE)
@@ -92,8 +114,16 @@ func Start() error {
 
 	// start server
 	webserver.server = http.Server{}
-	webserver.server.Addr = fmt.Sprint(":", webserver.cfg.Server.HTTPPort)
+	webserver.server.Addr = fmt.Sprint(":", webserver.cfg.Webserver.HTTPPort)
 	webserver.server.Handler = webserver.router.Handler()
+
+	// close server on defer
+	defer func() {
+		err = webserver.server.Close()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	//TODO write own cors middleware
 	corsManager := cors.New(cors.Options{

@@ -18,9 +18,10 @@ type Config struct {
 	Description string `json:"description"`
 	Policy      int    `json:"-"`
 
-	Action  Action       `json:"action,omitempty"`
-	Filter  Filter       `json:"filter,omitempty"`
-	Exports []ExportType `json:"export,omitempty"`
+	History HistoryConfig `json:"history,omitempty"`
+	Action  Action        `json:"action,omitempty"`
+	Filter  Filter        `json:"filter,omitempty"`
+	Exports []ExportType  `json:"export,omitempty"`
 }
 
 // ExportType is an alias for string.
@@ -28,12 +29,19 @@ type Config struct {
 type ExportType string
 
 // Action configuration.
+type HistoryConfig struct {
+	Disable       bool     `json:"disable,omitempty"`
+	AdditionalIDs []string `json:"-"`
+}
+
+// Action configuration.
 type Action struct {
-	PositionLeft  bool `json:"positionLeft,omitempty"`
-	DisableDetail bool `json:"disableDetail,omitempty"`
-	DisableCreate bool `json:"disableCreate,omitempty"`
-	DisableUpdate bool `json:"disableUpdate,omitempty"`
-	DisableDelete bool `json:"disableDelete,omitempty"`
+	PositionLeft  bool              `json:"positionLeft,omitempty"`
+	DisableDetail bool              `json:"disableDetail,omitempty"`
+	DisableCreate bool              `json:"disableCreate,omitempty"`
+	DisableUpdate bool              `json:"disableUpdate,omitempty"`
+	DisableDelete bool              `json:"disableDelete,omitempty"`
+	CreateLinks   map[string]string `json:"createLinks,omitempty"`
 }
 
 // Filter configuration.

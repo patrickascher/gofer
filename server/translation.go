@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Patrick Ascher <development@fullhouse-productions.com>. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package server
 
 import (
@@ -24,6 +28,16 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "Export", Description: "", Other: "Export"},
 		i18n.Message{ID: translation.COMMON + "Login", Description: "", Other: "Login"},
 		i18n.Message{ID: translation.COMMON + "Password", Description: "", Other: "Password"},
+		i18n.Message{ID: translation.COMMON + "PasswordConfirm", Description: "", Other: "Password confirm"},
+		i18n.Message{ID: translation.COMMON + "Reset", Description: "", Other: "Reset"},
+
+		// history experimental.
+		i18n.Message{ID: translation.HISTORY + "Title", Description: "", Other: "History"},
+		i18n.Message{ID: translation.HISTORY + "NoDataTitle", Description: "", Other: "No Data!"},
+		i18n.Message{ID: translation.HISTORY + "NoDataText", Description: "", Other: "I could not find any history!"},
+		i18n.Message{ID: translation.HISTORY + "CreateEntry", Description: "", Other: "{Field} was created with {NewValue}"},
+		i18n.Message{ID: translation.HISTORY + "UpdateEntry", Description: "", Other: "{Field} was updated from {OldValue} to {NewValue}"},
+		i18n.Message{ID: translation.HISTORY + "DeleteEntry", Description: "", Other: "{Field} was delete {OldValue}"},
 	)
 }
 

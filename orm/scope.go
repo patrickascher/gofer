@@ -82,7 +82,9 @@ type Scope interface {
 	IsSelfReferencing(relation Relation) bool
 
 	TakeSnapshot(bool)
+	Snapshot() Interface
 
+	ChangedValues(withoutUpdatedAt bool) []ChangedValue
 	AppendChangedValue(c ChangedValue)
 	SetChangedValues(c []ChangedValue)
 	ChangedValueByFieldName(field string) *ChangedValue
@@ -123,6 +125,11 @@ func (s scope) Model() *Model {
 func (s scope) TakeSnapshot(snapshot bool) {
 	s.model.snapshot = snapshot
 	return
+}
+
+// Snapshot will be returned if taken.
+func (s scope) Snapshot() Interface {
+	return s.model.snapshotCaller
 }
 
 // IsSelfReferenceLoop checks if the model has a self reference loop.

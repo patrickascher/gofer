@@ -2,7 +2,7 @@
 
 TODO 
 
-## used tranlsation keys:
+## used translation keys:
 
 Key |
 ------ |

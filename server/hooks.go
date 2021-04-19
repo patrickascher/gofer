@@ -131,7 +131,7 @@ func (s *server) routerHook() error {
 func (s *server) dbHook() error {
 	for _, db := range s.cfg.Databases {
 		if db.Provider == "" {
-			return fmt.Errorf(ErrConfig, "database:provider")
+			return fmt.Errorf(ErrConfig, "databases:provider")
 		}
 		b, err := query.New(db.Provider, db)
 		if err != nil {

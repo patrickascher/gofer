@@ -4,11 +4,19 @@
 
 package grid
 
-import "github.com/patrickascher/gofer/controller"
+import (
+	"github.com/patrickascher/gofer/controller"
+	"github.com/patrickascher/gofer/query/condition"
+)
 
 // Source will return the defined grid source.
 func (g *grid) Source() interface{} {
 	return g.src.Interface()
+}
+
+// SetCondition adds a custom query.condition.
+func (g *grid) SetCondition(c condition.Condition) {
+	g.srcCondition = c
 }
 
 // Config will return a ptr to the configuration.

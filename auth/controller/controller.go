@@ -241,7 +241,7 @@ func (c *Auth) Roles() {
 		SetOption(options.SELECT, options.Select{TextField: "Name", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 1 AND public = 0"})
 
 	g.Field("Backend").SetRemove(grid.NewValue(false).SetTable(true)).
-		SetOption(options.SELECT, options.Select{TextField: "Name", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 0 AND public = 0"})
+		SetOption(options.SELECT, options.Select{TextField: "Name, Pattern", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 0 AND public = 0"})
 
 	g.Render()
 }
@@ -320,7 +320,7 @@ func (c *Auth) Accounts() {
 	g.Field("State").SetRemove(grid.NewValue(false))
 	g.Field("LastLogin").SetRemove(grid.NewValue(false))
 
-	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Name}}", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
+	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "Name", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
 	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
 
 	g.Render()

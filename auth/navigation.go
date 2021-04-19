@@ -46,8 +46,10 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 
 	c := condition.New()
 	c.SetWhere("id NOT IN (SELECT child_id FROM navigation_navigations)")
-	c.SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR navigations.route_id IS NULL)", roles)
+	c.SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR (navigations.route_id IS NULL AND EXISTS(SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE routes.id IN (Select n.route_id FROM navigation_navigations nn LEFT JOIN navigations n ON nn.child_id = n.id WHERE nn.navigation_id = navigations.id) and roles.name IN (?))) )", roles, roles)
 	c.SetOrder("position")
+
+	fmt.Println(c.Render(condition.Placeholder{Char: "?"}))
 
 	// adding a custom sql condition for the children relation (only display navigation points for the users role)
 	s, err := nav.Scope()
@@ -62,7 +64,7 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 		return nil, err
 	}
 
-	// if no manually added navigation points exists
+	// if  manually added navigation points exists
 	if manNavigationPoints != nil {
 		for k := range manNavigationPoints {
 			k := k

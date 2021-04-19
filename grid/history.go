@@ -25,11 +25,12 @@ const (
 	HistoryUpdated
 	HistoryDeleted
 )
+const HistorySystemUser = 0
 
 var ErrHistoryType = "history type %d is not implemented"
 var ErrConvertType = "history convert type %s is not implemented"
 
-// Level type
+// HistoryType level type
 type HistoryType int32
 
 // String converts the HistoryType code.

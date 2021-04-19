@@ -63,6 +63,7 @@ func New(config interface{}) error {
 			}
 		}
 		webserver = &server{config: config, cfg: cfg}
+
 		// create frontend json file
 		if cfg.Webserver.FrontendConfigFile != "" {
 			if frontendCfg := FrontendConfigConverter(config); frontendCfg != nil {
@@ -136,6 +137,15 @@ func Start() error {
 	webserver.server.Handler = corsManager.Handler(webserver.router.Handler())
 
 	return webserver.server.ListenAndServe()
+}
+
+// CurrentDir will return the current working dir.
+func CurrentDir() (string, error) {
+	cDir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return cDir, nil
 }
 
 // Stop the webserver.

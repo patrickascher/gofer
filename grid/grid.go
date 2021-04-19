@@ -64,15 +64,17 @@ const (
 	CSV = "gridCsv"
 )
 
-// operation modes
+// // backend operations
 const (
-	// backend operations
 	SrcCreate = iota + 1
 	SrcUpdate
 	SrcDelete
 	SrcCallback
-	// frontend operations
-	FeTable
+)
+
+// frontend operations
+const (
+	FeTable = iota + 100
 	FeDetails
 	FeCreate
 	FeUpdate
@@ -106,6 +108,7 @@ type Scope interface {
 	Fields() []Field
 	PrimaryFields() []Field
 	Controller() controller.Interface
+	SetCondition(condition.Condition)
 }
 
 // Source interface.

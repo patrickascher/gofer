@@ -268,7 +268,7 @@ defined:
 
 !!! info
 
-    If the `UserID` is `0`, it will be displayed as a SYSTEM user. This can be used for cronjobs or other automated changes.
+    If the `UserID` is `0` or `grid.HistroySystemUser`, it will be displayed as a SYSTEM user. This can be used for cronjobs or other automated changes.
 
 *orm.ChangeValue* will be used to describe the source changes.
 

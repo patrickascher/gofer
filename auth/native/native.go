@@ -33,17 +33,6 @@ func init() {
 		i18n.Message{ID: translation.CTRL + name + ".ForgotPassword.Info", Other: "Please enter your login to reset you password. You will receive an e-mail with further instructions."},
 		i18n.Message{ID: translation.CTRL + name + ".ForgotPassword.Success", Other: "Password reset was successful. Please check your e-emails."},
 	)
-
-	err = auth.Register("sims", func(options map[string]interface{}) (auth.Interface, error) { return &Native{}, nil })
-	if err != nil {
-		panic(err)
-	}
-	translation.AddRawMessage(
-		i18n.Message{ID: translation.CTRL + "sims" + ".ChangePassword.Info", Other: "SIMS:Please enter the new password."},
-		i18n.Message{ID: translation.CTRL + "sims" + ".ChangePassword.Success", Other: "SIMS:Your password is changed."},
-		i18n.Message{ID: translation.CTRL + "sims" + ".ForgotPassword.Info", Other: "SIMS:Please enter your login to reset you password. You will receive an e-mail with further instructions."},
-		i18n.Message{ID: translation.CTRL + "sims" + ".ForgotPassword.Success", Other: "SIMS:Password reset was successful. Please check your e-emails."},
-	)
 }
 
 // Native is exported that it can get overwritten if needed.
@@ -90,7 +79,7 @@ func (n *Native) Login(c controller.Interface) (auth.Schema, error) {
 	}
 
 	// return user
-	// only the email is needed at the moment because the auth package will search for the user by email.
+	// only the login is needed at the moment because the auth package will search for the user by login.
 	return auth.Schema{Login: u.Login}, nil
 }
 
@@ -217,7 +206,7 @@ func (n *Native) RegisterAccount(c controller.Interface) error {
 		}
 
 		// send mail
-		err = mailer.New([]string{"pat@fullhouse-productions.com"}, "Your password", user.Login+" "+string(password))
+		err = mailer.New([]string{user.Email}, "Your password", user.Login+" "+string(password))
 		if err != nil {
 			return err
 		}

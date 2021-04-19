@@ -448,6 +448,7 @@ func clauseManipulation(clause string, args []interface{}) (string, []interface{
 		spStmt := strings.SplitAfter(clause, PLACEHOLDER)
 
 		if argReflect.Kind() == reflect.Array || argReflect.Kind() == reflect.Slice {
+
 			//split after placeholder and only replace the map placeholder
 			spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder+strings.Repeat(", "+tmpPlaceholder, reflect.ValueOf(args[i]).Len()-1), -1)
 			clause = strings.Join(spStmt, "")
@@ -460,6 +461,7 @@ func clauseManipulation(clause string, args []interface{}) (string, []interface{
 				newArg = append(newArg, argReflect.Index(n).Interface())
 			}
 			args = append(newArg, args[i+1:]...)
+			i = i + len(newArg) - 1 // needed for manipulation i with the new added slice arguments.
 		} else {
 			//split after placeholder and only replace the map placeholder
 			spStmt[0] = strings.Replace(spStmt[0], PLACEHOLDER, tmpPlaceholder, -1)

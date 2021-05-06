@@ -160,6 +160,10 @@ func (vp *viperProvider) Parse(cfg interface{}, opt interface{}) error {
 	// automaticEnv and unmarshal do not take care of slices example (Databases.0.Port).
 	// this is a solution for string and int only for the depth 1 for slices.
 	if options.EnvAutomatic {
+		// replacing env _ with a .
+		// this is needed because a . is not always allowed to set as env variable.
+		i.viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
 		rvConfig := reflect.ValueOf(cfg).Elem()
 		for parent, v := range i.viper.AllSettings() {
 			rv := reflect.ValueOf(v)

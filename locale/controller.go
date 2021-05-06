@@ -63,9 +63,11 @@ func AddRoutes(r router.Manager) error {
 		return fmt.Errorf(ErrWrapper, err)
 	}
 	if cfg.Webserver.Translation.JSONFilePath != "" {
-		err = r.AddPublicDir("/lang", cfg.Webserver.Translation.JSONFilePath)
-		if err != nil {
-			return fmt.Errorf(ErrWrapper, err)
+		if _, err := r.RouteByPattern("/lang"); err != nil {
+			err = r.AddPublicDir("/lang", cfg.Webserver.Translation.JSONFilePath)
+			if err != nil {
+				return fmt.Errorf(ErrWrapper, err)
+			}
 		}
 	}
 

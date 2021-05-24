@@ -43,7 +43,7 @@ func historyGridHelper(g Grid) error {
 			if err != nil {
 				return err
 			}
-			value, _ := json.Marshal(updateHistoryEntry(g, g.Scope().Fields(), src, scope.Snapshot(), s.ChangedValues(true)))
+			value, _ := json.Marshal(updateHistoryEntry(g, g.Scope().Fields(), src, scope.Snapshot(), s.ChangedValues()))
 			historyValue = string(value)
 			historyMode = HistoryUpdated
 		case SrcDelete:

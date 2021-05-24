@@ -28,8 +28,9 @@ type Config struct {
 // The value will be converted to a grid.export type on json marshal.
 type ExportType string
 
-// Action configuration.
+// HistoryConfig configuration.
 type HistoryConfig struct {
+	Hide          bool     `json:"hide,omitempty"`
 	Disable       bool     `json:"disable,omitempty"`
 	AdditionalIDs []string `json:"-"`
 }

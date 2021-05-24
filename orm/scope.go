@@ -84,7 +84,7 @@ type Scope interface {
 	TakeSnapshot(bool)
 	Snapshot() Interface
 
-	ChangedValues(withoutUpdatedAt bool) []ChangedValue
+	ChangedValues() []ChangedValue
 	AppendChangedValue(c ChangedValue)
 	SetChangedValues(c []ChangedValue)
 	ChangedValueByFieldName(field string) *ChangedValue

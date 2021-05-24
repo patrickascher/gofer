@@ -28,11 +28,9 @@ type ChangedValue struct {
 }
 
 // ChangedValues will return all changed values after an update was called.
-func (s scope) ChangedValues(withoutUpdatedAt bool) []ChangedValue {
-	if withoutUpdatedAt {
-		return deleteUpdatedAt(s.model.changedValues)
-	}
-	return s.model.changedValues
+// The field UpdatedAt will be removed.
+func (s scope) ChangedValues() []ChangedValue {
+	return deleteUpdatedAt(s.model.changedValues)
 }
 
 // deleteUpdatedAt is a helper to recursively delete the "updatedAt" field.

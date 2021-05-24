@@ -269,5 +269,10 @@ func ascii() {
 	fmt.Println("   \\ \\_______\\\\ \\_______\\\\ \\__\\    \\ \\_______\\\\ \\__\\\\ _\\                  ____\\_\\  \\\\ \\_______\\\\ \\__\\\\ _\\ \\ \\__/ /      \\ \\_______\\\\ \\__\\\\ _\\ ")
 	fmt.Println("    \\|_______| \\|_______| \\|__|     \\|_______| \\|__|\\|__|                |\\_________\\\\|_______| \\|__|\\|__| \\|__|/        \\|_______| \\|__|\\|__|")
 	fmt.Println(gofer.VERSION)
+	fmt.Println("Running on port:", webserver.cfg.Webserver.HTTPPort)
+	fmt.Println("Defined routes:")
+	for _, route := range webserver.router.Routes() {
+		fmt.Println(route.Pattern(), route.Mapping(), route.Secure())
+	}
 
 }

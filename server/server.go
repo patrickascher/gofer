@@ -8,6 +8,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/peterhellberg/duration"
@@ -85,6 +86,14 @@ func New(config interface{}) error {
 				}
 			}
 		}
+	}
+
+	// create only the frontend.json config.
+	var build string
+	flag.StringVar(&build, "build", "", "if config is defined, only the frontend config will be created.")
+	flag.Parse()
+	if build == "config" {
+		os.Exit(0) // success exit
 	}
 
 	return webserver.initHooks(ROUTER, DB, CACHE)

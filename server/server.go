@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	"github.com/patrickascher/gofer"
@@ -76,6 +77,8 @@ func New(config interface{}) error {
 				if err != nil {
 					return err
 				}
+				fmt.Print("config created: ")
+				fmt.Println(filepath.Abs(cfg.Webserver.FrontendConfigFile))
 			} else if cfg.Webserver.FrontendConfigFile != "" {
 				_, err := os.Stat(cfg.Webserver.FrontendConfigFile)
 				if !os.IsNotExist(err) {

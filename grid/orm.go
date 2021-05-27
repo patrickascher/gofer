@@ -377,15 +377,8 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 	var rv []Field
 	i := 0
 
-	for _, f := range scope.Fields(orm.Permission{}) {
-		fmt.Println(f.Name)
-	}
-
 	// normal fields
 	for _, f := range scope.Fields(orm.Permission{}) {
-
-		fmt.Println("ORM:", f.Name)
-
 		// only allow read permission (and TimeFields) fields to be shown.
 		if !f.Permission.Read &&
 			f.Name != orm.CreatedAt &&

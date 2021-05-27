@@ -21,5 +21,5 @@ type Config struct {
 	MaxConnLifetime    time.Duration
 	Timeout            string
 
-	PreQuery []string
+	PreQuery []string `mapstructure:",omitempty"`
 }

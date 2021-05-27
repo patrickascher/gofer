@@ -10,7 +10,6 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -198,8 +197,6 @@ func (d *dbBundle) JSON(path string) error {
 		if err != nil {
 			return err
 		}
-
-		fmt.Println("----", lang.String())
 	}
 
 	return nil

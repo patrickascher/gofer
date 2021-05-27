@@ -6,12 +6,12 @@ package server
 
 import (
 	"fmt"
-	"github.com/patrickascher/gofer/controller/context"
-	"github.com/patrickascher/gofer/locale/translation"
 	"time"
 
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/cache/memory"
+	"github.com/patrickascher/gofer/controller/context"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router"
 )
@@ -77,10 +77,13 @@ func (s *server) translationHook() error {
 			return err
 		}
 		s.translation, err = translation.New(s.cfg.Webserver.Translation.Provider, nil, s.cfg.Webserver.Translation.Config)
+		if err != nil {
+			return err
+		}
+		// this content is here instead of translation.New because of the import cycle.
 		if s.cfg.Webserver.Translation.Controller {
 			context.DefaultLang = s.cfg.Webserver.Translation.DefaultLanguage
 		}
-		return err
 	}
 	return nil
 }
@@ -147,7 +150,7 @@ func (s *server) dbHook() error {
 // Error will return if the provider was not defined.
 func (s *server) cacheHook() error {
 	for _, c := range s.cfg.Caches {
-		// TODO only memory will work like this, think about better dynamic configs.
+		// TODO only memory will work like this (because of the options), think about better dynamic configs.
 		// TODO dynamic add cache provider options?
 		if c.Provider == "" {
 			return fmt.Errorf(ErrConfig, "cache:provider")

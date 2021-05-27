@@ -5,10 +5,11 @@
 package server
 
 import (
+	"time"
+
 	"github.com/patrickascher/gofer/cache"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
-	"time"
 )
 
 type Orm struct {

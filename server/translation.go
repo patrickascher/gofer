@@ -6,12 +6,14 @@ package server
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
-	"reflect"
+	"github.com/patrickascher/gofer/slicer"
 )
 
 func init() {
@@ -107,10 +109,21 @@ func ctrlTranslation() error {
 	routes := webserver.router.Routes()
 
 	var messages []i18n.Message
+	ctrlActionExists := map[string][]string{}
 	for _, route := range routes {
 		if route.Handler() != nil {
 			ctrl := reflect.TypeOf(route.Handler()).Elem().String()
 			for _, mapping := range route.Mapping() {
+				// check if ctrl and action already exists.
+				if _, exists := slicer.StringExists(ctrlActionExists[ctrl], mapping.Action()); exists {
+					continue
+				}
+				if len(ctrlActionExists[ctrl]) == 0 {
+					ctrlActionExists[ctrl] = []string{mapping.Action()}
+				} else {
+					ctrlActionExists[ctrl] = append(ctrlActionExists[ctrl], mapping.Action())
+				}
+				// add message
 				messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, ctrl, mapping.Action(), "Title"), Description: fmt.Sprintf(Desc, "Title", ctrl, mapping.Action()), Other: mapping.Action()})
 				messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, ctrl, mapping.Action(), "Description"), Description: fmt.Sprintf(Desc, "Description", ctrl, mapping.Action()), Other: "Description of " + mapping.Action()})
 			}

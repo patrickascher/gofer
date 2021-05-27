@@ -10,18 +10,18 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/patrickascher/gofer/locale/translation"
-	"github.com/peterhellberg/duration"
-	"github.com/rs/cors"
 	"net/http"
 	"os"
 	"reflect"
 
 	"github.com/patrickascher/gofer"
 	"github.com/patrickascher/gofer/cache"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/router"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
+	"github.com/peterhellberg/duration"
+	"github.com/rs/cors"
 )
 
 var webserver *server

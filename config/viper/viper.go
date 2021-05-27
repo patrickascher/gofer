@@ -15,6 +15,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -178,6 +180,26 @@ func (vp *viperProvider) Parse(cfg interface{}, opt interface{}) error {
 			panic(err)
 		}
 
+		rvConfig := reflect.ValueOf(cfg).Elem()
+		for parent, v := range i.viper.AllSettings() {
+			rv := reflect.ValueOf(v)
+			if reflect.TypeOf(v).Kind() == reflect.Slice {
+				for index := 0; index < rv.Len(); index++ {
+					rf := rv.Index(index).Interface().(map[string]interface{})
+					for key := range rf {
+						c := rvConfig.FieldByName(strings.Title(parent)).Index(index).FieldByName(strings.Title(key))
+						if c.CanSet() {
+							switch c.Type().Kind() {
+							case reflect.String:
+								c.Set(reflect.ValueOf(i.viper.GetString(strings.ToUpper(parent + "." + strconv.Itoa(index) + "." + key))))
+							case reflect.Int:
+								c.Set(reflect.ValueOf(i.viper.GetInt(strings.ToUpper(parent + "." + strconv.Itoa(index) + "." + key))))
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return err

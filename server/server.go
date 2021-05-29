@@ -150,13 +150,13 @@ func Start() error {
 	return webserver.server.ListenAndServe()
 }
 
-// CurrentDir will return the current working dir.
-func CurrentDir() (string, error) {
-	cDir, err := os.Getwd()
+// Dir will return the running application directory.
+func Dir() (string, error) {
+	ex, err := os.Executable()
 	if err != nil {
 		return "", err
 	}
-	return cDir, nil
+	return filepath.Dir(ex), nil
 }
 
 // Stop the webserver.

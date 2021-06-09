@@ -29,6 +29,14 @@ type customClaimErr struct {
 	gJwt.Claim
 }
 
+func (c *customClaim) UserID() interface{} {
+	return "userID"
+}
+
+func (c *customClaimErr) UserID() interface{} {
+	return "userID"
+}
+
 func (c *customClaimErr) Valid() error {
 	return errors.New("claim error")
 }

@@ -16,6 +16,8 @@ import (
 	"github.com/patrickascher/gofer/query"
 	_ "github.com/patrickascher/gofer/query/mysql"
 	"github.com/patrickascher/gofer/router"
+	_ "github.com/patrickascher/gofer/router/jsrouter"
+
 	"github.com/patrickascher/gofer/server"
 	"github.com/stretchr/testify/assert"
 )

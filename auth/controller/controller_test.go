@@ -78,7 +78,7 @@ func TestController_Login(t *testing.T) {
 			asserts.NoError(err)
 			err = goferServer.SetJWT(jToken)
 			asserts.NoError(err)
-			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{Login: "John@doe.com"}, nil)
+			mockProvider.On("Login", mock.AnythingOfType("*controller.Auth")).Once().Return(auth.Schema{Login: "John@doe.com"}, nil)
 			return nil
 		}
 	}
@@ -96,15 +96,15 @@ func TestController_Login(t *testing.T) {
 			return auth.Register("mockController", func(options map[string]interface{}) (auth.Interface, error) { return mockProvider, nil })
 		}},
 		{name: "provider returns error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, errors.New("an error")).Error(), fn: func() error {
-			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, errors.New("an error"))
+			mockProvider.On("Login", mock.AnythingOfType("*controller.Auth")).Once().Return(auth.Schema{}, errors.New("an error"))
 			return auth.ConfigureProvider("mockController", nil)
 		}},
 		{name: "server is not configured", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, goferServer.ErrInit).Error(), fn: func() error {
-			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, nil)
+			mockProvider.On("Login", mock.AnythingOfType("*controller.Auth")).Once().Return(auth.Schema{}, nil)
 			return auth.ConfigureProvider("mockController", nil)
 		}},
 		{name: "server jwt is not defined", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, goferServer.ErrJWT).Error(), fn: func() error {
-			mockProvider.On("Login", mock.AnythingOfType("*auth.Controller")).Once().Return(auth.Schema{}, nil)
+			mockProvider.On("Login", mock.AnythingOfType("*controller.Auth")).Once().Return(auth.Schema{}, nil)
 			return goferServer.New(cfg)
 		}},
 		{name: "jwt callback error", data: url.Values{auth.ParamProvider: {"mockController"}}, error: true, errorMsg: fmt.Errorf(controller.ErrWrap, errors.New("jwt: an error")).Error(), fn: cbk(1)},
@@ -168,8 +168,8 @@ func TestController_Logout(t *testing.T) {
 		}
 	}
 	mockProvider := new(mocks.Interface)
-	mockProvider.On("Logout", mock.AnythingOfType("*auth.Controller")).Once().Return(errors.New("an error"))
-	mockProvider.On("Logout", mock.AnythingOfType("*auth.Controller")).Twice().Return(nil)
+	mockProvider.On("Logout", mock.AnythingOfType("*controller.Auth")).Once().Return(errors.New("an error"))
+	mockProvider.On("Logout", mock.AnythingOfType("*controller.Auth")).Twice().Return(nil)
 	err := auth.Register("mockLogout", func(options map[string]interface{}) (auth.Interface, error) { return mockProvider, nil })
 	asserts.NoError(err)
 	err = auth.ConfigureProvider("mockLogout", nil)

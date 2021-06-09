@@ -23,7 +23,7 @@ type Route struct {
 	Pattern  string `json:",omitempty"`
 	Public   bool   `validate:"omitempty"`
 	Frontend bool   `validate:"omitempty"`
-	Method   string
+	Method   string `validate:"-"`
 }
 
 // createRouteDatabaseEntries will create a db entry if configured.
@@ -104,7 +104,7 @@ func routeName(route router.Route, action string) string {
 	if route.Handler() != nil {
 		return strings.Replace(reflect.TypeOf(route.Handler()).String(), "*", "", -1) + "::" + action
 	}
-	return ""
+	return route.Pattern()
 }
 
 // findDbRoute checks if the given pattern and method already exist.

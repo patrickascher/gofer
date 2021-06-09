@@ -665,6 +665,7 @@ func (m *Model) copyFieldRelationSlices() {
 // errorMessage is a helper to render the valid error messages.
 // TODO at the moment only the first will return. change return all errors at once. This will be helpful for the frontend?
 func errorMessage(m Model, field string, err error) error {
+
 	if err != nil {
 		for _, vErr := range err.(valid.ValidationErrors) {
 			f := vErr.StructField()

@@ -125,6 +125,7 @@ func createHistoryEntry(g Grid, fields []Field, val interface{}, index ...int) [
 		}
 		changedValues = append(changedValues, changedValue)
 	}
+
 	return changedValues
 }
 
@@ -247,6 +248,11 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 						changedValue.Children = manipulateToOld(createHistoryEntry(g, f.fields, rvSnapshotField.Index(i).Interface(), i))
 					}
 				}
+			}
+
+			// skip relations - if no change
+			if len(changedValue.Children) == 0 {
+				continue
 			}
 		}
 		changedValues = append(changedValues, changedValue)

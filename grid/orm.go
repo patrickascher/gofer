@@ -33,6 +33,7 @@ var (
 	ErrRequestBody = "request body is empty in %s"
 	ErrJSONInvalid = "json is invalid in %s"
 	ErrConfig      = "no fields are configured"
+	ErrConfigSrc   = fmt.Errorf("config the source over grid.Scope().Source() after the grid instance was created")
 )
 
 type gridSource struct {
@@ -50,7 +51,14 @@ func Orm(orm orm.Interface) *gridSource {
 // The orm gets initialized and the "update reference only" config is set.
 // (needed for belongsTo,M2M because they are only select boxes with an id and not the full entry. This would be recognized as a change on the orm).
 func (g *gridSource) Init(grid Grid) error {
-	err := g.orm.Init(g.orm)
+	// check if the source got already init.
+	_, err := g.orm.Scope()
+	if err == nil {
+		return ErrConfigSrc
+	}
+
+	// init orm
+	err = g.orm.Init(g.orm)
 	if err != nil {
 		return err
 	}
@@ -104,7 +112,8 @@ func (g *gridSource) UpdatedFields(grid Grid) error {
 			if err != nil {
 				return err
 			}
-			s.SetConfig(orm.NewConfig().SetUpdateReferenceOnly(true).SetPermissionsExplicit(true))
+			cfg := s.Config()
+			s.SetConfig(cfg.SetUpdateReferenceOnly(true).SetPermissionsExplicit(true))
 		} else {
 			return fmt.Errorf(ErrConfig)
 		}

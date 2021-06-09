@@ -113,7 +113,7 @@ func (v *validator) split(c string) []validatorKeyValue {
 
 // keyValue is a helper to set the key only, if there is no value, otherwise the key/value pair.
 func keyValue(c string) validatorKeyValue {
-	if strings.Contains(c, validatorValue) {
+	if strings.Contains(c, validatorValue) && !strings.Contains(c, "|") {
 		cSplit := strings.Split(c, validatorValue)
 		return validatorKeyValue{key: strings.TrimSpace(cSplit[0]), value: strings.TrimSpace(cSplit[1])}
 	}
@@ -133,51 +133,65 @@ func validateValuer(field reflect.Value) interface{} {
 
 // addDBValidation is a helper function to add the database column limits as validation.
 func (m *Model) addDBValidation() error {
-	for _, field := range m.scope.SQLFields(Permission{Write: true}) {
+	// TODO if field has SKIP Tag, skip also the defailt db validation!
+	for k := range m.fields {
+
+		// only writeable field need a validation.
+		if m.fields[k].Permission.Write != true {
+			continue
+		}
 
 		// if there is a belongsTo relation, the validation must be omitempty because on the value will be set by strategy.
 		// TODO create a function before isValid to set the belongsTo Values? problem solved or in the is Valid...
 		isBelongsTo := false
 		for _, relation := range m.scope.SQLRelations(Permission{}) {
-			if relation.Kind == BelongsTo && relation.Mapping.ForeignKey.Name == field.Name {
+			if relation.Kind == BelongsTo && relation.Mapping.ForeignKey.Name == m.fields[k].Name {
 				isBelongsTo = true
-				field.Validator.AddConfig("omitempty") // needed that an empty string "" or 0,false will not throw an error.
+				m.fields[k].Validator.AddConfig("omitempty") // needed that an empty string "" or 0,false will not throw an error.
 			}
+		}
+
+		// nullable values are skipped
+		if m.fields[k].Information.NullAble {
+			m.fields[k].Validator.AddConfig("omitempty")
 		}
 
 		// if the field is mandatory
 		// TODO create a function to set required, omitempty at the beginning (Prepend) and check if its already prependet.
 		// TODO error messages on required + omitempty? because they does not make sense together.
-		if !field.Information.NullAble && !field.Information.Autoincrement && !isBelongsTo {
-			field.Validator.AddConfig("required")
+		if !m.fields[k].Information.NullAble && !m.fields[k].Information.Autoincrement && !isBelongsTo {
+			m.fields[k].Validator.AddConfig("required")
 		}
 
-		switch field.Information.Type.Kind() {
+		switch m.fields[k].Information.Type.Kind() {
 		case "Bool":
 			// TODO check with tests, if notnull and eq=false...
-			field.Validator.AddConfig("eq=false|eq=true")
+			m.fields[k].Validator.AddConfig("eq=false|eq=true")
 		case "Integer":
-			field.Validator.AddConfig("numeric")
-			opt := field.Information.Type.(*types.Int)
-			field.Validator.AddConfig(fmt.Sprintf("min=%d", opt.Min))
-			field.Validator.AddConfig(fmt.Sprintf("max=%d", opt.Max))
+			m.fields[k].Validator.AddConfig("numeric")
+			opt := m.fields[k].Information.Type.(*types.Int)
+			m.fields[k].Validator.AddConfig(fmt.Sprintf("min=%d", opt.Min))
+			m.fields[k].Validator.AddConfig(fmt.Sprintf("max=%d", opt.Max))
 		case "Float":
-			field.Validator.AddConfig("numeric")
+			m.fields[k].Validator.AddConfig("numeric")
 		case "Text":
-			opt := field.Information.Type.(*types.Text)
-			field.Validator.AddConfig(fmt.Sprintf("max=%d", opt.Size)) // TODO FIX it must be the correct byte size
+			opt := m.fields[k].Information.Type.(*types.Text)
+			m.fields[k].Validator.AddConfig(fmt.Sprintf("max=%d", opt.Size)) // TODO FIX it must be the correct byte size
 		case "TextArea":
-			opt := field.Information.Type.(*types.TextArea)
-			field.Validator.AddConfig(fmt.Sprintf("max=%d", opt.Size)) // TODO FIX it must be the correct byte size
+			opt := m.fields[k].Information.Type.(*types.TextArea)
+			m.fields[k].Validator.AddConfig(fmt.Sprintf("max=%d", opt.Size)) // TODO FIX it must be the correct byte size
 		case "Time", "Date", "DateTime":
 			//TODO check db and struct date/time format.
-		case "Select", "MultiSelect":
-			opt := field.Information.Type.(types.Items)
-			field.Validator.AddConfig(fmt.Sprintf("oneof='%s'", strings.Join(opt.Items(), "' '")))
+		case "Select":
+
+			opt := m.fields[k].Information.Type.(types.Items).Items()
+			cfg := fmt.Sprintf("oneof='%s'", strings.Join(opt, "' '"))
+			m.fields[k].Validator.AddConfig(cfg)
+		case "MultiSelect":
+			// TODO not working with oneof. create custom validator... oneormanyof?
 		}
 
 		//TODO add unique
-
 	}
 
 	return nil

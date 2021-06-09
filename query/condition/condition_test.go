@@ -111,7 +111,6 @@ func TestCondition_Offset(t *testing.T) {
 func TestCondition_Where_Multiple(t *testing.T) {
 	c := condition.New()
 	c.SetWhere("a in (?) AND b in (?)", []interface{}{1, 3, 4}, []interface{}{5, 6, 7})
-	fmt.Println(c.Render(condition.Placeholder{Char: "?"}))
 }
 
 // TestCondition_Where_Having tests:

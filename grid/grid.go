@@ -184,11 +184,6 @@ func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 			return nil, fmt.Errorf(errWrap, err)
 		}
 
-		for _, f := range g.fields {
-			if f.name == "Roles" {
-				fmt.Println(f.option)
-			}
-		}
 		// checking config export types
 		err = g.checkExportTypes()
 		if err != nil {

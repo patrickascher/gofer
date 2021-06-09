@@ -29,6 +29,8 @@ func New(to []string, subject string, body string, attachments ...string) error 
 		m.Attach(attachment)
 	}
 
+	// TODO: error if not defined correctly.
+
 	d := gomail.Dialer{Host: cfg.Mail.Server, Port: cfg.Mail.Port, Username: cfg.Mail.User, Password: cfg.Mail.Password}
 	err = d.DialAndSend(m)
 	if err != nil {

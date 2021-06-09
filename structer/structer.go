@@ -5,7 +5,6 @@
 package structer
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/imdario/mergo"
@@ -33,7 +32,6 @@ func Merge(dst, src interface{}, option ...int) error {
 // Is just a wrapper for the awesome mergo (https://github.com/imdario/mergo).
 // For more details and options check out the github page.
 func MergeByMap(dst, src interface{}, option ...int) error {
-	fmt.Println(mergoOption(option...))
 	return mergo.Map(dst, src, mergoOption(option...)...)
 }
 

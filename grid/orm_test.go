@@ -5,7 +5,11 @@
 package grid_test
 
 import (
+	context2 "context"
 	"encoding/json"
+	"github.com/patrickascher/gofer/auth"
+	"github.com/patrickascher/gofer/router/middleware/jwt"
+	"github.com/patrickascher/gofer/server"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -126,7 +130,9 @@ func TestOrm_Delete(t *testing.T) {
 
 	// ok - entry exists
 	w := httptest.NewRecorder()
-	ctrl.SetContext(context.New(w, httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))))
+	req := httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))
+	req = req.WithContext(context2.WithValue(req.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Options: map[string]string{"provider": "mockLogout"}}))
+	ctrl.SetContext(context.New(w, req))
 	g, err := grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Render()
@@ -135,7 +141,9 @@ func TestOrm_Delete(t *testing.T) {
 
 	// error id 1 does not exist anymore - entry exists
 	w = httptest.NewRecorder()
-	ctrl.SetContext(context.New(w, httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))))
+	req = httptest.NewRequest("DELETE", "https://localhost/users?ID=1", strings.NewReader(""))
+	req = req.WithContext(context2.WithValue(req.Context(), jwt.CLAIM, &auth.Claim{Login: "John", Options: map[string]string{"provider": "mockLogout"}}))
+	ctrl.SetContext(context.New(w, req))
 	g, err = grid.New(&ctrl, grid.Orm(&Role{}))
 	asserts.NoError(err)
 	g.Render()
@@ -278,6 +286,9 @@ func helperCreateDatabaseAndTable(asserts *assert.Assertions) {
 
 	// set default cache
 	c, err = cache.New("memory", nil)
+	asserts.NoError(err)
+
+	err = server.New(server.Configuration{Caches: []server.ConfigurationCache{{Provider: "memory", GCInterval: 360}}})
 	asserts.NoError(err)
 }
 

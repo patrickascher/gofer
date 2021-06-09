@@ -12,6 +12,7 @@ import (
 	"math"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
@@ -145,8 +146,19 @@ func (s *NullString) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	if err := json.Unmarshal(data, &s.String); err != nil {
-		return fmt.Errorf("null: couldn't unmarshal JSON: %w", err)
+	// TODO support other solution - slice db possible?
+	// was created for multi-selects at the moment to support array posts.
+	// for displaying the frontend component "belongsTo" was modified.
+	if strings.HasPrefix(string(data), "[") {
+		var dummySlice []string
+		if err := json.Unmarshal(data, &dummySlice); err != nil {
+			return fmt.Errorf("null: couldn't unmarshal JSON: %w", err)
+		}
+		s.String = strings.Join(dummySlice, ",")
+	} else {
+		if err := json.Unmarshal(data, &s.String); err != nil {
+			return fmt.Errorf("null: couldn't unmarshal JSON: %w", err)
+		}
 	}
 
 	s.Valid = true

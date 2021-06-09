@@ -92,8 +92,10 @@ func New(config interface{}) error {
 
 	// create only the frontend.json config.
 	var build string
-	flag.StringVar(&build, "build", "", "if config is defined, only the frontend config will be created.")
-	flag.Parse()
+	if flag.Lookup("build") == nil {
+		flag.StringVar(&build, "build", "", "if config is defined, only the frontend config will be created.")
+		flag.Parse()
+	}
 	if build == "config" {
 		os.Exit(0) // success exit
 	}

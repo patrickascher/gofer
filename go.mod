@@ -9,12 +9,13 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-co-op/gocron v1.0.0
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
-	github.com/go-playground/validator/v10 v10.4.1
+	github.com/go-playground/validator/v10 v10.6.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/imdario/mergo v0.3.12
 	github.com/jinzhu/inflection v1.0.0
 	github.com/julienschmidt/httprouter v1.3.1-0.20200921135023-fe77dd05ab5a
+	github.com/mitchellh/mapstructure v1.3.3
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/onsi/ginkgo v1.15.2 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect

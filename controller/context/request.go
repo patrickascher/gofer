@@ -317,6 +317,7 @@ func newRequest(r *http.Request) *Request {
 // TODO set body limit.
 // TODO set filesize limit.
 func (r *Request) parse() error {
+
 	if r.params == nil {
 		r.params = make(map[string][]string)
 		r.files = make(map[string][]*multipart.FileHeader)
@@ -326,7 +327,7 @@ func (r *Request) parse() error {
 	}
 
 	// adding router params
-	if params := r.HTTPRequest().Context().Value("router_params"); params != nil { // used string instead of router.PATTERN because of dependency cycle.
+	if params := r.HTTPRequest().Context().Value("router_params"); params.(map[string][]string) != nil { // used string instead of router.PATTERN because of dependency cycle.
 		r.params = params.(map[string][]string)
 	}
 

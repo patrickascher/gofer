@@ -78,6 +78,15 @@ type User struct {
 	lockDuration              time.Duration
 }
 
+func (u User) HasRole(role string) bool {
+	for _, r := range u.Roles {
+		if r.Name == role {
+			return true
+		}
+	}
+	return false
+}
+
 // OptionsToMap is a helper to export all user options which are not hidden.
 // This is used for the user claim.
 func (u User) OptionsToMap() map[string]string {

@@ -258,6 +258,7 @@ func (e *eager) All(res interface{}, scope Scope, c condition.Condition) error {
 		m2mMapping := map[string][]interface{}{}
 		var m2mAll []interface{}
 		if relation.Kind == ManyToMany {
+
 			c := condition.New().SetWhere(b.QuoteIdentifier(relation.Mapping.Join.ForeignColumnName)+" IN (?)", in[relation.Mapping.ForeignKey.Name])
 			cols := []string{relation.Mapping.Join.ForeignColumnName, relation.Mapping.Join.ReferencesColumnName}
 			if relation.IsPolymorphic() {
@@ -302,6 +303,10 @@ func (e *eager) All(res interface{}, scope Scope, c condition.Condition) error {
 			}
 
 			config := rModel.model().scope.Config()
+
+			if scope.Config().relationCondition.c != nil {
+				c = scope.Config().relationCondition.c
+			}
 
 			// create condition
 			var c condition.Condition

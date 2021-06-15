@@ -49,14 +49,12 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 	c.SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR (navigations.route_id IS NULL AND EXISTS(SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE routes.id IN (Select n.route_id FROM navigation_navigations nn LEFT JOIN navigations n ON nn.child_id = n.id WHERE nn.navigation_id = navigations.id) and roles.name IN (?))) )", roles, roles)
 	c.SetOrder("position")
 
-	fmt.Println(c.Render(condition.Placeholder{Char: "?"}))
-
 	// adding a custom sql condition for the children relation (only display navigation points for the users role)
 	s, err := nav.Scope()
 	if err != nil {
 		return nil, err
 	}
-	s.SetConfig(orm.NewConfig().SetCondition(condition.New().SetOrder("position").SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR navigations.route_id IS NULL)", roles)))
+	s.SetConfig(orm.NewConfig().SetCondition(condition.New().SetOrder("position").SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR navigations.route_id IS NULL)", roles)), "Children")
 
 	nav.SetPermissions(orm.WHITELIST, "Icon", "Position", "Route.Name", "Route.Pattern", "Title", "Children")
 	err = nav.All(&res, c)

@@ -29,6 +29,8 @@ type Select struct {
 
 // SelectItem represents a HTML select Option.
 type SelectItem struct {
-	Text  interface{} `json:"text"`
-	Value interface{} `json:"value"`
+	Text    interface{} `json:"text"`
+	Value   interface{} `json:"value"`
+	Header  string      `json:"header,omitempty"`
+	Divider bool        `json:"divider,omitempty"`
 }

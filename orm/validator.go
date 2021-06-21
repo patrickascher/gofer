@@ -159,7 +159,7 @@ func (m *Model) addDBValidation() error {
 		// if the field is mandatory
 		// TODO create a function to set required, omitempty at the beginning (Prepend) and check if its already prependet.
 		// TODO error messages on required + omitempty? because they does not make sense together.
-		if !m.fields[k].Information.NullAble && !m.fields[k].Information.Autoincrement && !isBelongsTo {
+		if !m.fields[k].Information.NullAble && !m.fields[k].Information.Autoincrement && !isBelongsTo && m.fields[k].Information.Type.Kind() != "Bool" {
 			m.fields[k].Validator.AddConfig("required")
 		}
 

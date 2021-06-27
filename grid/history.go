@@ -153,7 +153,7 @@ func historiesById(g *grid) ([]History, []auth.User, error) {
 	gridIDWhere += ")"
 
 	// fetch histories.
-	err = history.All(&histories, condition.New().SetWhere(gridIDWhere, gridIDs...).SetWhere("src_id = ?", params[pFields[0].referenceName][0]).SetOrder("-created_at"))
+	err = history.All(&histories, condition.New().SetWhere(gridIDWhere, gridIDs...).SetWhere("src_id = ?", params[pFields[0].referenceName][0]).SetOrder("-id"))
 	if err != nil {
 		return nil, nil, fmt.Errorf(errWrap, err)
 	}

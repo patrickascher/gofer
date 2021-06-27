@@ -140,7 +140,7 @@ func (c *condition) Copy() Condition {
 	newC := New().(*condition)
 	newC.values = make(map[int][]Clause, len(c.values))
 	newC.order = make([]string, len(c.order))
-	newC.group = make([]string, len(c.order))
+	newC.group = make([]string, len(c.group))
 
 	newC.limit = c.limit
 	newC.offset = c.offset
@@ -310,7 +310,6 @@ func (c *condition) SetOrder(order ...string) Condition {
 	}
 
 	c.order = order
-
 	return c
 }
 

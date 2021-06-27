@@ -370,6 +370,7 @@ func (g *grid) Render() {
 			return
 		}
 	case FeTable, FeExport:
+
 		c, err := g.conditionAll()
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))

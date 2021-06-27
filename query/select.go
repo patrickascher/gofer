@@ -6,6 +6,7 @@ package query
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/patrickascher/gofer/query/condition"
 )
@@ -39,13 +40,14 @@ func (s *SelectBase) First() (*sql.Row, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(stmt, args, err)
 	return s.Provider.First(stmt, args)
 }
 
 // All will return sql.Rows.
 func (s *SelectBase) All() (*sql.Rows, error) {
 	stmt, args, err := s.Render()
+	fmt.Println(stmt, args, err)
 	if err != nil {
 		return nil, err
 	}

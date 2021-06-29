@@ -13,7 +13,7 @@ import (
 
 var ErrMailer = "mailer: %w"
 
-func New(to []string, subject string, body string, attachments ...string) error {
+func New(to []string, from string, subject string, body string, attachments ...string) error {
 
 	cfg, err := server.ServerConfig()
 	if err != nil {
@@ -21,7 +21,10 @@ func New(to []string, subject string, body string, attachments ...string) error 
 	}
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", cfg.Mail.From) // TODO settings
+	if from == "" {
+		from = cfg.Mail.From
+	}
+	m.SetHeader("From", from)
 	m.SetHeader("To", to...)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", body)

@@ -158,7 +158,7 @@ func (n *Native) ForgotPassword(c controller.Interface) error {
 	}
 
 	body := "To change your password, please click at the following link <a href=\"" + cfg.Webserver.Domain + "/token/" + p.Value + "/" + u.Login + "/" + token.String() + "\">Reset</a>."
-	err = mailer.New([]string{u.Email}, "Password change", body)
+	err = mailer.New([]string{u.Email}, "", "Password change", body)
 	if err != nil {
 		return err
 	}
@@ -206,7 +206,7 @@ func (n *Native) RegisterAccount(c controller.Interface) error {
 		}
 
 		// send mail
-		err = mailer.New([]string{user.Email}, "Your password", user.Login+" "+string(password))
+		err = mailer.New([]string{user.Email}, "", "Your password", user.Login+" "+string(password))
 		if err != nil {
 			return err
 		}

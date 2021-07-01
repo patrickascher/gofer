@@ -145,7 +145,7 @@ func Start() error {
 		AllowedOrigins:   []string{"http://localhost:8080"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Authorization", "Origin", "Cache-Control", "Accept", "Content-Type", "X-Requested-With"},
-		Debug:            true,
+		Debug:            false,
 	})
 	webserver.server.Handler = corsManager.Handler(webserver.router.Handler())
 

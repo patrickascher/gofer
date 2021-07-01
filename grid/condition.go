@@ -120,6 +120,8 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 			c.SetWhere(gridField.filterField + " " + gridField.filterCondition)
 		case query.IN, query.NOTIN:
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args)
+		case query.RIN, query.RNOTIN:
+			c.SetWhere(gridField.filterCondition+" "+gridField.filterField, args)
 		default:
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args[0])
 		}

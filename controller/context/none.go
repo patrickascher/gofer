@@ -6,7 +6,7 @@ package context
 
 // register json renderer automatically.
 func init() {
-	_ = RegisterRenderer("none", newJSONRenderer)
+	_ = RegisterRenderer("none", newNoneRenderer)
 }
 
 func newNoneRenderer() (Renderer, error) {

@@ -116,6 +116,12 @@ func (p *pagination) paginationParam(g *grid, q string) int {
 	switch q {
 	case paginationLimit:
 		param, err = g.controller.Context().Request.Param(paginationLimit)
+		if err == nil {
+			s, err := strconv.Atoi(param[0])
+			if err == nil {
+				return s
+			}
+		}
 		// the first data request is made of the frontend, but at this state the grid-config is not passed from the backend.
 		// So only if "onlyData" flag is set, the frontend limit should be used, otherwise its the init call with the grid backend config.
 		_, noExisting := g.controller.Context().Request.Param(paramOnlyData)

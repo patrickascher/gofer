@@ -765,10 +765,8 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 
 	_, err = g.Scope().Controller().Context().Request.Param("allFields")
 	if err != nil {
-		fmt.Println("not all fields")
 		relScope.Model().SetPermissions(orm.WHITELIST, reqFields...)
 	} else {
-		fmt.Println("all field not all fields")
 		fmt.Println(g.Scope().Controller().Context().Request.Param("allFields"))
 	}
 

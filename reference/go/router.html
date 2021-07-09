@@ -1,0 +1,1351 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The fullstack go framework. Focus on your actual ideas and create applications within minutes.">
+      
+      
+      
+      
+      <link rel="icon" href="../../static/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
+    
+    
+      
+        <title>Router - gofer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ca7ac06f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atom-one-light.min.css">
+    
+    
+      
+
+
+    
+    
+
+
+
+
+
+<meta content="website" property="og:type">
+<meta content="gofer" property="og:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." property="og:description">
+<meta content="None" property="og:url">
+<meta content="static/card.png" property="og:image">
+<meta content="image/png" property="og:image:type">
+<meta content="1200" property="og:image:width">
+<meta content="630" property="og:image:height">
+<meta content="summary_large_image" name="twitter:card">
+<meta content="@goreleaser" name="twitter:site">
+<meta content="@goreleaser" name="twitter:creator">
+<meta content="gofer - Router" name="twitter:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." name="twitter:description">
+<meta content="static/card.png" name="twitter:image">
+<style>
+    .md-header-nav__button.md-logo img, .md-header-nav__button.md-logo svg {
+        width: 2rem;
+        height: unset;
+    }
+</style>
+
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#router" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="gofer" class="md-header__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../assets/img/go.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            gofer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Router
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/patrickascher/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quickstart/index.html" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="registry.html" class="md-tabs__link md-tabs__link--active">
+        Reference
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="gofer" class="md-nav__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../assets/img/go.png" alt="logo">
+
+    </a>
+    gofer
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/patrickascher/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Getting started
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Getting started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/index.html" class="md-nav__link">
+        Install
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_1" type="checkbox" id="__nav_3_1" checked>
+      
+      <label class="md-nav__link" for="__nav_3_1">
+        Go
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Go" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          Go
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registry.html" class="md-nav__link">
+        Registry
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cache.html" class="md-nav__link">
+        Cache
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config.html" class="md-nav__link">
+        Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="logger.html" class="md-nav__link">
+        Logger
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Router
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="router.html" class="md-nav__link md-nav__link--active">
+        Router
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    New
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowhttpmethod" class="md-nav__link">
+    AllowHTTPMethod
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setsecuremiddleware" class="md-nav__link">
+    SetSecureMiddleware
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setfavicon" class="md-nav__link">
+    SetFavicon
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicfile" class="md-nav__link">
+    AddPublicFile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicdir" class="md-nav__link">
+    AddPublicDir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicroute" class="md-nav__link">
+    AddPublicRoute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addsecureroute" class="md-nav__link">
+    AddSecureRoute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routes" class="md-nav__link">
+    Routes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routebypattern" class="md-nav__link">
+    RouteByPattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler" class="md-nav__link">
+    Handler
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setnotfound" class="md-nav__link">
+    SetNotFound
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    Route
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware" class="md-nav__link">
+    Middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logger" class="md-nav__link">
+    Logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt" class="md-nav__link">
+    JWT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    RBAC
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    Providers
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsrouter" class="md-nav__link">
+    JSROUTER
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-own-provider" class="md-nav__link">
+    Create your own provider
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="controller.html" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="query.html" class="md-nav__link">
+        Query
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="stringer.html" class="md-nav__link">
+        Stringer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="structer.html" class="md-nav__link">
+        Structer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="slicer.html" class="md-nav__link">
+        Slicer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orm.html" class="md-nav__link">
+        Orm
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="grid.html" class="md-nav__link">
+        Grid
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="server.html" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth.html" class="md-nav__link">
+        Auth
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="translation.html" class="md-nav__link">
+        Translation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="scheduler.html" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      <label class="md-nav__link" for="__nav_3_2">
+        Frontend
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Frontend" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Frontend
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/alert.html" class="md-nav__link">
+        Alert
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/login.html" class="md-nav__link">
+        Login
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/translate.html" class="md-nav__link">
+        Translate
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/grid.html" class="md-nav__link">
+        Grid
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    New
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowhttpmethod" class="md-nav__link">
+    AllowHTTPMethod
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setsecuremiddleware" class="md-nav__link">
+    SetSecureMiddleware
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setfavicon" class="md-nav__link">
+    SetFavicon
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicfile" class="md-nav__link">
+    AddPublicFile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicdir" class="md-nav__link">
+    AddPublicDir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addpublicroute" class="md-nav__link">
+    AddPublicRoute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addsecureroute" class="md-nav__link">
+    AddSecureRoute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routes" class="md-nav__link">
+    Routes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routebypattern" class="md-nav__link">
+    RouteByPattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler" class="md-nav__link">
+    Handler
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setnotfound" class="md-nav__link">
+    SetNotFound
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    Route
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware" class="md-nav__link">
+    Middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logger" class="md-nav__link">
+    Logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt" class="md-nav__link">
+    JWT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    RBAC
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    Providers
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsrouter" class="md-nav__link">
+    JSROUTER
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-own-provider" class="md-nav__link">
+    Create your own provider
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/patrickascher/docs/edit/master/docs/reference/go/router.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="router">Router</h1>
+<p>Package router provides a manager to add public and secure routes based on a <code>http.Handler</code> or <code>http.HandlerFunc</code>.</p>
+<p>Specific Action&lt;-&gt;HTTP Method mapping can be defined.</p>
+<p>Middleware can be added for each route or globally for all secured routes.</p>
+<p>Files or directories can be added.</p>
+<p>The <code>PATTERN</code>, <code>PARAMS</code>, <code>ACTION</code> and (<code>ALLOWED</code> HTTP Methods - only on OPTIONS) will be added as request context.</p>
+<h2 id="usage">Usage</h2>
+<p>Inspired by the <code>database/sql</code>, this module is based on providers. You have to import the needed provider with a dash in
+front:
+This will only call the init function(s) of the package(s) and will register itself. For a full list of all available
+providers, see the <a href="router.html#providers">providers section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="s">&quot;github.com/patrickascher/gofer/router&quot;</span>
+<span class="kn">import</span> <span class="nx">_</span> <span class="s">&quot;github.com/patrickascher/gofer/router/httprouter&quot;</span> <span class="c1">// example for the julienschmidt http router</span>
+</code></pre></div>
+<h3 id="new">New</h3>
+<p>The New function requires two arguments. First the name of the registered provider and a provider configuration. Each
+provider will have different configuration settings, please see the <a href="router.html#providers">providers section</a> for more
+details.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// get a new router instance.</span>
+<span class="nx">routerManager</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">JSROUTER</span><span class="p">,</span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="allowhttpmethod">AllowHTTPMethod</h3>
+<p>Can be used to disable one or more HTTP methods globally. By Default: <code>TRACE</code> and <code>CONNECT</code> are disabled.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// will disable globally HTTP GET for any routes.</span>
+<span class="nx">err</span> <span class="p">=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">AllowHTTPMethod</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span><span class="kc">false</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="setsecuremiddleware">SetSecureMiddleware</h3>
+<p>Middleware(s) can be added. They will automatically apply to the <code>AddSecureRoute</code>(s).</p>
+<div class="highlight"><pre><span></span><code><span class="nx">routerManager</span><span class="p">.</span><span class="nx">SetSecureMiddleware</span><span class="p">(</span><span class="nx">mw</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="setfavicon">SetFavicon</h3>
+<p>Sets the fav icon. The pattern is <code>/favicon.ico</code>. If the source does not exist, an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">SetFavicon</span><span class="p">(</span><span class="s">&quot;assets/img/favicon.ico&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="addpublicfile">AddPublicFile</h3>
+<p>The first argument is the pattern, and the second one is the source. The pattern must begin with a <code>/</code>. If the pattern
+already exists, or the source does not exist, an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">AddPublicFile</span><span class="p">(</span><span class="s">&quot;/robot.txt&quot;</span><span class="p">,</span><span class="s">&quot;assets/static/robot.txt&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="addpublicdir">AddPublicDir</h3>
+<p>The first argument is the pattern, and the second one is the source. Directories are not allowed on pattern root
+level <code>/</code>. The pattern must begin with a <code>/</code>. If the pattern already exists, or the source does not exist, an error will
+return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">AddPublicDir</span><span class="p">(</span><span class="s">&quot;/images&quot;</span><span class="p">,</span><span class="s">&quot;assets/img&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="addpublicroute">AddPublicRoute</h3>
+<p>A route can be added to the router. Please see the <a href="router.html#route">route section</a> for more details.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">AddPublicRoute</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">NewRoute</span><span class="p">(</span><span class="s">&quot;/login&quot;</span><span class="p">,</span> <span class="nx">handleFunc</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="addsecureroute">AddSecureRoute</h3>
+<p>A secure route can be added to the router. Please see the <a href="router.html#route">route section</a> for more details. The route
+secure variable will be set to <code>true</code></p>
+<p>If no secure middleware(s) are defined, an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">AddSecureRoute</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">NewRoute</span><span class="p">(</span><span class="s">&quot;/admin&quot;</span><span class="p">,</span> <span class="nx">handleFunc</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="routes">Routes</h3>
+<p>All defined routes of the router will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">routes</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">Routes</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="routebypattern">RouteByPattern</h3>
+<p>The route by the given pattern will return. If the pattern does not exist, an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">routes</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">RouteByPattern</span><span class="p">(</span><span class="s">&quot;/favicon.ico&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="handler">Handler</h3>
+<p>Returns the <code>http.Handler</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">handler</span> <span class="o">:=</span> <span class="nx">routerManager</span><span class="p">.</span><span class="nx">Handler</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="setnotfound">SetNotFound</h3>
+<p>Set a custom handler for all routes which can not be found.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">routerManager</span><span class="p">.</span><span class="nx">SetNotFound</span><span class="p">(</span><span class="nx">hanlder</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="route">Route</h2>
+<p>A new route can be created with <code>router.NewRoute(pattern string, handler interface{}, mapping ...Mapping)</code>.</p>
+<p><code>patter</code>: If the pattern already exists, an error will return.</p>
+<p><code>handler</code> can be of type <code>http.Handler</code> or <code>http.HandlerFunc</code>. If it is <code>nil</code> or any other type, an error will return.</p>
+<p>A action name mapping is required on <code>http.Handler</code>. Mappings can be defined optionally on <code>http.HandlerFunc</code>. By
+default, all allowed HTTP methods of the router, will be mapped.</p>
+<p>A Mapping instance can be created with <code>router.NewMapping(methods []string, action interface{}, mw *middleware)</code>.</p>
+<p>The <code>methods</code> are any HTTP methods which should be mapped to the pattern. If its nil, all allowed HTTP methods of the
+router manager will be added.</p>
+<p>The <code>action</code> can be of the type <code>string</code> or <code>func</code>. If the type is <code>func</code>, the function name will be set as string on
+runtime. The action string will be added as request context.</p>
+<p>If set, the <code>middlewares</code> will be added to the route.</p>
+<p>For each pattern, any HTTP method must be unique, otherwise an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">route</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewRoute</span><span class="p">(</span><span class="s">&quot;/public2&quot;</span><span class="p">,</span> <span class="nx">handleFunc</span><span class="p">,</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewMapping</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">},</span> <span class="s">&quot;View&quot;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">),</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewMapping</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodPUt</span><span class="p">},</span> <span class="s">&quot;Create&quot;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>
+</code></pre></div>
+<h2 id="middleware">Middleware</h2>
+<p>All pre-defined middleware:</p>
+<h3 id="logger">Logger</h3>
+<p>Provides a middleware for the <code>logger.Manager</code>. The logged information is remoteAddr, HTTP Method, URL, Proto, HTTP
+Status, Response size and requested time. On HTTP status &lt; 400 a <code>log.Info()</code> will be called otherwise <code>log.Error()</code>.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The logger middleware should used before all other middlewares, otherwise the request time will be incorrect.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="c1">// the middleware</span>
+<span class="nx">mw</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewMiddleware</span><span class="p">(</span><span class="nx">middleware</span><span class="p">.</span><span class="nx">NewLogger</span><span class="p">(</span><span class="nx">logManager</span><span class="p">).</span><span class="nx">MW</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="jwt">JWT</h3>
+<p>Provides a middleware to check against a JWT token. If the JWT token is invalid a <code>http.StatusUnauthorized</code> will return.
+If the JWT token is expired it will be re-generated if allowed. In such case, the request header will be manipulated if a refresh happens, so that there is the new refresh token as <code>REFRESH</code> cookie and the old one as <code>REFRESH_OLD</code>.</p>
+<p>There are two callback functions. <code>CallbackGenerate</code> for manipulating the claim before its signed. <code>CallbackRefresh</code> to
+check if the refresh token is still valid, against a custom logic.</p>
+<p>The claim will be set as request context with the key <code>jwt.CLAIM</code>.</p>
+<p>A claim struct is provided and can be embedded into a custom struct.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">cfg</span> <span class="o">:=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+    <span class="nx">Alg</span><span class="p">:</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">HS512</span><span class="p">,</span> 
+    <span class="nx">Issuer</span><span class="p">:</span> <span class="s">&quot;authserver&quot;</span><span class="p">,</span> 
+    <span class="nx">Audience</span><span class="p">:</span> <span class="s">&quot;client&quot;</span><span class="p">,</span> 
+    <span class="nx">Subject</span><span class="p">:</span> <span class="s">&quot;auth&quot;</span><span class="p">,</span> 
+    <span class="nx">Expiration</span><span class="p">:</span> <span class="mi">5</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">,</span> 
+    <span class="nx">SignKey</span><span class="p">:</span> <span class="s">&quot;secret&quot;</span><span class="p">,</span>
+    <span class="nx">RefreshToken</span><span class="p">:</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">RefreshConfig</span><span class="p">{</span><span class="nx">Expiration</span><span class="p">:</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Hour</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">claim</span> <span class="o">:=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">Claim</span><span class="p">{}</span>
+
+<span class="nx">jwt</span> <span class="o">:=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">cfg</span><span class="p">,</span><span class="nx">claim</span><span class="p">);</span>
+<span class="nx">jwt</span><span class="p">.</span><span class="nx">CallbackRefresh</span> <span class="p">=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">Claimer</span><span class="p">){</span><span class="k">return</span> <span class="kc">nil</span><span class="p">}</span>  <span class="c1">// your logic</span>
+<span class="nx">jwt</span><span class="p">.</span><span class="nx">CallbackGenerate</span> <span class="p">=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">Claimer</span><span class="p">){</span><span class="k">return</span> <span class="kc">nil</span><span class="p">}</span> <span class="c1">// your logic</span>
+
+<span class="c1">// the middleware</span>
+<span class="nx">mw</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewMiddleware</span><span class="p">(</span><span class="nx">jwt</span><span class="p">.</span><span class="nx">MW</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="rbac">RBAC</h3>
+<p>Provides a role based access control list. It is build on top of the JWT middleware.</p>
+<p>A RoleService must be set, to check against the custom logic. Simply implement the <code>RoleService</code> interface. The
+arguments <code>pattern</code> <code>HTTP method</code> and <code>claim</code> will be passed to the <code>Allowed</code> function.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The JWT middleware must be set before the RBAC middleware.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="nx">roleService</span> <span class="o">:=</span> <span class="nx">CustomService</span><span class="p">{};</span>
+<span class="nx">rbac</span> <span class="o">:=</span> <span class="nx">middleware</span><span class="p">.</span><span class="nx">NewRbac</span><span class="p">(</span><span class="nx">roleService</span><span class="p">)</span>
+
+<span class="c1">// the middleware</span>
+<span class="nx">mw</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">NewMiddleware</span><span class="p">(</span><span class="nx">jwt</span><span class="p">.</span><span class="nx">MW</span><span class="p">,</span> <span class="nx">rbac</span><span class="p">.</span><span class="nx">MW</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="providers">Providers</h2>
+<p>All pre-defined providers:</p>
+<h3 id="jsrouter">JSROUTER</h3>
+<p>A wrapper for <a href="https://github.com/julienschmidt/httprouter">httprouter</a>.</p>
+<p>Name:</p>
+<p><code>router.JSROUTER</code></p>
+<p>Options:</p>
+<p>no options are available at the moment.</p>
+<p>Usage:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="s">&quot;github.com/patrickascher/gofer/router&quot;</span>
+<span class="kn">import</span> <span class="nx">_</span> <span class="s">&quot;github.com/patrickascher/gofer/router/jsrouter&quot;</span>
+
+<span class="nx">r</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">JSROUTER</span><span class="p">,</span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="create-your-own-provider">Create your own provider</h2>
+<p>To create your own provider, you have to implement the <code>router.Provider</code> interface.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Provider interface.</span>
+<span class="kd">type</span> <span class="nx">Provider</span> <span class="kd">interface</span> <span class="p">{</span>
+<span class="c1">// Handler must return the mux for http/server.</span>
+<span class="nx">Handler</span><span class="p">()</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span>
+<span class="c1">// custom NotFound handler can be set.</span>
+<span class="nx">SetNotFound</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span>
+<span class="c1">// AddRoute to the router.</span>
+<span class="nx">AddRoute</span><span class="p">(</span><span class="nx">Route</span><span class="p">)</span> <span class="kt">error</span>
+<span class="c1">// AddPublicDir to the router.</span>
+<span class="c1">// The source is already checked if it exists.</span>
+<span class="nx">AddPublicDir</span><span class="p">(</span><span class="nx">url</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">path</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="c1">// AddPublicFile to the router</span>
+<span class="c1">// The source is already checked if it exists.</span>
+<span class="nx">AddPublicFile</span><span class="p">(</span><span class="nx">url</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">path</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Use the <code>init</code> function to register your provider.</p>
+<p>The registered value must be of the type <code>func(m Manager, options interface{}) (router.Provider, error)</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// init register your config provider</span>
+<span class="kd">func</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//...</span>
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">Register</span><span class="p">(</span><span class="s">&quot;my-provider&quot;</span><span class="p">,</span><span class="nx">New</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">New</span><span class="p">(</span><span class="nx">m</span> <span class="nx">Manager</span><span class="p">,</span> <span class="nx">options</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">Provider</span><span class="p">,</span> <span class="kt">error</span><span class="p">){</span>
+    <span class="c1">//...</span>
+    <span class="k">return</span> <span class="nx">provider</span><span class="p">,</span><span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="s">&quot;github.com/patrickascher/gofer/router&quot;</span>
+<span class="kn">import</span> <span class="nx">_</span> <span class="s">&quot;your/repo/router/yourProvider&quot;</span>
+
+<span class="nx">err</span> <span class="o">:=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;my-provider&quot;</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="logger.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Logger" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Logger
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="controller.html" class="md-footer__link md-footer__link--next" aria-label="Next: Controller" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Controller
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Made with ❤️ by gofer contributors.
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+      
+        <script src="../../assets/js/config.js"></script>
+      
+    
+  </body>
+</html>

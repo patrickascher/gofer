@@ -1,0 +1,1165 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The fullstack go framework. Focus on your actual ideas and create applications within minutes.">
+      
+      
+      
+      
+      <link rel="icon" href="../../static/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
+    
+    
+      
+        <title>Logger - gofer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ca7ac06f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atom-one-light.min.css">
+    
+    
+      
+
+
+    
+    
+
+
+
+
+
+<meta content="website" property="og:type">
+<meta content="gofer" property="og:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." property="og:description">
+<meta content="None" property="og:url">
+<meta content="static/card.png" property="og:image">
+<meta content="image/png" property="og:image:type">
+<meta content="1200" property="og:image:width">
+<meta content="630" property="og:image:height">
+<meta content="summary_large_image" name="twitter:card">
+<meta content="@goreleaser" name="twitter:site">
+<meta content="@goreleaser" name="twitter:creator">
+<meta content="gofer - Logger" name="twitter:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." name="twitter:description">
+<meta content="static/card.png" name="twitter:image">
+<style>
+    .md-header-nav__button.md-logo img, .md-header-nav__button.md-logo svg {
+        width: 2rem;
+        height: unset;
+    }
+</style>
+
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#logger" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../index.html" title="gofer" class="md-header__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../assets/img/go.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            gofer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Logger
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/patrickascher/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../index.html" class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quickstart/index.html" class="md-tabs__link">
+        Getting started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="registry.html" class="md-tabs__link md-tabs__link--active">
+        Reference
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../index.html" title="gofer" class="md-nav__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../assets/img/go.png" alt="logo">
+
+    </a>
+    gofer
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/patrickascher/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Getting started
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Getting started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/index.html" class="md-nav__link">
+        Install
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_1" type="checkbox" id="__nav_3_1" checked>
+      
+      <label class="md-nav__link" for="__nav_3_1">
+        Go
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Go" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          Go
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="registry.html" class="md-nav__link">
+        Registry
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cache.html" class="md-nav__link">
+        Cache
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="config.html" class="md-nav__link">
+        Config
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Logger
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="logger.html" class="md-nav__link md-nav__link--active">
+        Logger
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#register" class="md-nav__link">
+    Register
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setcallerfields" class="md-nav__link">
+    SetCallerFields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setloglevel" class="md-nav__link">
+    SetLogLevel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-level" class="md-nav__link">
+    Log Level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#withfields" class="md-nav__link">
+    WithFields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#withtimer" class="md-nav__link">
+    WithTimer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    New
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    Providers
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logrus" class="md-nav__link">
+    Logrus
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-own-provider" class="md-nav__link">
+    Create your own provider
+  </a>
+  
+    <nav class="md-nav" aria-label="Create your own provider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entry" class="md-nav__link">
+    Entry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="router.html" class="md-nav__link">
+        Router
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="controller.html" class="md-nav__link">
+        Controller
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="query.html" class="md-nav__link">
+        Query
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="stringer.html" class="md-nav__link">
+        Stringer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="structer.html" class="md-nav__link">
+        Structer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="slicer.html" class="md-nav__link">
+        Slicer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="orm.html" class="md-nav__link">
+        Orm
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="grid.html" class="md-nav__link">
+        Grid
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="server.html" class="md-nav__link">
+        Server
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="auth.html" class="md-nav__link">
+        Auth
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="translation.html" class="md-nav__link">
+        Translation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="scheduler.html" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      <label class="md-nav__link" for="__nav_3_2">
+        Frontend
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Frontend" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Frontend
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/alert.html" class="md-nav__link">
+        Alert
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/login.html" class="md-nav__link">
+        Login
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/translate.html" class="md-nav__link">
+        Translate
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/grid.html" class="md-nav__link">
+        Grid
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#register" class="md-nav__link">
+    Register
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setcallerfields" class="md-nav__link">
+    SetCallerFields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setloglevel" class="md-nav__link">
+    SetLogLevel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-level" class="md-nav__link">
+    Log Level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#withfields" class="md-nav__link">
+    WithFields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#withtimer" class="md-nav__link">
+    WithTimer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    New
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    Providers
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logrus" class="md-nav__link">
+    Logrus
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-your-own-provider" class="md-nav__link">
+    Create your own provider
+  </a>
+  
+    <nav class="md-nav" aria-label="Create your own provider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entry" class="md-nav__link">
+    Entry
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/patrickascher/docs/edit/master/docs/reference/go/logger.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="logger">Logger</h1>
+<p>The package logger provides an interface for logging. It wraps awesome existing go loggers with that interface. In that
+case, it is easy to change the log provider without breaking anything in your application.</p>
+<p>Additionally log level, fields, time duration or caller information can be added.</p>
+<h3 id="register">Register</h3>
+<p>To register a logger by your requirements, simple use the <code>logger.Register</code> function. The registered logger must
+implement the <code>logger.Provider</code> interface.</p>
+<p>This should be done in the <code>init()</code> function or any other early stage in your application.</p>
+<p>For a list of all existing provider see <a href="logger.html#providers">providers section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Example of the memory cache provider</span>
+<span class="nx">logrus</span> <span class="o">:=</span> <span class="nx">logrus</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+<span class="c1">// the wrapped logrus instance can be configured as needed.</span>
+<span class="nx">logrus</span><span class="p">.</span><span class="nx">Instance</span><span class="p">.</span><span class="nx">ReportCaller</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="c1">// register the logger under a defined name</span>
+<span class="nx">err</span> <span class="p">=</span> <span class="nx">logrus</span><span class="p">.</span><span class="nx">Register</span><span class="p">(</span><span class="s">&quot;importLogger&quot;</span><span class="p">,</span><span class="nx">logrus</span><span class="p">)</span>
+<span class="c1">//...</span>
+</code></pre></div>
+<h3 id="usage">Usage</h3>
+<p>Use <code>Get()</code> to get a registered logger instance.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// get the logger</span>
+<span class="nx">log</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;importLogger&quot;</span><span class="p">)</span>
+
+<span class="c1">// set some default logger settings.</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">SetCallerFields</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">SetLogLevel</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">TRACE</span><span class="p">)</span>
+
+<span class="c1">// creates a new info log entry.</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Info</span><span class="p">(</span><span class="s">&quot;something&quot;</span><span class="p">)</span>
+
+<span class="c1">// log with some details</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">WithFields</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Fields</span><span class="p">{</span><span class="s">&quot;foo&quot;</span><span class="p">:</span><span class="s">&quot;bar&quot;</span><span class="p">}).</span><span class="nx">Info</span><span class="p">(</span><span class="s">&quot;something&quot;</span><span class="p">)</span>
+
+<span class="c1">// log with timer</span>
+<span class="nx">ltimer</span> <span class="o">:=</span> <span class="nx">log</span><span class="p">.</span><span class="nx">WithTimer</span><span class="p">()</span>
+<span class="c1">//.. some logic</span>
+<span class="nx">ltimer</span><span class="p">.</span><span class="nx">Debug</span><span class="p">(</span><span class="s">&quot;some time&quot;</span><span class="p">)</span> <span class="c1">//Field &quot;duration&quot; is added with the required time.</span>
+</code></pre></div>
+<h3 id="setcallerfields">SetCallerFields</h3>
+<p>If you call <code>SetCallerFields</code> on a logger instance, it will add the file name and line number as fields. Default it is
+set to <code>false</code>. The caller will be set global for this logger instance.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">log</span><span class="p">.</span><span class="nx">SetCallerFields</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="setloglevel">SetLogLevel</h3>
+<p>Defines the level where it should start logging. Available log levels are <code>logger.TRACE</code>,<code>logger.DEBUG</code>,<code>logger.INFO</code>
+,<code>logger.WARNING</code>,<code>logger.ERROR</code> and <code>logger.PANIC</code>. Default it is set to <code>logger.DEBUG</code>. The level will be set global
+for this logger instance.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">log</span><span class="p">.</span><span class="nx">SetLogLevel</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">INFO</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="log-level">Log Level</h3>
+<p>The following log levels are available.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">log</span><span class="p">.</span><span class="nx">Trace</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Debug</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Info</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Warning</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Error</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">Panic</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="withfields">WithFields</h3>
+<p>Sometimes a log message is not enough and some additional information is required.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p><code>WithFields</code> will create a new instance.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="nx">log</span><span class="p">.</span><span class="nx">WithFields</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Fields</span><span class="p">{</span><span class="s">&quot;foo&quot;</span><span class="p">:</span><span class="s">&quot;bar&quot;</span><span class="p">}).</span><span class="nx">Info</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="withtimer">WithTimer</h3>
+<p>Sometimes it is useful for debugging to see the required time of a function.
+<code>WithTimer</code> can be combined <code>WithFields</code> or vis-a-vis.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p><code>WithTimer</code> will create a new instance.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="nx">ltimer</span> <span class="o">:=</span> <span class="nx">log</span><span class="p">.</span><span class="nx">WithTimer</span><span class="p">()</span>
+<span class="c1">//...</span>
+<span class="nx">ltimer</span><span class="p">.</span><span class="nx">Debug</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span> <span class="c1">// a Field &quot;duration&quot; with the required time is added.</span>
+
+<span class="c1">// combinde with fields</span>
+<span class="nx">ltimer</span> <span class="p">=</span> <span class="nx">log</span><span class="p">.</span><span class="nx">WithFields</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">Fields</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">:</span><span class="s">&quot;bar&quot;</span><span class="p">)).</span><span class="nx">WithTimer</span><span class="p">()</span>
+<span class="c1">//...</span>
+<span class="nx">ltimer</span><span class="p">.</span><span class="nx">Debug</span><span class="p">(</span><span class="s">&quot;msg&quot;</span><span class="p">)</span><span class="c1">// a Field &quot;duration&quot; and &quot;foo&quot; is added.</span>
+</code></pre></div>
+<h3 id="new">New</h3>
+<p>Sometimes its useful to create a logger with slightly a different configuration. The new instance will inherit the
+setting of the parent logger by default.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">log</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;importLogger&quot;</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">SetCallerFields</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">log</span><span class="p">.</span><span class="nx">SetLogLevel</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">WARNING</span><span class="p">)</span>
+
+<span class="c1">// create a new instance and add different settings.</span>
+<span class="nx">log2</span> <span class="o">:=</span> <span class="nx">log</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+<span class="nx">log2</span><span class="p">.</span><span class="nx">SetCallFields</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="nx">log2</span><span class="p">.</span><span class="nx">SetLogLevel</span><span class="p">(</span><span class="nx">logger</span><span class="p">.</span><span class="nx">TRACE</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="providers">Providers</h2>
+<p>All pre-defined providers:</p>
+<h3 id="logrus">Logrus</h3>
+<p>A wrapper for <a href="https://github.com/sirupsen/logrus">logrus</a>.</p>
+<p>Package:</p>
+<p><code>github.com/patrickascher/gofer/logger/logrus</code></p>
+<p>Options:</p>
+<p>The original logrus struct can be accessed by the <code>Instance</code> field. Please check the github page for the documentation.</p>
+<p>Usage:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="s">&quot;github.com/patrickascher/gofer/logger&quot;</span>
+<span class="kn">import</span> <span class="s">&quot;github.com/patrickascher/gofer/logger/logrus&quot;</span>
+
+<span class="nx">logrusProvider</span> <span class="o">:=</span> <span class="nx">logrus</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+<span class="nx">logrusProvider</span><span class="p">.</span><span class="nx">Instance</span><span class="p">.</span><span class="nx">ReportCaller</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="c1">// register the logger</span>
+<span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Register</span><span class="p">(</span><span class="s">&quot;logger-name&quot;</span><span class="p">,</span> <span class="nx">logrusProvider</span><span class="p">)</span>
+
+<span class="c1">// somewhere in the application</span>
+<span class="nx">log</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;logger-name&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="create-your-own-provider">Create your own provider</h2>
+<p>To create your own provider, you have to implement the <code>logger.Provider</code> interface.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span> <span class="nx">Provider</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">Log</span><span class="p">(</span><span class="nx">Entry</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The registered value must be of the type <code>logger.Provider</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span> <span class="nx">MyLogger</span> <span class="kd">struct</span><span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">ml</span> <span class="o">*</span><span class="nx">MyLogger</span><span class="p">)</span> <span class="nx">Log</span><span class="p">(</span><span class="nx">Entry</span><span class="p">){</span>
+    <span class="c1">// ... do something</span>
+<span class="p">}</span>
+
+<span class="c1">// register the logger</span>
+<span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Register</span><span class="p">(</span><span class="s">&quot;my-logger&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">MyLogger</span><span class="p">{})</span>
+
+<span class="c1">// somewhere in the application</span>
+<span class="nx">log</span><span class="p">,</span><span class="nx">err</span> <span class="o">:=</span> <span class="nx">logger</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;my-logger&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="entry">Entry</h3>
+<p>The <code>logger.Entry</code> holds all information about the log message.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span> <span class="nx">Entry</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Level</span>     <span class="nx">level</span>
+    <span class="nx">Timestamp</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>
+    <span class="nx">Message</span>   <span class="kt">string</span>
+    <span class="nx">Fields</span>    <span class="nx">Fields</span>
+<span class="p">}</span>
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="config.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Config" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Config
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="router.html" class="md-footer__link md-footer__link--next" aria-label="Next: Router" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Router
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Made with ❤️ by gofer contributors.
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.82b56eb2.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+      
+        <script src="../../assets/js/config.js"></script>
+      
+    
+  </body>
+</html>

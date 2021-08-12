@@ -122,6 +122,16 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args)
 		case query.RIN, query.RNOTIN:
 			c.SetWhere(gridField.filterCondition+" "+gridField.filterField, args)
+		case query.CUSTOM, query.CUSTOMLIKE:
+			var argsCustom []interface{}
+			for i := 0; i < strings.Count(gridField.filterField, "?"); i++ {
+				if gridField.filterCondition == query.CUSTOMLIKE {
+					argsCustom = append(argsCustom, "%%"+args[0]+"%%")
+				} else {
+					argsCustom = append(argsCustom, args[0])
+				}
+			}
+			c.SetWhere(gridField.filterField, argsCustom...)
 		default:
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args[0])
 		}

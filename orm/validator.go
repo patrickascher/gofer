@@ -8,6 +8,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
+	"log"
 	"reflect"
 	"strings"
 
@@ -22,6 +23,26 @@ func init() {
 	validate = valid.New()
 	validate.SetTagName(TagValidate)
 	validate.RegisterCustomTypeFunc(validateValuer, query.NullString{}, query.NullBool{}, query.NullInt{}, query.NullFloat{}, query.NullTime{})
+	validate.RegisterCustomTypeFunc(validateValuer, query.NullString{}, query.NullBool{}, query.NullInt{}, query.NullFloat{}, query.NullTime{})
+
+	// custom emails validation
+	err := validate.RegisterValidation("emails", emailsValidator)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func emailsValidator(fl valid.FieldLevel) bool {
+	if fl.Field().String() != "" {
+		values := strings.Split(fl.Field().String(), ",")
+		for _, value := range values {
+			err := validate.VarWithValue(value, "", "email")
+			if err != nil {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // Error messages
@@ -133,7 +154,7 @@ func validateValuer(field reflect.Value) interface{} {
 
 // addDBValidation is a helper function to add the database column limits as validation.
 func (m *Model) addDBValidation() error {
-	// TODO if field has SKIP Tag, skip also the defailt db validation!
+	// TODO if field has SKIP Tag, skip also the default db validation!
 	for k := range m.fields {
 
 		// only writeable field need a validation.

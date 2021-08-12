@@ -6,6 +6,7 @@ package orm
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/query/types"
 	"reflect"
 	"strings"
 
@@ -81,6 +82,10 @@ func (m *Model) createFields(structFields []reflect.StructField) error {
 				f.Information.PrimaryKey = true
 			case tagColumn:
 				f.Information.Name = v
+				f.Permission.Read = true
+				f.Permission.Write = false
+				f.Information.Name = v
+				f.Information.Type = types.NewText("varchar(250)")
 			case tagPermission:
 				f.Permission.Read = false
 				f.Permission.Write = false
@@ -92,6 +97,10 @@ func (m *Model) createFields(structFields []reflect.StructField) error {
 				}
 			case tagSQLSelect:
 				f.SQLSelect = v
+				f.Permission.Read = true
+				f.Permission.Write = false
+				f.Information.Name = v
+				f.Information.Type = types.NewText("varchar(250)")
 			}
 		}
 
@@ -197,7 +206,14 @@ Columns:
 			continue
 		}
 
-		return fmt.Errorf(ErrDbColumnMissing, m.fields[i].Information.Name, m.scope.FqdnModel(m.fields[i].Name), m.db+"."+m.table)
+		if m.fields[i].SQLSelect != "" {
+			m.fields = append(m.fields[:i], m.fields[i+1:]...)
+			i--
+			continue
+		}
+
+		//return fmt.Errorf(ErrDbColumnMissing, m.fields[i].Information.Name, m.scope.FqdnModel(m.fields[i].Name), m.db+"."+m.table)
 	}
+
 	return nil
 }

@@ -44,7 +44,8 @@ func (g *grid) newPagination(c condition.Condition) (*pagination, error) {
 	// count source
 	count, err := g.src.Count(c, g)
 	if err != nil {
-		return nil, err
+		//return nil, err  // disabled error because of empty results!
+		count = 0
 	}
 
 	p.Total = count

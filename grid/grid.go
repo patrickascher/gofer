@@ -19,15 +19,6 @@ import (
 	"github.com/patrickascher/gofer/query/condition"
 )
 
-// init will collect all registered Renderer.
-func init() {
-	var err error
-	availableRenderer, err = context.RenderTypes()
-	if err != nil {
-		panic(err)
-	}
-}
-
 // availableRenderer will store all defined render types.
 var availableRenderer map[string]context.Renderer
 
@@ -144,6 +135,14 @@ type grid struct {
 // The source and config is required.
 // By default the grid id will be the controller.action name.
 func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
+
+	if availableRenderer == nil {
+		var err error
+		availableRenderer, err = context.RenderTypes()
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// merge configs
 	cfg := defaultConfig(ctrl)
@@ -372,6 +371,8 @@ func (g *grid) Render() {
 	case FeTable, FeExport:
 
 		c, err := g.conditionAll()
+		fmt.Println("-->all1", err)
+
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
@@ -380,6 +381,8 @@ func (g *grid) Render() {
 		// pagination only on table vied
 		if g.Mode() == FeTable {
 			pagination, err := g.newPagination(c)
+			fmt.Println("-->all2", err)
+
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
 				return
@@ -406,6 +409,8 @@ func (g *grid) Render() {
 
 		// fetch data.
 		values, err := g.src.All(c, g)
+		fmt.Println("-->all", err)
+
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return

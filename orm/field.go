@@ -96,6 +96,9 @@ func (m *Model) createFields(structFields []reflect.StructField) error {
 					f.Permission.Write = true
 				}
 			case tagSQLSelect:
+				if v[0:1] != "!" {
+					v = query.DbExpr(v)
+				}
 				f.SQLSelect = v
 				f.Permission.Read = true
 				f.Permission.Write = false
@@ -201,12 +204,6 @@ Columns:
 
 		// if the predefined time fields does not exist in the database, delete it of the fields list.
 		if m.fields[i].Name == CreatedAt || m.fields[i].Name == UpdatedAt || m.fields[i].Name == DeletedAt {
-			m.fields = append(m.fields[:i], m.fields[i+1:]...)
-			i--
-			continue
-		}
-
-		if m.fields[i].SQLSelect != "" {
 			m.fields = append(m.fields[:i], m.fields[i+1:]...)
 			i--
 			continue

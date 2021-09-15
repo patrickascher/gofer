@@ -6,6 +6,7 @@ package query
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/patrickascher/gofer/query/condition"
 )
 
@@ -69,6 +70,7 @@ func (s *SelectBase) Render() (string, []interface{}, error) {
 		args = arg
 	}
 
+	fmt.Println(selectStmt)
 	return selectStmt, args, nil
 }
 

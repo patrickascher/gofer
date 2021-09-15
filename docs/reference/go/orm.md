@@ -185,7 +185,7 @@ For more details about the tags, [see ParseTag](structer.md#parsetag)
 | custom        | Defines a field as a none sql field.                                                                         |                | `orm:"custom"`    |   |
 | column            | Set a custom table column name                                                                                  | name           | `orm:"column:name"`   |   |
 | permission        | A field can be defined as Write or Read only. If the permission is empty read and write will be set to `false`. If a read permission is false, it the column will not be fetched by first and all. If a write permission is false, the column will not be saved on create or update. | r,w or empty.    | `orm:"permission:rw"` |   |
-| sql         | Set a custom select for the column. Only supported for `First` and `All`.                                       | string         | `orm:"sql:CONCAT(name,surname)"`    |   |
+| sql         | Set a custom select for the column. Only supported for `First` and `All`. Will be set as DbExpr to avoid escaping problems. Be aware you have to escape on your own.                                      | string         | `orm:"sql:CONCAT(name,surname)"`    |   |
 | primary           | Defines a column as primary.                                                                                    |          | `orm:"primary"`       |   |
 | relation           | Defines a relation   | `hasOne`, `belongsTo`, `hasMany`, `m2m`          | `orm:"relation:belongsTo"`       |   |
 | fk           | Defines a custom foreign key | string         | `orm:"fk:CustomID"`       |   |

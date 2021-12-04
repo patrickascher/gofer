@@ -320,6 +320,7 @@ func JWTRefreshCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer) e
 		return err
 	}
 	// check if token is still valid.
+	// on valid process the expired tokens will get deleted.
 	refreshToken := RefreshToken{}
 	err = refreshToken.Valid(c.(*Claim).Login, refreshCookie.Value)
 	if err != nil {

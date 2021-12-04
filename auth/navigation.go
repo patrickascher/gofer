@@ -14,6 +14,8 @@ import (
 	"github.com/patrickascher/gofer/server"
 )
 
+const AdditionalNavigationPoint = "additional"
+
 // manNavigationPoints stores manually added navigation points.
 var manNavigationPoints = map[string]func([]string, controller.Interface) ([]Navigation, error){}
 
@@ -90,30 +92,32 @@ func mergeNavigation(navPoints []Navigation, name string, addNav []Navigation) [
 			return navPoints
 		}
 
-		if name == "additional" {
-			fmt.Println("additional before", len(navPoints))
+		if name == AdditionalNavigationPoint {
 			navPoints = append(addNav, navPoints...)
-			fmt.Println("additional after", len(navPoints))
 			return navPoints
 		}
 
 		if strings.Contains(name, ".") {
 			sp := strings.Split(name, ".")
 			mergeNavigation(navPoints[k].Children, strings.Join(sp[1:], "."), addNav)
-			fmt.Println(strings.Join(sp[1:], "."))
 		}
 	}
 	return navPoints
 }
 
 // AddNavigationPoint to the database navigation.
-// Navigations points can be added to any level.
+// Navigation points can be added to any level.
 // To access a child navigation point use a dot notation.
 // Example: Settings.Accounts
 func AddNavigationPoint(name string, fn func([]string, controller.Interface) ([]Navigation, error)) {
-	Desc := "Navigation endpoint of %s%s"
-	MessageID := translation.NAV + "%s"
-	nav := strings.Split(name, ".")
-	translation.AddRawMessage(i18n.Message{ID: fmt.Sprintf(MessageID, nav[len(nav)-1]), Description: fmt.Sprintf(Desc, nav[len(nav)-1], "")})
+
+	// TODO logic for additional Navigation and the translation for it. Probably only possible if added manually.
+	if name != AdditionalNavigationPoint {
+		Desc := "Navigation endpoint of %s%s"
+		MessageID := translation.NAV + "%s"
+		nav := strings.Split(name, ".")
+		translation.AddRawMessage(i18n.Message{ID: fmt.Sprintf(MessageID, nav[len(nav)-1]), Description: fmt.Sprintf(Desc, nav[len(nav)-1], "")})
+	}
+
 	manNavigationPoints[name] = fn
 }

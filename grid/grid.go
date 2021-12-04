@@ -371,8 +371,6 @@ func (g *grid) Render() {
 	case FeTable, FeExport:
 
 		c, err := g.conditionAll()
-		fmt.Println("-->all1", err)
-
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
@@ -381,8 +379,6 @@ func (g *grid) Render() {
 		// pagination only on table vied
 		if g.Mode() == FeTable {
 			pagination, err := g.newPagination(c)
-			fmt.Println("-->all2", err)
-
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
 				return
@@ -409,8 +405,6 @@ func (g *grid) Render() {
 
 		// fetch data.
 		values, err := g.src.All(c, g)
-		fmt.Println("-->all", err)
-
 		if err != nil {
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return

@@ -20,6 +20,8 @@ import (
 	"golang.org/x/text/language"
 )
 
+var defaults map[string]*i18n.Message
+
 // init - registers the translation db provider.
 func init() {
 	err := translation.Register(translation.DB, newDB)
@@ -127,12 +129,11 @@ func (d *dbBundle) Bundle() (*i18n.Bundle, error) {
 
 	bundle := i18n.NewBundle(d.defaultLang)
 
+	// add messages to bundle.
 	messages, err := d.getData()
 	if err != nil {
 		return nil, err
 	}
-
-	// add messages to bundle.
 	for _, m := range messages {
 		lang, err := language.Parse(m.Lang)
 		if err != nil {
@@ -144,6 +145,7 @@ func (d *dbBundle) Bundle() (*i18n.Bundle, error) {
 		}
 	}
 
+	// create default
 	return bundle, nil
 }
 
@@ -294,7 +296,7 @@ func (d *dbBundle) getData(lang ...string) ([]Message, error) {
 		return nil, err
 	}
 
-	c := condition.New().SetWhere("lang != ?", translation.RAW).SetOrder("lang")
+	c := condition.New().SetOrder("lang").SetWhere("lang != ?", translation.RAW)
 	if len(lang) > 0 {
 		c.SetWhere("lang = ?", lang[0])
 	}

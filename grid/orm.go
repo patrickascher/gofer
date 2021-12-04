@@ -437,7 +437,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			if f.Information.Type.Kind() == types.MULTISELECT {
 				multiple = true
 			}
-			field.SetOption(options.SELECT, options.Select{ReturnID: true, TextField: "text", ValueField: "value", Items: items, Multiple: multiple})
+			field.SetOption(options.SELECT, options.Select{ReturnValue: true, TextField: "text", ValueField: "value", Items: items, Multiple: multiple})
 		}
 
 		// field manipulations
@@ -479,7 +479,17 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 						parent += "."
 					}
 					rv[k].SetType(relation.Kind)
-					rv[k].SetOption(options.SELECT, options.Select{ReturnID: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
+
+					// TODO better solution.
+					// Idea is to automatic find out the TextField of the database. at the moment the 2nd ord 3rd field will be taken.
+					// Soluation id - the field with the next "TEXT" type orm description.
+					// 3 fields = id, parendid, text
+					// 2 fields = id, value
+					if relation.Type.NumField() == 2 {
+						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(1).Name, ValueField: relation.Mapping.References.Name})
+					} else {
+						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
+					}
 				}
 			}
 
@@ -493,8 +503,14 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			field.SetRemove(NewValue(true).SetTable(false)).SetRelation(true)
 
 			if relation.Kind == orm.BelongsTo {
+				// TODO see above
 				// display only the text field... experimental
-				field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(2).Name+"}}")
+				if relation.Type.NumField() == 2 {
+					field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(1).Name+"}}")
+				} else {
+					field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(2).Name+"}}")
+				}
+
 			}
 
 			rv = append(rv, field)

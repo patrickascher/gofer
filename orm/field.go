@@ -209,7 +209,7 @@ Columns:
 			continue
 		}
 
-		//return fmt.Errorf(ErrDbColumnMissing, m.fields[i].Information.Name, m.scope.FqdnModel(m.fields[i].Name), m.db+"."+m.table)
+		return fmt.Errorf(ErrDbColumnMissing, m.fields[i].Information.Name, m.scope.FqdnModel(m.fields[i].Name), m.db+"."+m.table)
 	}
 
 	return nil

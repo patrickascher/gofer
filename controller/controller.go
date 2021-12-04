@@ -145,9 +145,16 @@ func (c *Base) T(name string, template ...map[string]interface{}) string {
 	if l == nil {
 		return name
 	}
-	if v, err := l.Translate(name, template...); err == nil {
+
+	v, err := l.Translate(name, template...)
+	if err == nil {
 		return v
 	}
+	// there can happen an error on translation, but it will still return the bet effort. (raw default)
+	if v != "" {
+		return v
+	}
+
 	return name
 }
 

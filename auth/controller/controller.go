@@ -14,9 +14,11 @@ import (
 	"github.com/patrickascher/gofer/locale/translation"
 	"golang.org/x/text/language/display"
 	"net/http"
+	"reflect"
 
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/grid"
+	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/router"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
 	"github.com/patrickascher/gofer/server"
@@ -29,8 +31,10 @@ func init() {
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordMatch", Other: "Password does not match"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordRequired", Other: "Password is mandatory"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrLoginRequired", Other: "Login is mandatory"},
-		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Privacy", Other: "user admin,pw admin123"},
-		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Impress", Other: " "},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Privacy", Description: "Privacy text on the login layout.", Other: ""},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Impress", Description: "Impress text on the login layout.", Other: " "},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.PrivacyHREF", Description: "The privacy link in the dash layout.", Other: ""},
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ImpressHREF", Description: "The impress link in the dash layout.", Other: " "},
 	)
 }
 
@@ -41,29 +45,42 @@ const (
 
 // Error messages.
 var (
+	UserErr    = errors.New("login/password is incorrect or your account is disabled")
 	ErrWrap    = "auth-controller: %w"
 	ErrNoClaim = errors.New("no claim data")
 )
 
-// Controller is a predefined auth controller.
+// Auth is a predefined auth controller.
 type Auth struct {
 	controller.Base
 }
 
+var (
+	customAccount grid.Source
+	customFn      func(grid.Grid) error
+)
+
+func SetAccountModel(source grid.Source, sourceFn func(grid.Grid) error) {
+	customAccount = source
+	customFn = sourceFn
+}
+
 // ChangePassword will call the providers function.
+// TODO better solution for errors/user errors.
 func (c *Auth) ChangePassword() {
 	err := helperPasswordProvider(c, pwChange)
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 }
 
 // ForgotPassword will call the providers function.
+// TODO better solution for errors/user errors.
 func (c *Auth) ForgotPassword() {
 	err := helperPasswordProvider(c, pwForgot)
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 }
@@ -73,33 +90,34 @@ func (c *Auth) ForgotPassword() {
 // - call the providers Login function.
 // - generate the jwt token.
 // - return the user claim.
+// TODO better solution for errors/user errors.
 func (c *Auth) Login() {
 
 	// auth type.
 	prov, err := c.Context().Request.Param(auth.ParamProvider)
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
 	// get provider
 	provider, err := auth.New(prov[0])
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
 	// call the provider login function.
 	schema, err := provider.Login(c)
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
 	// get the jwt instance.
 	j, err := server.JWT()
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
@@ -107,7 +125,7 @@ func (c *Auth) Login() {
 	ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, schema.Login), auth.ParamProvider, prov[0])
 	claim, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
 	if err != nil {
-		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
@@ -258,7 +276,7 @@ func (c *Auth) Nav() {
 	}
 
 	g.Field("Title").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(0))
-	g.Field("Icon").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(1)).SetView(grid.NewValue("").SetTable("IconView")).SetDescription(grid.NewValue("Visit https://materialdesignicons.com/ to view all icons!"))
+	g.Field("Icon").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(1)).SetView(grid.NewValue("").SetTable("MdiView")).SetDescription(grid.NewValue("Visit https://materialdesignicons.com/ to view all icons!"))
 	g.Field("Position").SetRemove(grid.NewValue(false)).SetPosition(grid.NewValue(2))
 
 	g.Field("Children").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "{{Title}}", "<br/>").SetOption(options.SELECT, options.Select{TextField: "Title"})
@@ -267,7 +285,7 @@ func (c *Auth) Nav() {
 	g.Field("Route").SetRemove(grid.NewValue(true).SetTable(false)).SetOption(options.DECORATOR, "{{Pattern}}").SetPosition(grid.NewValue(3))
 	g.Field("Route.Pattern").SetRemove(grid.NewValue(true).SetTable(false))
 
-	g.Field("RouteID").SetTitle(grid.NewValue("ROUTE")).SetType("Select").SetRemove(grid.NewValue(false).SetTable(true)).SetPosition(grid.NewValue(4)).SetOption(options.SELECT, options.Select{OrmField: "Route", TextField: "Name", ValueField: "ID", Condition: "frontend = 1 AND deleted_at IS NULL", ReturnID: true})
+	g.Field("RouteID").SetTitle(grid.NewValue("ROUTE")).SetType("Select").SetRemove(grid.NewValue(false).SetTable(true)).SetPosition(grid.NewValue(4)).SetOption(options.SELECT, options.Select{OrmField: "Route", TextField: "Name", ValueField: "ID", Condition: "frontend = 1 AND deleted_at IS NULL", ReturnValue: true})
 
 	g.Render()
 }
@@ -307,21 +325,39 @@ func (c *Auth) Accounts() {
 		createLinks[i] = auth.ParamProvider + "/" + i
 	}
 
-	g, err := grid.New(c, grid.Orm(&auth.User{}), grid.Config{Action: grid.Action{CreateLinks: createLinks}})
+	var src grid.Source
+	src = grid.Orm(&auth.User{})
+
+	// TODO can be soved by event trigger and a SetSource function?
+	if customAccount != nil {
+		// need to create a new instance.
+		tmpSrc := reflect.New(reflect.TypeOf(customAccount.Interface()).Elem())
+		src = grid.Orm(tmpSrc.Interface().(orm.Interface))
+	}
+
+	g, err := grid.New(c, src, grid.Config{Action: grid.Action{CreateLinks: createLinks}})
 	if err != nil {
 		c.Error(500, err)
 		return
 	}
 
-	g.Field("Login").SetRemove(grid.NewValue(false))
-	g.Field("Salutation").SetRemove(grid.NewValue(false))
-	g.Field("Name").SetRemove(grid.NewValue(false))
-	g.Field("Surname").SetRemove(grid.NewValue(false))
-	g.Field("State").SetRemove(grid.NewValue(false))
-	g.Field("LastLogin").SetRemove(grid.NewValue(false))
-
-	g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "Name", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
-	g.Field("Roles.Name").SetRemove(grid.NewValue(false))
+	// TODO this can be solved by event triggers
+	if customFn != nil {
+		err = customFn(g)
+		if err != nil {
+			c.Error(500, err)
+			return
+		}
+	} else {
+		g.Field("Login").SetRemove(grid.NewValue(false))
+		g.Field("Salutation").SetRemove(grid.NewValue(false))
+		g.Field("Name").SetRemove(grid.NewValue(false))
+		g.Field("Surname").SetRemove(grid.NewValue(false))
+		g.Field("State").SetRemove(grid.NewValue(false))
+		g.Field("LastLogin").SetRemove(grid.NewValue(false))
+		g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "Name", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
+		g.Field("Roles.Name").SetRemove(grid.NewValue(false))
+	}
 
 	g.Render()
 }

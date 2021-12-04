@@ -25,7 +25,7 @@ var (
 	ErrParam = "context: the param %#v does not exist"
 )
 
-// Localizer of the request.
+// DefaultLang of the request.
 // Its added by the server.Translation.
 // The controller can not call the server package (import cycle), thats why its here.
 var (
@@ -57,6 +57,11 @@ func (r *Request) Body() []byte {
 // SetBody for manipulations.
 func (r *Request) SetBody(body []byte) {
 	r.body = body
+}
+
+// SetLocale to manipulate the request locale.
+func (r *Request) SetLocale(lang string) {
+	r.locale = translation.Localizer(lang)
 }
 
 // Locale is used to translate message ids in the controller.
@@ -306,7 +311,7 @@ func newRequest(r *http.Request) *Request {
 		if lang == "" {
 			lang = DefaultLang
 		}
-		req.locale = translation.Localizer(lang)
+		req.SetLocale(lang)
 	}
 
 	return req

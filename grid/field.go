@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/patrickascher/gofer/grid/options"
 	"reflect"
+	"sync"
 
 	"github.com/patrickascher/gofer/query"
 )
@@ -18,6 +19,8 @@ var (
 	ErrOperator   = "grid: filter operator %s is not allowed in field %s"
 	ErrFieldValue = "grid: field value must be a %s, given %v"
 )
+
+var mutex = sync.RWMutex{}
 
 // Field struct.
 type Field struct {
@@ -260,6 +263,8 @@ func (f Field) Options() map[string][]interface{} {
 // If the key does not exist, nil will return.
 // TODO check if field error is better?
 func (f Field) Option(key string) []interface{} {
+	mutex.RLock()
+	defer mutex.RUnlock()
 	if v, ok := f.option[key]; ok {
 		return v
 	}
@@ -269,9 +274,14 @@ func (f Field) Option(key string) []interface{} {
 // SetOption will define an option by key and value.
 func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	if f.option == nil {
+		mutex.Lock()
 		f.option = map[string][]interface{}{}
+		mutex.Unlock()
 	}
+
+	mutex.Lock()
 	f.option[key] = append([]interface{}{}, value...)
+	mutex.Unlock()
 
 	//experimental, on set select the textValue will be set as decorator
 	if key == options.SELECT {

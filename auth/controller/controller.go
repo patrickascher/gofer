@@ -26,6 +26,7 @@ import (
 
 func init() {
 	translation.AddRawMessage(
+		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.Description", Other: "Login-screen description"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ForgotPassword", Other: "Forgot password"},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordLength", Other: "Password length min 6 chars."},
 		i18n.Message{ID: translation.CTRL + "auth.Controller.Login.ErrPasswordMatch", Other: "Password does not match"},

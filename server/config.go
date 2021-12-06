@@ -35,6 +35,7 @@ type ConfigurationApp struct {
 	Logo      string `frontend:""`
 	LogoSmall string `frontend:""`
 	BgImg     string `frontend:""`
+	BgDark    bool   `frontend:""`
 }
 
 type I18n struct {
@@ -42,7 +43,6 @@ type I18n struct {
 	translation.Config
 }
 
-// Mail configuration
 type ConfigurationMail struct {
 	Server   string
 	Port     int
@@ -51,7 +51,6 @@ type ConfigurationMail struct {
 	From     string
 }
 
-// Auth configuration
 type ConfigurationAuth struct {
 	Providers            map[string]map[string]interface{} `frontend:""`
 	JWT                  jwt.Config

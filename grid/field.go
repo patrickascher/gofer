@@ -286,7 +286,9 @@ func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	//experimental, on set select the textValue will be set as decorator
 	if key == options.SELECT {
 		sel := value[0].(options.Select)
-		f.SetOption(options.DECORATOR, "{{"+sel.TextField+"}}", ", ")
+		if sel.TextField != "" {
+			f.SetOption(options.DECORATOR, "{{"+sel.TextField+"}}", ", ")
+		}
 	}
 
 	return f

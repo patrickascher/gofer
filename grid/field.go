@@ -32,12 +32,13 @@ type Field struct {
 	primary bool
 	fType   string
 
-	title       value
-	description value
-	position    value
-	remove      value
-	hidden      value
-	view        value
+	title        value
+	description  value
+	position     value
+	remove       value
+	hidden       value
+	view         value
+	defaultValue value
 
 	readOnly  bool
 	sortAble  bool
@@ -87,6 +88,23 @@ func (f Field) Type() string {
 // SetType of the field.
 func (f *Field) SetType(t string) *Field {
 	f.fType = t
+	return f
+}
+
+// DefaultValue of the field.
+func (f Field) DefaultValue() string {
+	if rv := f.defaultValue.get(f.mode); rv != nil {
+		return rv.(string)
+	}
+	return ""
+}
+
+// SetDefaultValue of the field.
+// The argument must be a grid.NewValue() or string.
+// Title can have different values between the grid modes.
+// Error will be set if the type is not grid.NewValue() or string.
+func (f *Field) SetDefaultValue(value interface{}) *Field {
+	setValuerByInterface(f, &f.defaultValue, value, "string")
 	return f
 }
 
@@ -352,6 +370,9 @@ func (f Field) MarshalJSON() ([]byte, error) {
 	}
 	rv["position"] = f.Position()
 
+	if v := f.DefaultValue(); v != "" {
+		rv["defaultValue"] = v
+	}
 	if v := f.Removed(); v {
 		rv["remove"] = v
 	}

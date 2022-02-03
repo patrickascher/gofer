@@ -783,7 +783,7 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 	if err != nil {
 		relScope.Model().SetPermissions(orm.WHITELIST, reqFields...)
 	} else {
-		fmt.Println(g.Scope().Controller().Context().Request.Param("allFields"))
+		//fmt.Println(g.Scope().Controller().Context().Request.Param("allFields"))
 	}
 
 	// request the data

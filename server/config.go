@@ -49,6 +49,7 @@ type ConfigurationMail struct {
 	User     string
 	Password string
 	From     string
+	SSL      bool
 }
 
 type ConfigurationAuth struct {

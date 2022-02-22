@@ -34,7 +34,7 @@ func New(to []string, from string, subject string, body string, attachments ...s
 
 	// TODO: error if not defined correctly.
 
-	d := gomail.Dialer{Host: cfg.Mail.Server, Port: cfg.Mail.Port, Username: cfg.Mail.User, Password: cfg.Mail.Password}
+	d := gomail.NewDialer(cfg.Mail.Server, cfg.Mail.Port, cfg.Mail.User, cfg.Mail.Password)
 	err = d.DialAndSend(m)
 	if err != nil {
 		return fmt.Errorf(ErrMailer, err)

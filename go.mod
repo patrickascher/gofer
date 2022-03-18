@@ -19,6 +19,7 @@ require (
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/onsi/ginkgo v1.15.2 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect
+	github.com/patrickascher/ora v4.1.15+incompatible
 	github.com/peterhellberg/duration v0.0.0-20191119133758-ec6baeebcd10
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
@@ -31,4 +32,5 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/guregu/null.v4 v4.0.0
+	gopkg.in/rana/ora.v4 v4.1.15 // indirect
 )

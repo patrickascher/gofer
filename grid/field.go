@@ -234,6 +234,8 @@ func (f *Field) SetSort(allow bool, customize ...string) *Field {
 	f.sortAble = allow
 	if len(customize) > 0 {
 		f.sortField = customize[0]
+	} else {
+		f.sortField = f.name
 	}
 	return f
 }
@@ -257,6 +259,9 @@ func (f *Field) SetFilter(allow bool, customize ...string) *Field {
 		if len(customize) == 2 {
 			f.filterField = customize[1]
 		}
+	} else {
+		f.filterCondition = query.LIKE
+		f.filterField = f.name
 	}
 	return f
 }

@@ -376,7 +376,7 @@ func (g *grid) Render() {
 			return
 		}
 
-		// pagination only on table vied
+		// pagination only on table view
 		if g.Mode() == FeTable {
 			pagination, err := g.newPagination(c)
 			if err != nil {

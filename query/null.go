@@ -256,6 +256,7 @@ func (b NullBool) MarshalText() ([]byte, error) {
 // It supports number, string, and null input.
 // 0 will not be considered a null Int.
 func (i *NullInt) UnmarshalJSON(data []byte) error {
+
 	if bytes.Equal(data, nullBytes) {
 		i.Valid = false
 		return nil

@@ -55,7 +55,7 @@ func (s *SelectBase) Render() (string, []interface{}, error) {
 
 	columns := s.SColumns
 	if len(s.SColumns) == 0 {
-		columns = append(columns, "*")
+		columns = append(columns, dbExpr+"*")
 	}
 
 	selectStmt := "SELECT " + s.Provider.QuoteIdentifier(columns...) + " FROM " + s.Provider.QuoteIdentifier(s.STable)

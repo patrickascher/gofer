@@ -70,7 +70,7 @@ func defaultConfig(ctrl controller.Interface) Config {
 		},
 		Filter: Filter{
 			AllowedRowsPerPage: []int{-1, 5, 10, 15, 25, 50},
-			RowsPerPage:        15,
+			RowsPerPage:        10,
 		},
 		Exports: nil,
 	}

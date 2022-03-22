@@ -11,7 +11,7 @@ import (
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/query/types"
-	_ "github.com/patrickascher/ora" // oracle driver
+	_ "gopkg.in/rana/ora.v4" // oracle driver
 )
 
 // Error messages.

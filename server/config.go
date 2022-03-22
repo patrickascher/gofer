@@ -36,7 +36,7 @@ type ConfigurationApp struct {
 	LogoSmall string `frontend:""`
 	BgImg     string `frontend:""`
 	BgDark    bool   `frontend:""`
-	Debug     bool
+	Debug     bool   `frontend:""`
 }
 
 type I18n struct {

@@ -38,7 +38,7 @@ const (
 	paramModeDetails  = "details"
 	paramModeExport   = "export"
 	paramExportType   = "type"
-	paramOnlyData     = "onlyData"
+	paramOnlyData     = "onlyData" // value can be 1 (only load data) or 2 (load data and pagination)
 	// pagination
 	paginationLimit = "limit"
 	paginationPage  = "page"
@@ -377,14 +377,21 @@ func (g *grid) Render() {
 		}
 
 		// pagination only on table view
+		// in the "newPagination" function the orm.Count is called and the condition is getting modified.
+		// that`s why we need two paginationRequired calls.
+		// TODO: can be simplified to avoid one extra call when there is time.
 		if g.Mode() == FeTable {
 			pagination, err := g.newPagination(c)
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
 				return
 			}
-			g.controller.Set(ctrlPagination, pagination)
+			// only set pagination if its required.
+			if g.paginationRequired() {
+				g.controller.Set(ctrlPagination, pagination)
+			}
 		}
+
 		// add header as long as the param noHeader is not given.
 		if _, err := g.controller.Context().Request.Param(paramOnlyData); err != nil {
 			g.controller.Set(ctrlHead, g.sortFields())
@@ -452,6 +459,14 @@ func (g *grid) sortFields() []Field {
 		return g.fields[i].Position() < g.fields[j].Position()
 	})
 	return g.fields
+}
+
+// paginationRequired will return true if the header info is needed or the pagination data.
+func (g *grid) paginationRequired() bool {
+	if v, err := g.Controller().Context().Request.Param("onlyData"); err != nil || (err == nil && v[0] == "2") {
+		return true
+	}
+	return false
 }
 
 // copySlice is creating a new slice of fields.

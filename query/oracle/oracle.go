@@ -128,7 +128,7 @@ type information struct {
 // If the columns argument is set, only the required columns are requested.
 func (i *information) Describe(columns ...string) ([]query.Column, error) {
 
-	sel := i.oracle.Query().Select("USER_TAB_COLUMNS")
+	sel := i.oracle.Query().Select("ALL_TAB_COLUMNS")
 	sel.Columns("COLUMN_NAME",
 		"COLUMN_ID",
 		query.DbExpr("case when NULLABLE='Y' THEN 'TRUE' ELSE 'FALSE' END AS \"N\""),

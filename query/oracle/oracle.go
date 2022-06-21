@@ -57,7 +57,7 @@ func (m *oracle) Config() query.Config {
 
 // QuoteIdentifierChar for mysql.
 func (m *oracle) QuoteIdentifierChar() string {
-	return "\""
+	return ""
 }
 
 // Open creates a new *sql.DB.

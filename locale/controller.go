@@ -35,7 +35,8 @@ func init() {
 	translation.AddRawMessage(
 		i18n.Message{ID: ctrl + ".Translation.AddLanguage", Description: "", Other: "Add language"},
 		i18n.Message{ID: ctrl + ".Translation.Translation", Description: "", Other: "Translation"},
-		i18n.Message{ID: ctrl + ".Translation.ID", Description: "", Other: "ID"})
+		i18n.Message{ID: ctrl + ".Translation.ID", Description: "", Other: "ID"},
+		i18n.Message{ID: ctrl + ".Translation.Sync", Description: "", Other: "Sync"})
 }
 
 // SEPARATOR is used to split the message into groups.
@@ -82,6 +83,21 @@ type Controller struct {
 // Translation controller implements a CRUD for generating the translations.
 // Translation manage reload will be called on CREATE,UPDATE and DELETE.
 func (c *Controller) Translation() {
+
+	// sync button
+	if p, err := c.Context().Request.Param("mode"); err == nil && p[0] == "sync" {
+		m, err := server.Translation()
+		if err != nil {
+			c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))
+			return
+		}
+		err = m.Reload()
+		if err != nil {
+			c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))
+			return
+		}
+		return
+	}
 
 	// declaration
 	rawMessages, err := rawMessages()

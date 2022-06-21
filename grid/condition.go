@@ -114,6 +114,8 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 		}
 
 		switch gridField.filterCondition {
+		case query.DATE:
+			fmt.Println("DATE Filter TODO (different drivers?)")
 		case query.LIKE, query.NOTLIKE:
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, "%%"+args[0]+"%%")
 		case query.NULL, query.NOTNULL:

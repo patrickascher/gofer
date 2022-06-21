@@ -22,6 +22,7 @@ const (
 	RNOTIN     = "(?) NOT IN "
 	CUSTOM     = "CUSTOM"
 	CUSTOMLIKE = "CUSTOMLIKE"
+	DATE       = "DATE"
 )
 
 // IsOperatorAllowed will return false if the operator is not implemented.

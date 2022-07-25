@@ -108,6 +108,7 @@ func New(provider string, providerOption interface{}, config Config) (Manager, e
 	}
 
 	// set the provider.
+	t = translation{}
 	t.provider = p
 	t.config = config
 

@@ -117,6 +117,10 @@ func (n *Native) ChangePassword(c controller.Interface) error {
 	return auth.ChangePassword(login[0], password[0])
 }
 
+func (n *Native) ChangeProfile(c controller.Interface) error {
+	return nil
+}
+
 // ForgotPassword will send an email to the user with a reset link.
 // The password token will be valid for 15min.
 func (n *Native) ForgotPassword(c controller.Interface) error {

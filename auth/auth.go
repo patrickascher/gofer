@@ -50,6 +50,7 @@ type Interface interface {
 
 	ForgotPassword(p controller.Interface) error
 	ChangePassword(p controller.Interface) error
+	ChangeProfile(p controller.Interface) error
 	RegisterAccount(p controller.Interface) error
 }
 

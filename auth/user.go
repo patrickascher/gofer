@@ -379,7 +379,7 @@ func JWTGenerateCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer, 
 	c.(*Claim).Surname = u.Surname.String
 	c.(*Claim).Login = u.Login
 	c.(*Claim).Options = u.OptionsToMap()
-	c.(*Claim).Roles = append([]string{"Guest"}, flatRoles(u.Roles)...)
+	c.(*Claim).Roles = append([]string{"Guest"}, FlatRoles(u.Roles)...)
 
 	// protocol login if its not a refresh token.
 	if r.Context().Value("refresh") == nil {
@@ -410,14 +410,14 @@ func DeleteUserToken(login string, rt string) error {
 	return u.Update()
 }
 
-// flatRoles - will flatten out all user roles.
-func flatRoles(roles []Role) []string {
+// FlatRoles - will flatten out all user roles.
+func FlatRoles(roles []Role) []string {
 	var rv []string
 
 	for _, role := range roles {
 		rv = append(rv, role.Name)
 		if role.Children != nil {
-			rv = append(rv, flatRoles(role.Children)...)
+			rv = append(rv, FlatRoles(role.Children)...)
 		}
 	}
 

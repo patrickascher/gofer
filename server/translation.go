@@ -32,6 +32,13 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "Password", Description: "", Other: "Password"},
 		i18n.Message{ID: translation.COMMON + "PasswordConfirm", Description: "", Other: "Password confirm"},
 		i18n.Message{ID: translation.COMMON + "Reset", Description: "", Other: "Reset"},
+		i18n.Message{ID: translation.COMMON + "SelectDateFirst", Description: "", Other: "Please select a date first!"},
+		i18n.Message{ID: translation.COMMON + "DateFrom", Description: "", Other: "From"},
+		i18n.Message{ID: translation.COMMON + "TimeFrom", Description: "", Other: "From"},
+		i18n.Message{ID: translation.COMMON + "DateTo", Description: "", Other: "To"},
+		i18n.Message{ID: translation.COMMON + "TimeTo", Description: "", Other: "To"},
+		i18n.Message{ID: translation.COMMON + "ProfileSaved", Description: "", Other: "Profile saved!"},
+		i18n.Message{ID: translation.COMMON + "PasswordSaved", Description: "", Other: "Password saved!"},
 
 		// history experimental.
 		i18n.Message{ID: translation.HISTORY + "Title", Description: "", Other: "History"},

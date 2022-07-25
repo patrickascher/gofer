@@ -86,6 +86,16 @@ func (c *Auth) ForgotPassword() {
 	}
 }
 
+// Profile will call the providers function.
+// TODO better solution for errors/user errors.
+func (c *Auth) Profile() {
+	err := helperProfile(c)
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
+		return
+	}
+}
+
 // Login will check:
 // - if the provider is defined and allowed.
 // - call the providers Login function.
@@ -412,7 +422,31 @@ func AddRoutes(r router.Manager) error {
 		return err
 	}
 
+	err = r.AddSecureRoute(router.NewRoute("/profile/*grid", &a, router.NewMapping(nil, a.Profile, nil)))
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+// helperProfile will check if the provider is valid and if the configuration allows the request.
+func helperProfile(c controller.Interface) error {
+	// auth type.
+	prov, err := c.Context().Request.Param(auth.ParamProvider)
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return err
+	}
+
+	// get provider
+	provider, err := auth.New(prov[0])
+	if err != nil {
+		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
+		return err
+	}
+
+	return provider.ChangeProfile(c)
 }
 
 // helperPasswordProvider will check if the provider is valid and if the configuration allows the request.

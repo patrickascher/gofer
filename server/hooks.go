@@ -28,6 +28,10 @@ const (
 	TRANSLATION
 )
 
+func RunHook(hook ...int) error {
+	return webserver.initHooks(hook...)
+}
+
 // initHooks will initialize all pre-defined server hooks.
 func (s *server) initHooks(hooks ...int) error {
 

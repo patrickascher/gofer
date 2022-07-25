@@ -484,6 +484,7 @@ func (m *Model) Init(caller Interface) error {
 		m.scope = scope{model: m} // needed
 	} else {
 		// setting the default values, builder, table name, database name.
+		m.fields = nil
 		if m.builder = m.caller.DefaultBuilder(); m.builder == nil {
 			return fmt.Errorf(ErrMandatory, "builder", m.scope.Name(true))
 		}

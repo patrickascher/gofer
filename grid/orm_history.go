@@ -195,7 +195,10 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 			rv := reflect.Indirect(reflect.ValueOf(val))
 			rvField := reflect.Indirect(rv.FieldByName(f.name))
 			rvSnapshot := reflect.Indirect(reflect.ValueOf(snapshot))
-			rvSnapshotField := reflect.Indirect(rvSnapshot.FieldByName(f.name))
+			var rvSnapshotField reflect.Value
+			if rvSnapshot.IsValid() {
+				rvSnapshotField = reflect.Indirect(rvSnapshot.FieldByName(f.name))
+			}
 
 			switch f.fType {
 			case orm.ManyToMany:
@@ -216,6 +219,7 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 				}
 			case orm.HasOne:
 				changedValue.Children = updateHistoryEntry(g, f.fields, rvField.Interface(), rvSnapshotField.Interface(), ormChange.Children)
+
 			case orm.HasMany:
 				switch ormChange.Operation {
 				case "create":
@@ -239,14 +243,18 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 								changes[i].Index = index
 							}
 							changedValue.Children = append(changedValue.Children, changes...)
+
 						case "delete":
-							changedValue.Children = manipulateToOld(createHistoryEntry(g, f.fields, snapshotSliceByID(rvSnapshotField.Interface(), index, primaryField(f.fields)), index))
+							if rvSnapshotField.IsValid() {
+								changedValue.Children = manipulateToOld(createHistoryEntry(g, f.fields, snapshotSliceByID(rvSnapshotField.Interface(), index, primaryField(f.fields)), index))
+							}
 						}
 					}
 				case "delete":
 					for i := 0; i < rvSnapshotField.Len(); i++ {
 						changedValue.Children = manipulateToOld(createHistoryEntry(g, f.fields, rvSnapshotField.Index(i).Interface(), i))
 					}
+
 				}
 			}
 

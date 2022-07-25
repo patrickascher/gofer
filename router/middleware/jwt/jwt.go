@@ -159,7 +159,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 }
 
 // Parse the JWT cookie.
-// The Claim will be checked if its valid. If the Claim is expired, the refresh Callback will be called to generate a new Token.
+// The Claim will be checked if it's valid. If the Claim is expired, the refresh Callback will be called to generate a new Token.
 // The Claim will be set as request context JWT.
 // A refresh token will only be generated if the CookieJWT (expired) and CookieRefresh is set.
 func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {

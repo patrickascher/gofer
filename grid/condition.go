@@ -7,6 +7,7 @@ package grid
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
@@ -114,6 +115,82 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 		}
 
 		switch gridField.filterCondition {
+		case query.ORACLEDATE: // TODO different driver? create for each driver a callback.
+			inputDateFormatISO := "2006-01-02T15:04:05Z"
+			inputDateFormat := "2006-01-02"
+			outputDateFormatISO := "2006-01-02 15:04"
+			outputDateFormat := "2006-01-02"
+			var t time.Time
+			var err error
+			if strings.Index(args[0], ",") == -1 {
+				// FROM
+				if strings.Index(args[0], "T") != -1 {
+					t, err = time.Parse(inputDateFormatISO, args[0])
+					if err != nil {
+						return err
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') >= ?", t.Format(outputDateFormatISO))
+				} else {
+					t, err = time.Parse(inputDateFormat, args[0])
+					if err != nil {
+						return err
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') >= ?", t.Format(outputDateFormat))
+				}
+			} else if strings.HasPrefix(args[0], ",") {
+				// TO
+				if strings.Index(args[0][1:], "T") != -1 {
+					t, err = time.Parse(inputDateFormatISO, args[0][1:])
+					if err != nil {
+						return err
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') <= ?", t.Format(outputDateFormatISO))
+				} else {
+					t, err = time.Parse(inputDateFormat, args[0][1:])
+					if err != nil {
+						return err
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') <= ?", t.Format(outputDateFormat))
+				}
+			} else {
+				// FROM TO
+				if strings.Index(args[0], "T") != -1 {
+					if strings.Index(strings.Split(args[0], ",")[0], "T") != -1 {
+						t, err = time.Parse(inputDateFormatISO, strings.Split(args[0], ",")[0])
+						if err != nil {
+							return err
+						}
+					} else {
+						t, err = time.Parse(inputDateFormat, strings.Split(args[0], ",")[0])
+						if err != nil {
+							return err
+						}
+					}
+					var t1 time.Time
+					if strings.Index(strings.Split(args[0], ",")[1], "T") != -1 {
+						t1, err = time.Parse(inputDateFormatISO, strings.Split(args[0], ",")[1])
+						if err != nil {
+							return err
+						}
+					} else {
+						t1, err = time.Parse(inputDateFormat, strings.Split(args[0], ",")[1])
+						if err != nil {
+							return err
+						}
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') >= ? AND TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') <= ?", t.Format(outputDateFormatISO), t1.Format(outputDateFormatISO))
+				} else {
+					t, err = time.Parse(inputDateFormat, strings.Split(args[0], ",")[0])
+					if err != nil {
+						return err
+					}
+					t1, err := time.Parse(inputDateFormat, strings.Split(args[0], ",")[1])
+					if err != nil {
+						return err
+					}
+					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') >= ? AND TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') <= ?", t.Format(outputDateFormat), t1.Format(outputDateFormat))
+				}
+			}
 		case query.DATE:
 			fmt.Println("DATE Filter TODO (different drivers?)")
 		case query.LIKE, query.NOTLIKE:
@@ -124,6 +201,15 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args)
 		case query.RIN, query.RNOTIN:
 			c.SetWhere(gridField.filterCondition+" "+gridField.filterField, args)
+		case query.SANITIZE:
+			if strings.HasPrefix(args[0], "\\%") {
+				c.SetWhere("UPPER("+gridField.filterField+") LIKE ?", "%%"+strings.ToUpper(args[0][2:]))
+			} else if strings.HasSuffix(args[0], "\\%") {
+				c.SetWhere("UPPER("+gridField.filterField+") LIKE ?", strings.ToUpper(args[0][:len(args[0])-2])+"%%")
+			} else {
+				//TODO check % in text because its escaped by \ from golang.
+				c.SetWhere("UPPER("+gridField.filterField+") = ?", strings.ToUpper(args[0]))
+			}
 		case query.CUSTOM, query.CUSTOMLIKE:
 			var argsCustom []interface{}
 			for i := 0; i < strings.Count(gridField.filterField, "?"); i++ {

@@ -255,6 +255,7 @@ func (f *Field) SetFilter(allow bool, customize ...string) *Field {
 		if !query.IsOperatorAllowed(customize[0]) {
 			f.error = fmt.Errorf(ErrOperator, customize[0], f.name)
 		}
+		f.filterField = f.name
 		f.filterCondition = customize[0]
 		if len(customize) == 2 {
 			f.filterField = customize[1]

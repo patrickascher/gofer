@@ -108,11 +108,12 @@ func New(provider string, providerOption interface{}, config Config) (Manager, e
 	}
 
 	// set the provider.
-	t = translation{}
+	// t = translation{} //this got deactived because it overwrites the already set rawMessages. Dont know why this was created.
 	t.provider = p
 	t.config = config
 
 	// add raw messages to provider.
+	fmt.Println(len(t.rawMessages), t.rawMessages)
 	if len(t.rawMessages) > 0 {
 		err := t.provider.AddRawMessage(t.rawMessages)
 		if err != nil {

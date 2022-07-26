@@ -101,6 +101,7 @@ func (c *Controller) Translation() {
 
 	// declaration
 	rawMessages, err := rawMessages()
+	fmt.Println(rawMessages)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, err)
 	}

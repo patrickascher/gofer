@@ -101,7 +101,6 @@ func (c *Controller) Translation() {
 
 	// declaration
 	rawMessages, err := rawMessages()
-	fmt.Println(rawMessages)
 	if err != nil {
 		c.Error(http.StatusInternalServerError, err)
 	}
@@ -110,7 +109,7 @@ func (c *Controller) Translation() {
 	// overview
 	if p, err := c.Context().Request.Param("mode"); err == nil && p[0] == "overview" {
 		// get all translated languages.
-		translated, err := translatedLanguages()
+		translated, err := TranslatedLanguages()
 		if err != nil {
 			c.Error(http.StatusInternalServerError, err)
 		}
@@ -238,7 +237,7 @@ func (c *Controller) Translation() {
 			}
 			c.Set("translation", raw)
 
-			translated, err := translatedLanguages()
+			translated, err := TranslatedLanguages()
 			if err != nil {
 				c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))
 			}
@@ -339,8 +338,8 @@ type langTag struct {
 	Translated  int `json:",omitempty"`
 }
 
-// translatedLanguages is a helper to return all defined languages.
-func translatedLanguages() ([]langTag, error) {
+// TranslatedLanguages is a helper to return all defined languages.
+func TranslatedLanguages() ([]langTag, error) {
 
 	en := display.English.Tags()
 

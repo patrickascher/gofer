@@ -204,7 +204,6 @@ func (m *Model) addDBValidation() error {
 		case "Time", "Date", "DateTime":
 			//TODO check db and struct date/time format.
 		case "Select":
-
 			opt := m.fields[k].Information.Type.(types.Items).Items()
 			cfg := fmt.Sprintf("oneof='%s'", strings.Join(opt, "' '"))
 			m.fields[k].Validator.AddConfig(cfg)

@@ -89,7 +89,6 @@ func (s *server) translationHook() error {
 			context.DefaultLang = s.cfg.Webserver.Translation.DefaultLanguage
 		}
 	}
-	fmt.Println(s.cfg.Webserver.Translation.Provider, "-->", len(s.translation.RawMessages()))
 	return nil
 }
 

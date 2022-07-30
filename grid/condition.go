@@ -6,6 +6,7 @@ package grid
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,6 +62,130 @@ func (g *grid) conditionFirst() (condition.Condition, error) {
 	return c, nil
 }
 
+func (g *grid) userFilter(c condition.Condition) error {
+	filter, err := g.controller.Context().Request.Param("filter")
+	if err == nil {
+		id, err := strconv.Atoi(filter[0])
+		if err != nil {
+			return err
+		}
+
+		uFilter, err := getFilterByID(id, g)
+		if err != nil {
+			return err
+		}
+
+		// set limit
+		if uFilter.RowsPerPage.Valid {
+			limit, err := g.controller.Context().Request.Param(paginationLimit)
+			if err != nil {
+				return err
+			}
+			limit[0] = fmt.Sprint(uFilter.RowsPerPage.Int64)
+		}
+
+		// set active Filter
+		g.config.Filter.Active.ID = uFilter.ID
+		if uFilter.RowsPerPage.Valid {
+			g.config.Filter.Active.RowsPerPage = int(uFilter.RowsPerPage.Int64)
+		}
+
+		// Position/Disable fields
+		if len(uFilter.Fields) > 0 {
+			for i, f := range g.Fields() {
+				remove := true
+				for _, uf := range uFilter.Fields {
+					if uf.Key == f.name {
+						g.fields[i].SetPosition(uf.Pos)
+						remove = false
+						break
+					}
+				}
+				g.fields[i].SetRemove(remove)
+			}
+		}
+
+		// Add filters
+		//TODO Mysql,Oracle have different ways to add/sub dates. create a driver based date function.
+		for _, f := range uFilter.Filters {
+			if gridField := g.Field(f.Key); gridField.error == nil && gridField.filterAble {
+
+				switch f.Op {
+				case "TODAY":
+					c.SetWhere(gridField.name + " >= DATENOW")
+					c.SetWhere(gridField.name + " <= DATENOW")
+				case "YESTERDAY":
+					c.SetWhere(gridField.name + " >= DATENOW-1")
+					c.SetWhere(gridField.name + " < DATENOW")
+				case "WEEK":
+					c.SetWhere(gridField.name + " = WEEK")
+				case "LWEEK":
+					c.SetWhere(gridField.name + " = WEEK-1")
+				case "MONTH":
+					c.SetWhere(gridField.name + " = MONTH")
+				case "LMONTH":
+					c.SetWhere(gridField.name + " = MONTH-1")
+				case "YEAR":
+					c.SetWhere(gridField.name + " = YEAR")
+				case "LYEAR":
+					c.SetWhere(gridField.name + " = YEAR-1")
+				case "!=", "=", ">=", "<=":
+					c.SetWhere(gridField.name+" "+f.Op+" ?", escape(f.Value.String))
+				case "IN":
+					//c.SetWhere(gridField.name+" "+f.Op+" (?)", strings.Split(escape(f.Value.String), ConditionFilterSeparator))
+				case "NOTIN":
+					//c.SetWhere(gridField.name+" NOT IN (?)", strings.Split(escape(f.Value.String), ConditionFilterSeparator))
+				case "NULL":
+					c.SetWhere(gridField.name + " IS NULL")
+				case "NOTNULL":
+					c.SetWhere(gridField.name + " IS NOT NULL")
+				case "Like":
+					c.SetWhere(gridField.name+" LIKE ?", "%%"+escape(f.Value.String)+"%%")
+				case "RLike":
+					c.SetWhere(gridField.name+" LIKE ?", escape(f.Value.String)+"%%")
+				case "LLike":
+					c.SetWhere(gridField.name+" LIKE ?", "%%"+escape(f.Value.String))
+				default:
+					return fmt.Errorf(ErrFieldPermission, f.Key, "filter")
+				}
+			} else {
+				return fmt.Errorf(ErrFieldPermission, f.Key, "filter")
+			}
+		}
+
+		// Add sorts
+		var sort string
+		// add grouping as first param
+		if uFilter.GroupBy.Valid {
+			sort += uFilter.GroupBy.String
+			g.config.Filter.Active.Group = uFilter.GroupBy.String
+			//TODO ASC or DESC
+		}
+		// add order by
+		for _, s := range uFilter.Sorting {
+			if sort != "" {
+				sort += ", "
+			}
+			op := "ASC"
+			if s.Desc {
+				op = "DESC"
+			}
+
+			if gridField := g.Field(s.Key); gridField.error == nil && gridField.sortAble {
+				sort += gridField.name + " " + op
+				g.config.Filter.Active.Sort = append(g.config.Filter.Active.Sort, s.Key+" "+op)
+			} else {
+				return fmt.Errorf(ErrFieldPermission, s.Key, "sort")
+			}
+
+		}
+		if sort != "" {
+			c.SetOrder(sort)
+		}
+	}
+	return nil
+}
+
 // conditionAll return a condition for the grid table and export view.
 // If a grid condition exists, this condition will be appended.
 // Sort and filter_ params are checked. (sort=ID,-Name) (filter_ID=1&filter_Name=John;Doe)
@@ -72,6 +197,12 @@ func (g *grid) conditionAll() (condition.Condition, error) {
 	c := condition.New()
 	if g.srcCondition != nil {
 		c = g.srcCondition.Copy()
+	}
+
+	// user filter
+	err := g.userFilter(c)
+	if err != nil {
+		return nil, err
 	}
 
 	// get all controller params.

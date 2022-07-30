@@ -53,6 +53,9 @@ type Filter struct {
 	OpenQuickFilter     bool  `json:"openQuickFilter,omitempty"`
 	AllowedRowsPerPage  []int `json:"allowedRowsPerPage,omitempty"`
 	RowsPerPage         int   `json:"rowsPerPage,omitempty"`
+
+	Lists  []FeGridFilter `json:"lists,omitempty"`
+	Active FeGridActive   `json:"active,omitempty"`
 }
 
 // defaultConfig for the grid with mandatory settings.

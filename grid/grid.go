@@ -7,9 +7,11 @@ package grid
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/auth"
 	"github.com/patrickascher/gofer/structer"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/patrickascher/gofer/cache"
@@ -61,6 +63,9 @@ const (
 	SrcUpdate
 	SrcDelete
 	SrcCallback
+	FilterCreate
+	FilterUpdate
+	FilterDelete
 )
 
 // frontend operations
@@ -252,10 +257,22 @@ func (g *grid) Mode() int {
 			return FeExport
 		}
 	case http.MethodPost:
+		switch m[0] {
+		case paramModeFilter:
+			return FilterCreate
+		}
 		return SrcCreate
 	case http.MethodPut:
+		switch m[0] {
+		case paramModeFilter:
+			return FilterUpdate
+		}
 		return SrcUpdate
 	case http.MethodDelete:
+		switch m[0] {
+		case paramModeFilter:
+			return FilterDelete
+		}
 		return SrcDelete
 	}
 	return 0
@@ -311,7 +328,8 @@ func (g *grid) Scope() Scope {
 // 		- call conditionFirst
 //		- fetch the entry by the given id and set the controller data.
 // FeFilter
-// 		- TODO
+// 		- add header data if there is no ID given in the param.
+//		- read filter by ID if ID is given in the param.
 // FeHistory
 // 		- add all histories to the given primary key and grid id(s).
 //		- get all linked users.
@@ -381,6 +399,12 @@ func (g *grid) Render() {
 		// that`s why we need two paginationRequired calls.
 		// TODO: can be simplified to avoid one extra call when there is time.
 		if g.Mode() == FeTable {
+
+			// add filter to grid config
+			if f, ok := getFilterList(g); ok == nil {
+				g.config.Filter.Lists = f
+			}
+
 			pagination, err := g.newPagination(c)
 			if err != nil {
 				g.controller.Error(500, fmt.Errorf(errWrap, err))
@@ -436,7 +460,98 @@ func (g *grid) Render() {
 		g.controller.Set(ctrlHead, g.sortFields())
 		g.controller.Set(ctrlData, values)
 	case FeFilter:
-		//TODO
+		m, errParam := g.controller.Context().Request.Param("id")
+		// get filter headers (GET METHOD without ID)
+		if g.controller.Context().Request.IsGet() && errParam != nil {
+			g.controller.Set("head", g.sortFields())
+			return
+		}
+
+		// request with ID param
+		id, err := strconv.Atoi(m[0])
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		item, err := getFilterByID(id, g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		g.controller.Set("item", item)
+		return
+
+	case FilterCreate:
+
+		//Filter source
+		filter := UserGrid{}
+		err = filter.Init(&filter)
+		filter.UserID = g.controller.Context().Request.JWTClaim().(*auth.Claim).UID
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		g.src = Orm(&filter)
+		g.config.History.Disable = true
+
+		pk, err := g.src.Create(g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+
+		// add filter to grid config
+		if f, ok := getFilterList(g); ok == nil {
+			g.controller.Set("filterList", f)
+		}
+		g.controller.Set("pkeys", pk)
+
+		return
+	case FilterUpdate:
+		// update filter
+		filter := UserGrid{}
+		err = filter.Init(&filter)
+		filter.UserID = g.controller.Context().Request.JWTClaim().(*auth.Claim).UID
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		g.src = Orm(&filter)
+		g.config.History.Disable = true
+		err := g.src.Update(g)
+		if err != nil {
+			g.controller.Error(500, fmt.Errorf(errWrap, err))
+			return
+		}
+		if f, ok := getFilterList(g); ok == nil {
+			g.controller.Set("filterList", f)
+		}
+		return
+
+	case FilterDelete:
+		m, errParam := g.controller.Context().Request.Param("id")
+		if g.controller.Context().Request.IsDelete() && errParam == nil {
+			//Filter source
+			filter := UserGrid{}
+			err = filter.Init(&filter)
+			filter.UserID = g.controller.Context().Request.JWTClaim().(*auth.Claim).UID
+			if err != nil {
+				g.controller.Error(500, fmt.Errorf(errWrap, err))
+				return
+			}
+			g.src = Orm(&filter)
+			g.config.History.Disable = true
+			id := m[0]
+			err := g.src.Delete(condition.New().SetWhere("id = ?", id), g)
+			if err != nil {
+				g.controller.Error(500, fmt.Errorf(errWrap, err))
+				return
+			}
+			if f, ok := getFilterList(g); ok == nil {
+				g.controller.Set("filterList", f)
+			}
+			return
+		}
 	case FeHistory:
 		// fetch history
 		histories, users, err := historiesById(g)

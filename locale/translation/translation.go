@@ -113,7 +113,6 @@ func New(provider string, providerOption interface{}, config Config) (Manager, e
 	t.config = config
 
 	// add raw messages to provider.
-	fmt.Println(len(t.rawMessages), t.rawMessages)
 	if len(t.rawMessages) > 0 {
 		err := t.provider.AddRawMessage(t.rawMessages)
 		if err != nil {

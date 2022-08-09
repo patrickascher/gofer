@@ -32,5 +32,24 @@ func init() {
 		i18n.Message{ID: translation.GRID + "Filter.UnsavedChanges", Description: "Message after closing without saving", Other: "There are unsaved changes, do you really want to close?"},
 		i18n.Message{ID: translation.GRID + "Filter.Delete", Description: "Delete filter", Other: "Do you really want to delete this filter?"},
 		i18n.Message{ID: translation.GRID + "Filter.Deleted", Description: "Message after a successful delete", Other: "Filter deleted!"},
-	)
+
+		i18n.Message{ID: translation.GRID + "Filter.Today", Description: "", Other: "Today"},
+		i18n.Message{ID: translation.GRID + "Filter.Yesterday", Description: "", Other: "Yesterday"},
+		i18n.Message{ID: translation.GRID + "Filter.ThisWeek", Description: "", Other: "This week"},
+		i18n.Message{ID: translation.GRID + "Filter.LastWeek", Description: "", Other: "Last week"},
+		i18n.Message{ID: translation.GRID + "Filter.ThisMonth", Description: "", Other: "This month"},
+		i18n.Message{ID: translation.GRID + "Filter.LastMonth", Description: "", Other: "Last month"},
+		i18n.Message{ID: translation.GRID + "Filter.ThisYear", Description: "", Other: "This year"},
+		i18n.Message{ID: translation.GRID + "Filter.LastYear", Description: "", Other: "Last year"},
+		i18n.Message{ID: translation.GRID + "Filter.Equal", Description: "", Other: "Equal"},
+		i18n.Message{ID: translation.GRID + "Filter.NotEqual", Description: "", Other: "Not equal"},
+		i18n.Message{ID: translation.GRID + "Filter.GreaterThan", Description: "", Other: "Greater than"},
+		i18n.Message{ID: translation.GRID + "Filter.LesserThan", Description: "", Other: "Lesser than"},
+		i18n.Message{ID: translation.GRID + "Filter.Null", Description: "", Other: "Null"},
+		i18n.Message{ID: translation.GRID + "Filter.NotNull", Description: "", Other: "Not null"},
+		i18n.Message{ID: translation.GRID + "Filter.In", Description: "", Other: "In"},
+		i18n.Message{ID: translation.GRID + "Filter.NotIn", Description: "", Other: "Not in"},
+		i18n.Message{ID: translation.GRID + "Filter.Like", Description: "", Other: "Like"},
+		i18n.Message{ID: translation.GRID + "Filter.Rlike", Description: "", Other: "Right like"},
+		i18n.Message{ID: translation.GRID + "Filter.Llike", Description: "", Other: "Left like"})
 }

@@ -82,6 +82,11 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 // mergeNavigation database and manually added entries recursively.
 // The position of the navigation points is given.
 func mergeNavigation(navPoints []Navigation, name string, addNav []Navigation) []Navigation {
+	if name == AdditionalNavigationPoint {
+		navPoints = append(addNav, navPoints...)
+		return navPoints
+	}
+
 	for k := range navPoints {
 		if navPoints[k].Title == name {
 			navPoints[k].Children = append(navPoints[k].Children, addNav...)
@@ -89,11 +94,6 @@ func mergeNavigation(navPoints []Navigation, name string, addNav []Navigation) [
 			sort.Slice(navPoints[k].Children, func(i, j int) bool {
 				return navPoints[k].Children[i].Position < navPoints[k].Children[j].Position
 			})
-			return navPoints
-		}
-
-		if name == AdditionalNavigationPoint {
-			navPoints = append(addNav, navPoints...)
 			return navPoints
 		}
 

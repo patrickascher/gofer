@@ -140,6 +140,13 @@ func New(provider string, providerOption interface{}, config Config) (Manager, e
 // This can be used in the init() function for the packages.
 // Raw messages will be sorted by ID.
 func AddRawMessage(m ...i18n.Message) {
+	for _, existingM := range t.rawMessages {
+		for _, addedM := range m {
+			if existingM.ID == addedM.ID {
+				return //message id is duplicated
+			}
+		}
+	}
 	t.rawMessages = append(t.rawMessages, m...)
 	sort.Slice(t.rawMessages, func(i, j int) bool { return t.rawMessages[i].ID < t.rawMessages[j].ID })
 }

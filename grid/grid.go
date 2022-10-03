@@ -233,45 +233,53 @@ func (g *grid) Mode() int {
 	}
 
 	// callbacks can be of all types.
-	if table == nil && m[0] == paramModeCallback {
+	if table == nil && m != nil && m[0] == paramModeCallback {
 		return SrcCallback
 	}
 
 	// Requested HTTP method of the controller.
 	switch httpMethod {
 	case http.MethodGet:
-		switch m[0] {
-		case paramModeFilter:
-			return FeFilter
-		case paramModeHistory:
-			return FeHistory
-		case paramModeCallback:
-			return SrcCallback
-		case paramModeCreate:
-			return FeCreate
-		case paramModeUpdate:
-			return FeUpdate
-		case paramModeDetails:
-			return FeDetails
-		case paramModeExport:
-			return FeExport
+		if m != nil {
+			switch m[0] {
+			case paramModeFilter:
+				return FeFilter
+			case paramModeHistory:
+				return FeHistory
+			case paramModeCallback:
+				return SrcCallback
+			case paramModeCreate:
+				return FeCreate
+			case paramModeUpdate:
+				return FeUpdate
+			case paramModeDetails:
+				return FeDetails
+			case paramModeExport:
+				return FeExport
+			}
 		}
 	case http.MethodPost:
-		switch m[0] {
-		case paramModeFilter:
-			return FilterCreate
+		if m != nil {
+			switch m[0] {
+			case paramModeFilter:
+				return FilterCreate
+			}
 		}
 		return SrcCreate
 	case http.MethodPut:
-		switch m[0] {
-		case paramModeFilter:
-			return FilterUpdate
+		if m != nil {
+			switch m[0] {
+			case paramModeFilter:
+				return FilterUpdate
+			}
 		}
 		return SrcUpdate
 	case http.MethodDelete:
-		switch m[0] {
-		case paramModeFilter:
-			return FilterDelete
+		if m != nil {
+			switch m[0] {
+			case paramModeFilter:
+				return FilterDelete
+			}
 		}
 		return SrcDelete
 	}

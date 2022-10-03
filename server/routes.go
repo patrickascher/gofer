@@ -5,6 +5,7 @@
 package server
 
 import (
+	"github.com/patrickascher/gofer/orm"
 	"reflect"
 	"sort"
 	"strings"
@@ -24,6 +25,10 @@ type Route struct {
 	Public   bool   `validate:"omitempty"`
 	Frontend bool   `validate:"omitempty"`
 	Method   string `validate:"-"`
+}
+
+func (r Route) DefaultTableName() string {
+	return orm.OrmFwPrefix + "routes"
 }
 
 // createRouteDatabaseEntries will create a db entry if configured.
@@ -95,7 +100,7 @@ func createRouteDatabaseEntries(manager router.Manager) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.Builder().Query().Update("routes").Set(map[string]interface{}{"deleted_at": time.Now()}).Where("deleted_at IS NULL").Where("frontend = 0").Where("id NOT IN (?)", activeIDs).Exec()
+	_, err = s.Builder().Query().Update(orm.OrmFwPrefix+"routes").Set(map[string]interface{}{"deleted_at": time.Now()}).Where("deleted_at IS NULL").Where("frontend = 0").Where("id NOT IN (?)", activeIDs).Exec()
 	return err
 }
 

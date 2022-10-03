@@ -31,7 +31,11 @@ type Navigation struct {
 	Note    query.NullString
 	Route   server.Route `orm:"relation:belongsTo"`
 
-	Children []Navigation
+	Children []Navigation `orm:"join_table:fw_navigation_navigations"`
+}
+
+func (n Navigation) DefaultTableName() string {
+	return orm.OrmFwPrefix + "navigations"
 }
 
 // EndpointsByRoles will return all nav endpoints which are allowed for the given roles.
@@ -47,8 +51,9 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 	}
 
 	c := condition.New()
-	c.SetWhere("id NOT IN (SELECT child_id FROM navigation_navigations)")
-	c.SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR (navigations.route_id IS NULL AND EXISTS(SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE routes.id IN (Select n.route_id FROM navigation_navigations nn LEFT JOIN navigations n ON nn.child_id = n.id WHERE nn.navigation_id = navigations.id) and roles.name IN (?))) )", roles, roles)
+
+	c.SetWhere("id NOT IN (SELECT child_id FROM " + orm.OrmFwPrefix + "navigation_navigations)")
+	c.SetWhere("EXISTS ( SELECT "+orm.OrmFwPrefix+"roles.name FROM "+orm.OrmFwPrefix+"routes LEFT JOIN "+orm.OrmFwPrefix+"role_routes ON "+orm.OrmFwPrefix+"role_routes.route_id = "+orm.OrmFwPrefix+"routes.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" LEFT JOIN "+orm.OrmFwPrefix+"roles ON "+orm.OrmFwPrefix+"role_routes.role_id = "+orm.OrmFwPrefix+"roles.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" WHERE ("+orm.OrmFwPrefix+"routes.id = "+orm.OrmFwPrefix+"navigations.route_id AND "+orm.OrmFwPrefix+"roles.name IN (?)) OR ("+orm.OrmFwPrefix+"navigations.route_id IS NULL AND EXISTS(SELECT "+orm.OrmFwPrefix+"roles.name FROM "+orm.OrmFwPrefix+"routes LEFT JOIN "+orm.OrmFwPrefix+"role_routes ON "+orm.OrmFwPrefix+"role_routes.route_id = "+orm.OrmFwPrefix+"routes.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" LEFT JOIN "+orm.OrmFwPrefix+"roles ON "+orm.OrmFwPrefix+"role_routes.role_id = "+orm.OrmFwPrefix+"roles.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" WHERE "+orm.OrmFwPrefix+"routes.id IN (Select n.route_id FROM "+orm.OrmFwPrefix+"navigation_navigations nn LEFT JOIN "+orm.OrmFwPrefix+"navigations n ON nn.child_id = n.id WHERE nn.navigation_id = "+orm.OrmFwPrefix+"navigations.id) and "+orm.OrmFwPrefix+"roles.name IN (?))) )", roles, roles)
 	c.SetOrder("position")
 
 	// adding a custom sql condition for the children relation (only display navigation points for the users role)
@@ -56,7 +61,7 @@ func (n *Navigation) EndpointsByRoles(roles []string, controller controller.Inte
 	if err != nil {
 		return nil, err
 	}
-	s.SetConfig(orm.NewConfig().SetCondition(condition.New().SetOrder("position").SetWhere("EXISTS ( SELECT roles.name FROM routes LEFT JOIN role_routes ON role_routes.route_id = routes.id AND role_routes.route_type =\"Frontend\" LEFT JOIN roles ON role_routes.role_id = roles.id AND role_routes.route_type =\"Frontend\" WHERE (routes.id = navigations.route_id AND roles.name IN (?)) OR navigations.route_id IS NULL)", roles)), "Children")
+	s.SetConfig(orm.NewConfig().SetCondition(condition.New().SetOrder("position").SetWhere("EXISTS ( SELECT "+orm.OrmFwPrefix+"roles.name FROM "+orm.OrmFwPrefix+"routes LEFT JOIN "+orm.OrmFwPrefix+"role_routes ON "+orm.OrmFwPrefix+"role_routes.route_id = "+orm.OrmFwPrefix+"routes.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" LEFT JOIN "+orm.OrmFwPrefix+"roles ON "+orm.OrmFwPrefix+"role_routes.role_id = "+orm.OrmFwPrefix+"roles.id AND "+orm.OrmFwPrefix+"role_routes.route_type =\"Frontend\" WHERE ("+orm.OrmFwPrefix+"routes.id = "+orm.OrmFwPrefix+"navigations.route_id AND "+orm.OrmFwPrefix+"roles.name IN (?)) OR "+orm.OrmFwPrefix+"navigations.route_id IS NULL)", roles)), "Children")
 
 	nav.SetPermissions(orm.WHITELIST, "Icon", "Position", "Route.Name", "Route.Pattern", "Title", "Children")
 	err = nav.All(&res, c)

@@ -28,6 +28,10 @@ type UserGrid struct {
 	RowsPerPage query.NullInt
 }
 
+func (b UserGrid) DefaultTableName() string {
+	return orm.OrmFwPrefix + "user_grid"
+}
+
 // DefaultCache of the models.
 func (b UserGrid) DefaultCache() (cache.Manager, time.Duration) {
 	c, err := server.Caches()
@@ -54,6 +58,10 @@ type UserGridFilter struct {
 	Key   string
 	Op    string
 	Value query.NullString
+}
+
+func (b UserGridFilter) DefaultTableName() string {
+	return orm.OrmFwPrefix + "user_grid_filter"
 }
 
 // DefaultCache of the models.
@@ -84,6 +92,10 @@ type UserGridSort struct {
 	Desc bool
 }
 
+func (b UserGridSort) DefaultTableName() string {
+	return orm.OrmFwPrefix + "user_grid_sort"
+}
+
 // DefaultCache of the models.
 func (b UserGridSort) DefaultCache() (cache.Manager, time.Duration) {
 	c, err := server.Caches()
@@ -109,6 +121,10 @@ type UserGridField struct {
 
 	Key string
 	Pos int
+}
+
+func (b UserGridField) DefaultTableName() string {
+	return orm.OrmFwPrefix + "user_grid_field"
 }
 
 // DefaultCache of the models.

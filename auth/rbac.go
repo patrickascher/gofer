@@ -5,6 +5,7 @@
 package auth
 
 import (
+	"github.com/patrickascher/gofer/orm"
 	"strings"
 
 	"github.com/patrickascher/gofer/query"
@@ -47,10 +48,11 @@ func BuildRouteGuard() error {
 	}
 
 	// build select
-	rows, err := b[0].Query().Select("routes").Columns("routes.pattern", "method", "roles.name").
-		Join(condition.LEFT, "role_routes", "role_routes.route_id = routes.id AND role_routes.route_type = \"Backend\"").
-		Join(condition.LEFT, "roles", "role_routes.role_id  = roles.id").
-		Where("routes.deleted_at IS NULL").Where("routes.frontend = 0").All()
+
+	rows, err := b[0].Query().Select(orm.OrmFwPrefix+"routes").Columns(orm.OrmFwPrefix+"routes.pattern", "method", orm.OrmFwPrefix+"roles.name").
+		Join(condition.LEFT, orm.OrmFwPrefix+"role_routes", orm.OrmFwPrefix+"role_routes.route_id = "+orm.OrmFwPrefix+"routes.id AND "+orm.OrmFwPrefix+"role_routes.route_type = \"Backend\"").
+		Join(condition.LEFT, orm.OrmFwPrefix+"roles", orm.OrmFwPrefix+"role_routes.role_id  = "+orm.OrmFwPrefix+"roles.id").
+		Where(orm.OrmFwPrefix + "routes.deleted_at IS NULL").Where(orm.OrmFwPrefix + "routes.frontend = 0").All()
 	if err != nil {
 		return err
 	}

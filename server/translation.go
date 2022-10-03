@@ -86,7 +86,7 @@ func navTranslation() error {
 	Desc := "Navigation endpoint of %s%s"
 	MessageID := translation.NAV + "%s"
 
-	rows, err := webserver.databases[0].Query().Select("navigations").Columns("title", "routes.pattern").Join(condition.LEFT, "routes", "navigations.route_id = routes.id").Order("title").All()
+	rows, err := webserver.databases[0].Query().Select(orm.OrmFwPrefix+"navigations").Columns("title", orm.OrmFwPrefix+"routes.pattern").Join(condition.LEFT, orm.OrmFwPrefix+"routes", orm.OrmFwPrefix+"navigations.route_id = "+orm.OrmFwPrefix+"routes.id").Order("title").All()
 	if err != nil {
 		return err
 	}

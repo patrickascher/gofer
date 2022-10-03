@@ -69,13 +69,17 @@ type User struct {
 	LastFailedLogin query.NullTime `json:",omitempty"`
 
 	RefreshTokens []RefreshToken `json:",omitempty"`
-	Roles         []Role         `orm:"relation:m2m" json:",omitempty" validate:"min=1"`
+	Roles         []Role         `orm:"relation:m2m;join_table:fw_user_roles" json:",omitempty" validate:"min=1"`
 	Options       []Option       `json:",omitempty"`
 
 	// security
 	allowedFailedLogins       int
 	allowedInactivityDuration time.Duration
 	lockDuration              time.Duration
+}
+
+func (u User) DefaultTableName() string {
+	return orm.OrmFwPrefix + "users"
 }
 
 func (u User) HasRole(role string) bool {
@@ -234,7 +238,7 @@ type Option struct {
 }
 
 func (o Option) DefaultTableName() string {
-	return "user_options"
+	return orm.OrmFwPrefix + "user_options"
 }
 
 // Role struct is holding the permission for frontend and backend routes.
@@ -245,9 +249,13 @@ type Role struct {
 	Name        string           `json:",omitempty"`
 	Description query.NullString `json:",omitempty"`
 
-	Children []Role         `json:",omitempty"`
-	Backend  []server.Route `orm:"relation:m2m;poly:Route;poly_value:Backend;join_table:role_routes;join_fk:role_id" json:",omitempty"`
-	Frontend []server.Route `orm:"relation:m2m;poly:Route;poly_value:Frontend;join_table:role_routes;join_fk:role_id" json:",omitempty"`
+	Children []Role         `json:",omitempty" orm:"join_table:fw_role_roles"`
+	Backend  []server.Route `orm:"relation:m2m;poly:Route;poly_value:Backend;join_table:fw_role_routes;join_fk:role_id" json:",omitempty"`
+	Frontend []server.Route `orm:"relation:m2m;poly:Route;poly_value:Frontend;join_table:fw_role_routes;join_fk:role_id" json:",omitempty"`
+}
+
+func (r Role) DefaultTableName() string {
+	return orm.OrmFwPrefix + "roles"
 }
 
 // UserByLogin will return the user.

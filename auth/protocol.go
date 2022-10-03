@@ -6,6 +6,7 @@ package auth
 
 import (
 	"fmt"
+	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 )
@@ -34,7 +35,7 @@ type Protocol struct {
 
 //DefaultTableName of the protocol model.
 func (p Protocol) DefaultTableName() string {
-	return "user_protocols"
+	return orm.OrmFwPrefix + "user_protocols"
 }
 
 // AddProtocol is a helper to log a key, value(optional) for the given user id.

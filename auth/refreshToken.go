@@ -24,6 +24,10 @@ type RefreshToken struct {
 	Expire query.NullTime
 }
 
+func (r RefreshToken) DefaultTableName() string {
+	return "fw_refresh_tokens"
+}
+
 // DeleteExpired refresh tokens of the user account.
 func (r *RefreshToken) DeleteExpired() error {
 	err := r.Init(r)

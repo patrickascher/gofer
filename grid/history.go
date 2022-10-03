@@ -58,6 +58,10 @@ type History struct {
 	Value  string
 }
 
+func (h History) DefaultTableName() string {
+	return orm.OrmFwPrefix + "histories"
+}
+
 func (h History) DefaultCache() (cache.Manager, time.Duration) {
 	c, err := server.Caches()
 	if err != nil || len(c) < 1 {

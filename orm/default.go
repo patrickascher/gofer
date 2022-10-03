@@ -12,6 +12,8 @@ import (
 	"github.com/patrickascher/gofer/stringer"
 )
 
+var OrmFwPrefix = "fw_"
+
 // Defined struct time field names.
 const (
 	CreatedAt = "CreatedAt"
@@ -44,6 +46,7 @@ func (m Model) DefaultSoftDelete() SoftDelete {
 
 // DefaultTableName will be the plural struct name in snake style.
 func (m Model) DefaultTableName() string {
+
 	return stringer.CamelToSnake(stringer.Plural(m.scope.Name(false)))
 }
 

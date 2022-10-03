@@ -10,6 +10,7 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/patrickascher/gofer/orm"
 	"os"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -49,7 +50,7 @@ type Message struct {
 
 // DefaultTableName sets a different table name.
 func (m *Message) DefaultTableName() string {
-	return "translations"
+	return orm.OrmFwPrefix + "translations"
 }
 
 // ToI18nMessage converts a orm message to an i18n.Message.
@@ -99,7 +100,7 @@ func (d *dbBundle) Languages() ([]language.Tag, error) {
 		return nil, err
 	}
 
-	rows, err := b[0].Query().Select("translations").Columns("lang").Where("lang != ?", translation.RAW).Group("lang").All()
+	rows, err := b[0].Query().Select(orm.OrmFwPrefix+"translations").Columns("lang").Where("lang != ?", translation.RAW).Group("lang").All()
 	if err != nil {
 		return nil, err
 	}

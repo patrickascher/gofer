@@ -158,7 +158,7 @@ func (m *Model) addDBValidation() error {
 	for k := range m.fields {
 
 		// only writeable field need a validation.
-		if m.fields[k].Permission.Write != true {
+		if m.fields[k].Permission.Write != true || m.fields[k].Information.Type == nil {
 			continue
 		}
 
@@ -177,10 +177,7 @@ func (m *Model) addDBValidation() error {
 			m.fields[k].Validator.AddConfig("omitempty")
 		}
 
-		// if the field is mandatory
-		// TODO create a function to set required, omitempty at the beginning (Prepend) and check if its already prependet.
-		// TODO error messages on required + omitempty? because they does not make sense together.
-		if !m.fields[k].Information.NullAble && !m.fields[k].Information.Autoincrement && !isBelongsTo && m.fields[k].Information.Type.Kind() != "Bool" {
+		if m.fields[k].Information.Type != nil && !m.fields[k].Information.NullAble && !m.fields[k].Information.Autoincrement && !isBelongsTo && m.fields[k].Information.Type.Kind() != "Bool" {
 			m.fields[k].Validator.AddConfig("required")
 		}
 

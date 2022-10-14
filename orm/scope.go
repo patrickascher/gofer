@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"os"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -606,6 +607,12 @@ func implementsInterface(value reflect.Value) bool {
 
 // implementsScannerValuer is a helper to identify if the given reflect.Value implements the sql.Scanner and driver.Valuer interface.
 func implementsScannerValuer(value reflect.Value) bool {
+
+	// allow time.Time
+	if value.Type().String() == "time.Time" {
+		return true
+	}
+
 	v := newValueInstanceFromType(value.Type())
 	if v.Addr().Type().Implements(reflect.TypeOf((*sql.Scanner)(nil)).Elem()) && v.Addr().Type().Implements(reflect.TypeOf((*driver.Valuer)(nil)).Elem()) {
 		return true
@@ -844,6 +851,12 @@ func (s scope) allowedFieldType(field reflect.Value) error {
 	case reflect.Float32, reflect.Float64:
 		return nil
 	case reflect.Bool:
+		return nil
+	}
+
+	fmt.Println(rv.String(), rv.Kind().String())
+	os.Exit(1)
+	if rv.Kind().String() == "time.Time" {
 		return nil
 	}
 

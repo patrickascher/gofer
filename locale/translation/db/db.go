@@ -278,7 +278,7 @@ func (d *dbBundle) AddRawMessage(messages []i18n.Message) error {
 		if err != nil {
 			return err
 		}
-		_, err = s.Builder().Query().Delete("translations").Where("id IN (?)", existingIDs).Exec()
+		_, err = s.Builder().Query().Delete(orm.OrmFwPrefix+"translations").Where("id IN (?)", existingIDs).Exec()
 		if err != nil {
 			return err
 		}

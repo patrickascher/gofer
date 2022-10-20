@@ -18,6 +18,8 @@ import (
 
 func init() {
 	translation.AddRawMessage(
+		i18n.Message{ID: translation.COMMON + "BOOL.True", Description: "", Other: "True"},
+		i18n.Message{ID: translation.COMMON + "BOOL.False", Description: "", Other: "False"},
 		i18n.Message{ID: translation.COMMON + "Language", Description: "", Other: "Language"},
 		i18n.Message{ID: translation.COMMON + "Add", Description: "", Other: "Add"},
 		i18n.Message{ID: translation.COMMON + "Save", Description: "", Other: "Save"},

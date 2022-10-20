@@ -485,10 +485,18 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 					// Soluation id - the field with the next "TEXT" type orm description.
 					// 3 fields = id, parendid, text
 					// 2 fields = id, value
-					if relation.Type.NumField() == 2 {
-						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(1).Name, ValueField: relation.Mapping.References.Name})
+
+					var t reflect.Type
+					if relation.Type.Kind() == reflect.Ptr {
+						t = relation.Type.Elem()
 					} else {
-						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: relation.Type.Field(2).Name, ValueField: relation.Mapping.References.Name})
+						t = relation.Type
+					}
+
+					if t.NumField() == 2 {
+						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: t.Field(1).Name, ValueField: relation.Mapping.References.Name})
+					} else {
+						rv[k].SetOption(options.SELECT, options.Select{ReturnValue: true, OrmField: parent + relation.Field, TextField: t.Field(2).Name, ValueField: relation.Mapping.References.Name})
 					}
 				}
 			}
@@ -505,10 +513,16 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			if relation.Kind == orm.BelongsTo {
 				// TODO see above
 				// display only the text field... experimental
-				if relation.Type.NumField() == 2 {
-					field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(1).Name+"}}")
+				var t reflect.Type
+				if relation.Type.Kind() == reflect.Ptr {
+					t = relation.Type.Elem()
 				} else {
-					field.SetOption(options.DECORATOR, "{{"+relation.Type.Field(2).Name+"}}")
+					t = relation.Type
+				}
+				if t.NumField() == 2 {
+					field.SetOption(options.DECORATOR, "{{"+t.Field(1).Name+"}}")
+				} else {
+					field.SetOption(options.DECORATOR, "{{"+t.Field(2).Name+"}}")
 				}
 
 			}

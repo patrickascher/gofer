@@ -424,6 +424,14 @@ func (g *grid) Render() {
 			}
 		}
 
+		// set translated titles to an export
+		if g.Mode() == FeExport {
+			for i, f := range g.fields {
+				g.fields[i].title.export = g.controller.T(fmt.Sprint(f.title.export))
+			}
+			g.controller.Set("ctrl", g.Controller())
+		}
+
 		// add header as long as the param noHeader is not given.
 		if _, err := g.controller.Context().Request.Param(paramOnlyData); err != nil {
 			g.controller.Set(ctrlHead, g.sortFields())

@@ -134,25 +134,25 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 		}
 
 		// set the refresh cookie.
-		NewCookie(w, CookieRefresh, refreshToken, t.config.RefreshToken.Expiration)
+		NewCookie(w, CookieRefresh(), refreshToken, t.config.RefreshToken.Expiration)
 
 		// if a refresh token already exists, it means the token was refreshed.
 		// update the refresh token in the request. the old one will get added with the name REFRESH_OLD if needed.
-		if _, err := r.Cookie(CookieRefresh); err == nil {
+		if _, err := r.Cookie(CookieRefresh()); err == nil {
 			cookies := r.Cookies()
 			r.Header.Del("Cookie")
 			for _, c := range cookies {
-				if c.Name == CookieRefresh {
-					r.AddCookie(&http.Cookie{Name: CookieJWT + "_OLD", Value: c.Value})
+				if c.Name == CookieRefresh() {
+					r.AddCookie(&http.Cookie{Name: CookieJWT() + "_OLD", Value: c.Value})
 					continue
 				}
 				r.AddCookie(c)
 			}
-			r.AddCookie(&http.Cookie{Name: CookieRefresh, Value: refreshToken})
+			r.AddCookie(&http.Cookie{Name: CookieRefresh(), Value: refreshToken})
 		}
 
 		// JWT token lives exactly as long as the refresh token, to have some additional data for refreshing (more secure).
-		NewCookie(w, CookieJWT, tokenString, t.config.RefreshToken.Expiration)
+		NewCookie(w, CookieJWT(), tokenString, t.config.RefreshToken.Expiration)
 	}
 
 	return claim, nil
@@ -165,7 +165,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
 
 	// get jwt cookie.
-	token, err := Cookie(r, CookieJWT)
+	token, err := Cookie(r, CookieJWT())
 	if err != nil {
 		return fmt.Errorf("jwt: %w", err)
 	}
@@ -208,7 +208,7 @@ func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
 	// refresh the claim, if allowed.
 	if now > claim.Exp() {
 		// try to refresh jwt. only possible if refresh token and callback exists.
-		if _, err := Cookie(r, CookieRefresh); err == nil && t.CallbackRefresh != nil {
+		if _, err := Cookie(r, CookieRefresh()); err == nil && t.CallbackRefresh != nil {
 			// check callback function if a refresh is allowed
 			err := t.CallbackRefresh(w, r, claim)
 			if err != nil {

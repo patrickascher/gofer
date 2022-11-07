@@ -101,7 +101,7 @@ func (g *grid) userFilter(c condition.Condition) error {
 						break
 					}
 				}
-				g.fields[i].SetRemove(remove)
+				g.fields[i].SetRemove(remove).SetHidden(remove)
 			}
 		}
 

@@ -148,11 +148,11 @@ func (c *Auth) Login() {
 // if the token was refreshed, its taken care of because the new refresh token gets set as request.
 func (c *Auth) Logout() {
 	// delete cookies
-	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieJWT, Value: "", MaxAge: -1})
-	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieRefresh, Value: "", MaxAge: -1})
+	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieJWT(), Value: "", MaxAge: -1})
+	http.SetCookie(c.Context().Response.Writer(), &http.Cookie{Name: jwt.CookieRefresh(), Value: "", MaxAge: -1})
 
 	// get request refresh token and claim.
-	rt, err := c.Context().Request.HTTPRequest().Cookie(jwt.CookieRefresh)
+	rt, err := c.Context().Request.HTTPRequest().Cookie(jwt.CookieRefresh())
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, err))
 		return

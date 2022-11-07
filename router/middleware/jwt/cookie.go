@@ -9,14 +9,19 @@ import (
 	"time"
 )
 
-// Cookie constants
-const (
-	CookieJWT     = "JWT"
-	CookieRefresh = "REFRESH"
-)
+var CookieNameJWT = "JWT"
+var CookieNameRefresh = "REFRESH"
+
+func CookieJWT() string {
+	return CookieNameJWT
+}
+
+func CookieRefresh() string {
+	return CookieNameRefresh
+}
 
 // NewCookie creates a cookie with the given name, value and expiration.
-// Additionally this cookie is http only and secured.
+// Additionally, this cookie is http only and secured.
 func NewCookie(w http.ResponseWriter, name string, value string, ttl time.Duration) {
 	cookie := &http.Cookie{}
 	cookie.Name = name

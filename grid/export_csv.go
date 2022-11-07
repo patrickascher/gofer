@@ -38,10 +38,6 @@ func (cw *csvWriter) Error(r *context.Response, code int, err error) error {
 }
 
 func (cw *csvWriter) Write(r *context.Response) error {
-
-	// TODO define separator
-	// TODO define CRLF
-
 	r.Writer().Header().Set("Content-Type", "text/csv; charset=utf-8")
 	r.Writer().Header().Set("Content-Disposition", "attachment; filename=\"export.csv\"")
 

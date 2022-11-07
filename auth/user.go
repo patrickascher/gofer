@@ -323,7 +323,7 @@ func (u *User) IncreaseFailedLogin() error {
 func JWTRefreshCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer) error {
 
 	// check the refresh cookie exists
-	refreshCookie, err := r.Cookie(jwt.CookieRefresh)
+	refreshCookie, err := r.Cookie(jwt.CookieRefresh())
 	if err != nil {
 		return err
 	}

@@ -109,42 +109,41 @@ func (g *grid) userFilter(c condition.Condition) error {
 		//TODO Mysql,Oracle have different ways to add/sub dates. create a driver based date function.
 		for _, f := range uFilter.Filters {
 			if gridField := g.Field(f.Key); gridField.error == nil && gridField.filterAble {
-
 				switch f.Op {
 				case "TODAY":
-					c.SetWhere(gridField.name + " >= DATENOW")
-					c.SetWhere(gridField.name + " <= DATENOW")
+					c.SetWhere(gridField.filterField + " >= DATENOW")
+					c.SetWhere(gridField.filterField + " <= DATENOW")
 				case "YESTERDAY":
-					c.SetWhere(gridField.name + " >= DATENOW-1")
-					c.SetWhere(gridField.name + " < DATENOW")
+					c.SetWhere(gridField.filterField + " >= DATENOW-1")
+					c.SetWhere(gridField.filterField + " < DATENOW")
 				case "WEEK":
-					c.SetWhere(gridField.name + " = WEEK")
+					c.SetWhere(gridField.filterField + " = WEEK")
 				case "LWEEK":
-					c.SetWhere(gridField.name + " = WEEK-1")
+					c.SetWhere(gridField.filterField + " = WEEK-1")
 				case "MONTH":
-					c.SetWhere(gridField.name + " = MONTH")
+					c.SetWhere(gridField.filterField + " = MONTH")
 				case "LMONTH":
-					c.SetWhere(gridField.name + " = MONTH-1")
+					c.SetWhere(gridField.filterField + " = MONTH-1")
 				case "YEAR":
-					c.SetWhere(gridField.name + " = YEAR")
+					c.SetWhere(gridField.filterField + " = YEAR")
 				case "LYEAR":
-					c.SetWhere(gridField.name + " = YEAR-1")
+					c.SetWhere(gridField.filterField + " = YEAR-1")
 				case "!=", "=", ">=", "<=":
-					c.SetWhere(gridField.name+" "+f.Op+" ?", escape(f.Value.String))
+					c.SetWhere(gridField.filterField+" "+f.Op+" ?", escape(f.Value.String))
 				case "IN":
-					//c.SetWhere(gridField.name+" "+f.Op+" (?)", strings.Split(escape(f.Value.String), ConditionFilterSeparator))
+					c.SetWhere(gridField.filterField+" IN (?)", strings.Split(escape(f.Value.String), conditionFilterSeparator))
 				case "NOTIN":
-					//c.SetWhere(gridField.name+" NOT IN (?)", strings.Split(escape(f.Value.String), ConditionFilterSeparator))
+					c.SetWhere(gridField.name+" NOT IN (?)", strings.Split(escape(f.Value.String), conditionFilterSeparator))
 				case "NULL":
-					c.SetWhere(gridField.name + " IS NULL")
+					c.SetWhere(gridField.filterField + " IS NULL")
 				case "NOTNULL":
-					c.SetWhere(gridField.name + " IS NOT NULL")
-				case "Like":
-					c.SetWhere(gridField.name+" LIKE ?", "%%"+escape(f.Value.String)+"%%")
-				case "RLike":
-					c.SetWhere(gridField.name+" LIKE ?", escape(f.Value.String)+"%%")
-				case "LLike":
-					c.SetWhere(gridField.name+" LIKE ?", "%%"+escape(f.Value.String))
+					c.SetWhere(gridField.filterField + " IS NOT NULL")
+				case "LIKE":
+					c.SetWhere(gridField.filterField+" LIKE ?", "%%"+escape(f.Value.String)+"%%")
+				case "RLIKE":
+					c.SetWhere(gridField.filterField+" LIKE ?", escape(f.Value.String)+"%%")
+				case "LLIKE":
+					c.SetWhere(gridField.filterField+" LIKE ?", "%%"+escape(f.Value.String))
 				default:
 					return fmt.Errorf(ErrFieldPermission, f.Key, "filter")
 				}

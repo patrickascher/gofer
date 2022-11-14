@@ -38,11 +38,25 @@ func (cw *csvWriter) Error(r *context.Response, code int, err error) error {
 }
 
 func (cw *csvWriter) Write(r *context.Response) error {
+
+	// Filename
+	filename := "export"
+	if r.Value(FILENAME) != nil {
+		filename = r.Value(FILENAME).(string)
+	}
+
 	r.Writer().Header().Set("Content-Type", "text/csv; charset=utf-8")
-	r.Writer().Header().Set("Content-Disposition", "attachment; filename=\"export.csv\"")
+	r.Writer().Header().Set("Content-Disposition", "attachment; filename=\""+filename+".csv\"")
 
 	w := csv.NewWriter(r.Writer())
 	w.Comma = 59 //;
+
+	// UTF-8 BOM for Excel
+	bomUtf8 := []byte{0xEF, 0xBB, 0xBF}
+	err := w.Write([]string{string(bomUtf8[:])})
+	if err != nil {
+		return err
+	}
 
 	var header []Field
 	for _, h := range r.Value("head").([]Field) {

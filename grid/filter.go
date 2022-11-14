@@ -29,7 +29,7 @@ type UserGrid struct {
 }
 
 func (b UserGrid) DefaultTableName() string {
-	return orm.OrmFwPrefix + "user_grid"
+	return orm.OrmFwPrefix + "user_grids"
 }
 
 // DefaultCache of the models.
@@ -61,7 +61,7 @@ type UserGridFilter struct {
 }
 
 func (b UserGridFilter) DefaultTableName() string {
-	return orm.OrmFwPrefix + "user_grid_filter"
+	return orm.OrmFwPrefix + "user_grid_filters"
 }
 
 // DefaultCache of the models.
@@ -93,7 +93,7 @@ type UserGridSort struct {
 }
 
 func (b UserGridSort) DefaultTableName() string {
-	return orm.OrmFwPrefix + "user_grid_sort"
+	return orm.OrmFwPrefix + "user_grid_sorts"
 }
 
 // DefaultCache of the models.
@@ -124,7 +124,7 @@ type UserGridField struct {
 }
 
 func (b UserGridField) DefaultTableName() string {
-	return orm.OrmFwPrefix + "user_grid_field"
+	return orm.OrmFwPrefix + "user_grid_fields"
 }
 
 // DefaultCache of the models.

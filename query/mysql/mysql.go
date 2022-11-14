@@ -68,7 +68,7 @@ func (m *mysql) Open() error {
 		m.Base.Config.Timeout = "30s"
 	}
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=true&timeout=%s", m.Base.Config.Username, m.Base.Config.Password, m.Base.Config.Host, m.Base.Config.Port, m.Base.Config.Database, m.Base.Config.Timeout))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=true&timeout=%s&wait_timeout=2", m.Base.Config.Username, m.Base.Config.Password, m.Base.Config.Host, m.Base.Config.Port, m.Base.Config.Database, m.Base.Config.Timeout))
 	if err != nil {
 		return err
 	}

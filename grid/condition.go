@@ -248,8 +248,8 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 		case query.ORACLEDATE: // TODO different driver? create for each driver a callback.
 			inputDateFormatISO := "2006-01-02T15:04:05Z"
 			inputDateFormat := "2006-01-02"
-			outputDateFormatISO := "2006-01-02 15:04"
-			outputDateFormat := "2006-01-02"
+			outputDateFormatISO := "200601021504"
+			outputDateFormat := "20060102"
 			var t time.Time
 			var err error
 			if strings.Index(args[0], ",") == -1 {
@@ -259,13 +259,13 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 					if err != nil {
 						return err
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') >= ?", t.Format(outputDateFormatISO))
+					c.SetWhere("TO_DATE(?,'YYYYMMDDHH24MI') <= "+gridField.filterField, t.Format(outputDateFormatISO))
 				} else {
 					t, err = time.Parse(inputDateFormat, args[0])
 					if err != nil {
 						return err
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') >= ?", t.Format(outputDateFormat))
+					c.SetWhere("TO_DATE(?,'YYYYMMDD') <= "+gridField.filterField, t.Format(outputDateFormat))
 				}
 			} else if strings.HasPrefix(args[0], ",") {
 				// TO
@@ -274,13 +274,13 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 					if err != nil {
 						return err
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') <= ?", t.Format(outputDateFormatISO))
+					c.SetWhere("TO_DATE(?,'YYYYMMDDHH24MI') >= "+gridField.filterField, t.Format(outputDateFormatISO))
 				} else {
 					t, err = time.Parse(inputDateFormat, args[0][1:])
 					if err != nil {
 						return err
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') <= ?", t.Format(outputDateFormat))
+					c.SetWhere("TO_DATE(?,'YYYYMMDD') >= "+gridField.filterField, t.Format(outputDateFormat))
 				}
 			} else {
 				// FROM TO
@@ -308,7 +308,7 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 							return err
 						}
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') >= ? AND TO_CHAR("+gridField.filterField+",'YYYY-MM-DD HH24:MI') <= ?", t.Format(outputDateFormatISO), t1.Format(outputDateFormatISO))
+					c.SetWhere("TO_DATE(?,'YYYYMMDDHH24MI') <= "+gridField.filterField+" AND TO_DATE(?,'YYYYMMDDHH24MI') >= "+gridField.filterField, t.Format(outputDateFormatISO), t1.Format(outputDateFormatISO))
 				} else {
 					t, err = time.Parse(inputDateFormat, strings.Split(args[0], ",")[0])
 					if err != nil {
@@ -318,7 +318,7 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 					if err != nil {
 						return err
 					}
-					c.SetWhere("TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') >= ? AND TO_CHAR("+gridField.filterField+",'YYYY-MM-DD') <= ?", t.Format(outputDateFormat), t1.Format(outputDateFormat))
+					c.SetWhere("TO_DATE(?,'YYYYMMDD') <= "+gridField.filterField+" AND TO_DATE(?,'YYYYMMDD') >= "+gridField.filterField, t.Format(outputDateFormat), t1.Format(outputDateFormat))
 				}
 			}
 		case query.DATE:

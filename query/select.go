@@ -33,7 +33,6 @@ func (s *SelectBase) First() (*sql.Row, error) {
 	if s.SCondition != nil {
 		s.SCondition.Reset(condition.LIMIT, condition.OFFSET)
 	}
-
 	stmt, args, err := s.Render()
 	if err != nil {
 		return nil, err
@@ -47,6 +46,7 @@ func (s *SelectBase) All() (*sql.Rows, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.Provider.All(stmt, args)
 }
 

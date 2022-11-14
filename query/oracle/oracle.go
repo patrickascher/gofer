@@ -36,7 +36,7 @@ func init() {
 	}
 }
 
-// newOracke creates a new query.Provider.
+// newOracle creates a new query.Provider.
 func newOracle(config interface{}) (query.Provider, error) {
 	oracleBuilder := &oracle{}
 	oracleBuilder.Base.Provider = oracleBuilder

@@ -27,6 +27,8 @@ var availableRenderer map[string]context.Renderer
 // prefix for the cache.
 const prefixCache = "grid_"
 
+const FILENAME = "gridExportFilename"
+
 // defined params
 const (
 	// mode
@@ -426,6 +428,9 @@ func (g *grid) Render() {
 
 		// set translated titles to an export
 		if g.Mode() == FeExport {
+			if lang, err := g.controller.Context().Request.Param("lang"); err == nil {
+				g.controller.Context().Request.SetLocale(lang[0])
+			}
 			for i, f := range g.fields {
 				g.fields[i].title.export = g.controller.T(fmt.Sprint(f.title.export))
 			}

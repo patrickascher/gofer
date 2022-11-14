@@ -82,7 +82,6 @@ func (s *server) translationHook() error {
 		}
 		s.translation, err = translation.New(s.cfg.Webserver.Translation.Provider, nil, s.cfg.Webserver.Translation.Config)
 		if err != nil {
-			fmt.Println("trans --router")
 			return err
 		}
 		// this content is here instead of translation.New because of the import cycle.

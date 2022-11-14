@@ -225,6 +225,19 @@ func (c *Controller) Translation() {
 				}
 			}
 
+			// delete old raw entries
+			mysql, err := server.Databases()
+			if err != nil {
+				c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))
+				return
+			}
+			// double select needed
+			_, err = mysql[0].Query().DB().Exec("DELETE FROM fw_translations WHERE message_id NOT IN (SELECT t1.message_id FROM ( SELECT t2.message_id FROM fw_translations t2 WHERE t2.lang = ?) t1 ) ", "raw")
+			if err != nil {
+				c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))
+				return
+			}
+
 			gIndex, err := c.groupByParam()
 			if err != nil {
 				c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrapper, err))

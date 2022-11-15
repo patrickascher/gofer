@@ -28,6 +28,7 @@ var availableRenderer map[string]context.Renderer
 const prefixCache = "grid_"
 
 const FILENAME = "gridExportFilename"
+const DATEFORMAT = "gridExportDateFormat"
 
 // defined params
 const (
@@ -149,6 +150,12 @@ func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// change the language by param
+	// needed if there is a frontend href link without setting the correct accept-language header.
+	if lang, err := ctrl.Context().Request.Param("lang"); err == nil {
+		ctrl.Context().Request.SetLocale(lang[0])
 	}
 
 	// merge configs
@@ -428,9 +435,6 @@ func (g *grid) Render() {
 
 		// set translated titles to an export
 		if g.Mode() == FeExport {
-			if lang, err := g.controller.Context().Request.Param("lang"); err == nil {
-				g.controller.Context().Request.SetLocale(lang[0])
-			}
 			for i, f := range g.fields {
 				g.fields[i].title.export = g.controller.T(fmt.Sprint(f.title.export))
 			}

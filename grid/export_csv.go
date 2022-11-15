@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/patrickascher/gofer/controller/context"
 	"reflect"
+	"time"
 )
 
 func init() {
@@ -90,6 +91,37 @@ func (cw *csvWriter) Write(r *context.Response) error {
 					body = append(body, fmt.Sprint(rData.Index(i).FieldByName(head.name).Interface()))
 				}
 			} else {
+				// for date string values - recast it.
+				if head.Type() == "Date" || head.Type() == "DateTime" {
+					dateFormat := "2006-01-02 15:04"
+					if d := r.Value(DATEFORMAT); d != nil {
+						dateFormat = d.(string)
+					}
+					date := fmt.Sprint(reflect.ValueOf(rData.Index(i).Interface()).MapIndex(reflect.ValueOf(head.name)).Interface())
+					if date != "" && date != "<nil>" {
+						switch head.Type() {
+						case "Date":
+							t, err := time.Parse("2006-01-02", date[0:10])
+							if err != nil {
+								fmt.Println(err)
+								return err
+							}
+							body = append(body, t.Format(dateFormat[0:10]))
+							continue
+						case "DateTime":
+							t, err := time.Parse("2006-01-02 15:04", date[0:16])
+							if err != nil {
+								fmt.Println(err)
+								return err
+							}
+							body = append(body, t.Format(dateFormat[0:16]))
+							continue
+						}
+					} else {
+						body = append(body, "")
+					}
+					continue
+				}
 				body = append(body, fmt.Sprint(reflect.ValueOf(rData.Index(i).Interface()).MapIndex(reflect.ValueOf(head.name)).Interface()))
 			}
 		}

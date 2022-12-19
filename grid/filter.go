@@ -174,6 +174,11 @@ func getFilterByID(id int, g *grid) (*UserGrid, error) {
 	if err != nil {
 		return nil, err
 	}
+	s, err := userGrid.Scope()
+	if err != nil {
+		return nil, err
+	}
+	s.SetConfig(orm.NewConfig().SetCondition(condition.New().SetOrder("pos")), "Fields")
 	err = userGrid.First(condition.New().SetWhere("id = ? AND user_id = ? AND grid_id = ?", id, userID, g.config.ID))
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err

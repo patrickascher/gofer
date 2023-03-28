@@ -5,6 +5,7 @@
 package native
 
 import (
+	"errors"
 	"fmt"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/patrickascher/gofer/auth"
@@ -17,6 +18,7 @@ import (
 	"github.com/patrickascher/gofer/server"
 	"github.com/segmentio/ksuid"
 	"golang.org/x/crypto/bcrypt"
+	"unicode"
 )
 
 const name = "native"
@@ -88,6 +90,37 @@ func (n *Native) Logout(c controller.Interface) error {
 	return nil
 }
 
+// verifyPassword checks for minimum
+// 1 upper char
+// 1 lower char
+// 1 special char
+// 1 number
+// 8 or more characters
+func verifyPassword(s string) error {
+
+	eightOrMore, number, upper, special := false, false, false, false
+	letters := 0
+	for _, c := range s {
+		switch {
+		case unicode.IsNumber(c):
+			number = true
+		case unicode.IsUpper(c):
+			upper = true
+			letters++
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			special = true
+		}
+	}
+	eightOrMore = len(s) >= 8
+
+	// error is simplified, could be detailed in the future.
+	if !eightOrMore || !number || !upper || !special {
+		return errors.New("password is not complex enough")
+	}
+
+	return nil
+}
+
 // ChangePassword is checking if the login,pw and token are given.
 // If everything is valid, the password will be changed.
 func (n *Native) ChangePassword(c controller.Interface) error {
@@ -103,6 +136,12 @@ func (n *Native) ChangePassword(c controller.Interface) error {
 	}
 
 	token, err := c.Context().Request.Param(auth.ParamToken)
+	if err != nil {
+		return err
+	}
+
+	// validate new password
+	err = verifyPassword(password[0])
 	if err != nil {
 		return err
 	}
@@ -189,7 +228,7 @@ func (n *Native) RegisterAccount(c controller.Interface) error {
 
 	if g.Mode() == grid.SrcCreate {
 		// generate password
-		password := []byte(auth.RandomPassword(12))
+		password := []byte(auth.RandomPassword(12, 1, 1, 1))
 		cfg, err := server.ServerConfig()
 		if err != nil {
 			return err

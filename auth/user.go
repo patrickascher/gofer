@@ -8,11 +8,8 @@ import (
 	context2 "context"
 	"errors"
 	"fmt"
-	"github.com/patrickascher/gofer/controller/context"
-	"net/http"
-	"time"
-
 	"github.com/patrickascher/gofer/cache"
+	"github.com/patrickascher/gofer/controller/context"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
@@ -20,13 +17,16 @@ import (
 	"github.com/patrickascher/gofer/server"
 	"github.com/peterhellberg/duration"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
+	"time"
 )
 
 // Error messages.
 var (
-	ErrUserOption   = "auth: option %s was not found"
-	ErrUserLocked   = errors.New("auth: your user is locked because of too many login attempts")
-	ErrUserInactive = errors.New("auth: your user is inactive")
+	ErrUserOption    = "auth: option %s was not found"
+	ErrPasswordRegex = errors.New("auth: password must be at least 8-32 characters and include 1 uppercase, 1 lowercase, 1 number and one special character")
+	ErrUserLocked    = errors.New("auth: your user is locked because of too many login attempts")
+	ErrUserInactive  = errors.New("auth: your user is inactive")
 )
 
 // Base model is a helper for the default cache and builder.
@@ -172,6 +172,7 @@ func ChangePasswordTokenValid(login string, token string) error {
 
 // ChangePassword will change the password and delete the pw token.
 func ChangePassword(login string, pwUser string) error {
+
 	u, err := UserByLogin(login)
 	if err != nil {
 		return err

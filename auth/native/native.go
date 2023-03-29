@@ -5,6 +5,8 @@
 package native
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -12,16 +14,19 @@ import (
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/grid"
 	"github.com/patrickascher/gofer/grid/options"
+	"github.com/patrickascher/gofer/locale"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/mailer"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/server"
 	"github.com/segmentio/ksuid"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	"unicode"
 )
 
 const name = "native"
+const userPassword = "userPassword"
 
 // init registers the native provider.
 func init() {
@@ -96,11 +101,12 @@ func (n *Native) Logout(c controller.Interface) error {
 // 1 special char
 // 1 number
 // 8 or more characters
-func verifyPassword(s string) error {
+// pw is not allowed to be already used
+func verifyPassword(login, password string) error {
 
 	eightOrMore, number, upper, special := false, false, false, false
 	letters := 0
-	for _, c := range s {
+	for _, c := range password {
 		switch {
 		case unicode.IsNumber(c):
 			number = true
@@ -111,11 +117,25 @@ func verifyPassword(s string) error {
 			special = true
 		}
 	}
-	eightOrMore = len(s) >= 8
+	eightOrMore = len(password) >= 8
 
-	// error is simplified, could be detailed in the future.
+	// error is simplified, could be detailed if needed
 	if !eightOrMore || !number || !upper || !special {
 		return errors.New("password is not complex enough")
+	}
+
+	// check if password was already used before
+	user, err := auth.UserByLogin(login)
+	if err != nil {
+		return err
+	}
+	for i := range user.Options {
+		if user.Options[i].Key == userPassword {
+			err = bcrypt.CompareHashAndPassword([]byte(user.Options[i].Value), []byte(password))
+			if err == nil {
+				return errors.New("password was already used")
+			}
+		}
 	}
 
 	return nil
@@ -141,7 +161,7 @@ func (n *Native) ChangePassword(c controller.Interface) error {
 	}
 
 	// validate new password
-	err = verifyPassword(password[0])
+	err = verifyPassword(login[0], password[0])
 	if err != nil {
 		return err
 	}
@@ -153,14 +173,118 @@ func (n *Native) ChangePassword(c controller.Interface) error {
 	}
 
 	// change pw
-	return auth.ChangePassword(login[0], password[0])
-}
+	err = auth.ChangePassword(login[0], password[0])
+	if err != nil {
+		return err
+	}
 
-func (n *Native) ChangeProfile(c controller.Interface) error {
+	// add used password hash entry
+	err = addUsedPwHash(login[0])
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-// ForgotPassword will send an email to the user with a reset link.
+func (n *Native) ChangeProfile(c controller.Interface) error {
+
+	// check if user ID is set.
+	id, err := c.Context().Request.Param("ID")
+	if err != nil {
+		return err
+	}
+
+	// get user data.
+	user, err := auth.UserByLogin(id[0])
+	if err != nil {
+		return err
+	}
+
+	// password change
+	if oldPw, err := c.Context().Request.Param("password"); err == nil && oldPw[0] != "" {
+		var data map[string]interface{}
+		err = json.NewDecoder(c.Context().Request.HTTPRequest().Body).Decode(&data)
+		// mismatched password.
+		if fmt.Sprint(data["OldPassword"]) == "" || fmt.Sprint(data["Password"]) != fmt.Sprint(data["RePassword"]) {
+			return errors.New("native: password is wrong")
+		}
+		// check old password
+		o, err := user.Option("password")
+		err = user.ComparePassword(o.Value, fmt.Sprint(data["OldPassword"]))
+		if err != nil {
+			return err
+		}
+
+		// save new password
+		err = auth.ChangePassword(id[0], fmt.Sprint(data["Password"]))
+		if err != nil {
+			return err
+		}
+
+		// add used password hash entry
+		err = addUsedPwHash(user.Login)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	id[0] = fmt.Sprint(user.ID)
+
+	// set up grid
+	userModel := &auth.User{}
+	g, err := grid.New(c, grid.Orm(userModel))
+	if err != nil {
+		return err
+	}
+
+	g.Field("Name").SetRemove(false).SetReadOnly(true)
+	g.Field("Surname").SetRemove(false).SetReadOnly(true)
+	langs, err := locale.TranslatedLanguages()
+	if err != nil {
+		return err
+	}
+	var availableLangs []options.SelectItem
+	for _, lang := range langs {
+		availableLangs = append(availableLangs, options.SelectItem{Text: strings.ToUpper(lang.BCP), Value: lang.BCP})
+	}
+	//TODO g.Field("Language").SetRemove(false).SetType("Select").SetOption(options.SELECT, options.Select{ReturnValue: true, Items: availableLangs})
+	//TODO g.Field("DateFormat").SetRemove(false)
+	g.Field("Roles").SetRemove(false).SetHidden(true)
+
+	g.Render()
+
+	// Callback Profile changes
+	if g.Mode() == grid.SrcUpdate {
+
+		// get the jwt instance.
+		j, err := server.JWT()
+		if err != nil {
+			return err
+		}
+
+		// set ParamLogin and ParamProvider as context to use it in the jwt generator callback.
+		ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, user.Login), auth.ParamProvider, name)
+		claim, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
+		if err != nil {
+			return err
+		}
+
+		//Change the normal model to add Language and Dateformat
+		//TODO claim.(*auth.Claim).Options["Language"] = userModel.Language
+		//TODO claim.(*auth.Claim).Options["DateFormat"] = userModel.DateFormat
+		c.Set("claim", claim.Render())
+
+		// set the user claim.
+		c.Set(auth.KeyClaim, claim.Render())
+	}
+
+	return nil
+}
+
+// ForgotPassword will email the user with a reset link.
 // The password token will be valid for 15min.
 func (n *Native) ForgotPassword(c controller.Interface) error {
 
@@ -253,6 +377,45 @@ func (n *Native) RegisterAccount(c controller.Interface) error {
 		if err != nil {
 			return err
 		}
+
+		// add used password hash entry
+		err = addUsedPwHash(user.Login)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func addUsedPwHash(userID string) error {
+
+	// get user data
+	user, err := auth.UserByLogin(userID)
+	if err != nil {
+		return err
+	}
+
+	// get active pw hash.
+	h, err := user.Option(auth.ParamPassword)
+	if err != nil {
+		return err
+	}
+	hash := h.Value
+
+	// create option entry for used hash
+	o := auth.Option{}
+	err = o.Init(&o)
+	if err != nil {
+		return err
+	}
+	o.UserID = user.ID
+	o.Key = userPassword
+	o.Value = hash
+	o.Hide = true
+	err = o.Create()
+	if err != nil {
+		return err
 	}
 
 	return nil

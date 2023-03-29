@@ -93,6 +93,7 @@ func (u User) HasRole(role string) bool {
 
 // OptionsToMap is a helper to export all user options which are not hidden.
 // This is used for the user claim.
+// If keys are not unique the last one will be used.
 func (u User) OptionsToMap() map[string]string {
 	var rv map[string]string
 	for _, o := range u.Options {
@@ -219,6 +220,7 @@ func (u *User) ComparePassword(hash string, pw string) error {
 
 // Option will return the option by key.
 // Error will return if the option does not exist.
+// If there are multiple options for the same key only the first will be returned.
 func (u *User) Option(key string) (*Option, error) {
 	for i := range u.Options {
 		if u.Options[i].Key == key {

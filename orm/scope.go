@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-	"os"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -854,8 +853,6 @@ func (s scope) allowedFieldType(field reflect.Value) error {
 		return nil
 	}
 
-	fmt.Println(rv.String(), rv.Kind().String())
-	os.Exit(1)
 	if rv.Kind().String() == "time.Time" {
 		return nil
 	}

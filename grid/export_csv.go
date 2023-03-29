@@ -103,7 +103,6 @@ func (cw *csvWriter) Write(r *context.Response) error {
 						case "Date":
 							t, err := time.Parse("2006-01-02", date[0:10])
 							if err != nil {
-								fmt.Println(err)
 								return err
 							}
 							body = append(body, t.Format(dateFormat[0:10]))
@@ -111,7 +110,6 @@ func (cw *csvWriter) Write(r *context.Response) error {
 						case "DateTime":
 							t, err := time.Parse("2006-01-02 15:04", date[0:16])
 							if err != nil {
-								fmt.Println(err)
 								return err
 							}
 							body = append(body, t.Format(dateFormat[0:16]))

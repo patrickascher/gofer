@@ -20,7 +20,7 @@ var (
 
 // pagination holds information about the source rows.
 type pagination struct {
-	Limit       int // -1 is infinity
+	Limit       int // -1 = infinity
 	Prev        int
 	Next        int
 	CurrentPage int
@@ -33,8 +33,11 @@ func (g *grid) newPagination(c condition.Condition) (*pagination, error) {
 
 	p := &pagination{}
 	limit := p.paginationParam(g, paginationLimit)
+	fmt.Println("limit-", limit)
+	fmt.Println("check123")
+	fmt.Println(slicer.IntExists(g.config.Filter.AllowedRowsPerPage, limit))
 	if _, exists := slicer.IntExists(g.config.Filter.AllowedRowsPerPage, limit); !exists {
-		return nil, fmt.Errorf(ErrPaginationLimit, p.Limit)
+		return nil, fmt.Errorf(ErrPaginationLimit, limit)
 	}
 
 	if c == nil {
@@ -58,6 +61,7 @@ func (g *grid) newPagination(c condition.Condition) (*pagination, error) {
 	p.Next = p.next()
 	p.Prev = p.prev()
 
+	fmt.Println("setlimit", p.Limit)
 	if p.Limit != -1 {
 		c.SetLimit(p.Limit).SetOffset(p.offset())
 	}

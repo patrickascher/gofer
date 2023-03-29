@@ -77,11 +77,15 @@ func (g *grid) userFilter(c condition.Condition) error {
 
 		// set limit
 		if uFilter.RowsPerPage.Valid {
-			limit, err := g.controller.Context().Request.Param(paginationLimit)
+			p, err := g.controller.Context().Request.Params()
 			if err != nil {
 				return err
 			}
-			limit[0] = fmt.Sprint(uFilter.RowsPerPage.Int64)
+			// only add filter config if not manually changed.
+			_, exists := p[paginationLimit]
+			if !exists {
+				p[paginationLimit] = []string{fmt.Sprint(uFilter.RowsPerPage.Int64)}
+			}
 		}
 
 		// set active Filter

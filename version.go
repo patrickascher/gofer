@@ -1,3 +1,3 @@
 package gofer
 
-const VERSION = "v0.1.14-beta47"
+const VERSION = "v0.1.14-beta48"

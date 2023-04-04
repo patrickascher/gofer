@@ -23,7 +23,6 @@ func init() {
 	validate = valid.New()
 	validate.SetTagName(TagValidate)
 	validate.RegisterCustomTypeFunc(validateValuer, query.NullString{}, query.NullBool{}, query.NullInt{}, query.NullFloat{}, query.NullTime{})
-	validate.RegisterCustomTypeFunc(validateValuer, query.NullString{}, query.NullBool{}, query.NullInt{}, query.NullFloat{}, query.NullTime{})
 
 	// custom emails validation
 	err := validate.RegisterValidation("emails", emailsValidator)

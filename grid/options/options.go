@@ -11,6 +11,8 @@ const (
 	SELECT    = "select"
 	UNIQUE    = "unique"
 	DECORATOR = "decorator"
+	WIDTH     = "width"
+	VALIDATE  = "validate"
 )
 
 // Select will represent a frontend Select or MultiSelect.

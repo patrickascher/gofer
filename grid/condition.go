@@ -112,6 +112,12 @@ func (g *grid) userFilter(c condition.Condition) error {
 		// Add filters
 		//TODO Mysql,Oracle have different ways to add/sub dates. create a driver based date function.
 		for _, f := range uFilter.Filters {
+			// custom filters are getting overwritten! Needed because of sub-queries and so on.
+			// TODO frontend info
+			if _, op, _ := g.Field(f.Key).Filter(); op == "CUSTOM" || op == "CUSTOMLIKE" {
+				f.Op = op
+			}
+
 			if gridField := g.Field(f.Key); gridField.error == nil && gridField.filterAble {
 				switch f.Op {
 				case "TODAY":
@@ -148,6 +154,16 @@ func (g *grid) userFilter(c condition.Condition) error {
 					c.SetWhere(gridField.filterField+" LIKE ?", escape(f.Value.String)+"%%")
 				case "LLIKE":
 					c.SetWhere(gridField.filterField+" LIKE ?", "%%"+escape(f.Value.String))
+				case query.CUSTOM, query.CUSTOMLIKE:
+					var argsCustom []interface{}
+					for i := 0; i < strings.Count(gridField.filterField, "?"); i++ {
+						if gridField.filterCondition == query.CUSTOMLIKE {
+							argsCustom = append(argsCustom, "%%"+escape(f.Value.String)+"%%")
+						} else {
+							argsCustom = append(argsCustom, escape(f.Value.String))
+						}
+					}
+					c.SetWhere(gridField.filterField, argsCustom...)
 				default:
 					return fmt.Errorf(ErrFieldPermission, f.Key, "filter")
 				}
@@ -324,6 +340,36 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 					}
 					c.SetWhere("TO_DATE(?,'YYYYMMDD') <= "+gridField.filterField+" AND TO_DATE(?,'YYYYMMDD') >= "+gridField.filterField, t.Format(outputDateFormat), t1.Format(outputDateFormat))
 				}
+			}
+		case query.MYSQLDATE:
+			inputDateFormat := "2006-01-02"
+			outputDateFormat := "2006-01-02"
+			var t time.Time
+			var err error
+			if strings.Index(args[0], ",") == -1 {
+				// FROM
+				t, err = time.Parse(inputDateFormat, args[0])
+				if err != nil {
+					return err
+				}
+				c.SetWhere("DATE("+gridField.filterField+")>= ?", t.Format(outputDateFormat))
+			} else if strings.HasPrefix(args[0], ",") {
+				// TO
+				t, err = time.Parse(inputDateFormat, args[0][1:])
+				if err != nil {
+					return err
+				}
+				c.SetWhere("DATE("+gridField.filterField+")<= ?", t.Format(outputDateFormat))
+			} else {
+				t, err = time.Parse(inputDateFormat, strings.Split(args[0], ",")[0])
+				if err != nil {
+					return err
+				}
+				t1, err := time.Parse(inputDateFormat, strings.Split(args[0], ",")[1])
+				if err != nil {
+					return err
+				}
+				c.SetWhere("DATE("+gridField.filterField+")>= ? AND DATE("+gridField.filterField+")<= ?", t.Format(outputDateFormat), t1.Format(outputDateFormat))
 			}
 		case query.DATE:
 			fmt.Println("DATE Filter TODO (different drivers?)")

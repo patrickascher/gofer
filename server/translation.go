@@ -6,14 +6,14 @@ package server
 
 import (
 	"fmt"
-	"reflect"
-
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/slicer"
+	"reflect"
+	"strings"
 )
 
 func init() {
@@ -72,6 +72,17 @@ func ormTranslation() error {
 		var messages []i18n.Message
 		for _, field := range scope.Fields(orm.Permission{}) {
 			messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, scope.Name(true), field.Name), Description: fmt.Sprintf(Desc, field.Name, scope.Name(true)), Other: field.Name})
+			if field.Information.Type.Kind() == "MultiSelect" || field.Information.Type.Kind() == "Select" {
+				field.Information.Type.Kind()
+
+				replacer := strings.NewReplacer("enum(", "", "set(", "", ")", "", "'", "")
+				ll := replacer.Replace(field.Information.Type.Raw())
+				if len(ll) > 0 {
+					for _, c := range strings.Split(ll, ",") {
+						messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, scope.Name(true), field.Name) + "." + c, Description: fmt.Sprintf(Desc, field.Name, scope.Name(true)) + " value " + c, Other: c})
+					}
+				}
+			}
 		}
 		for _, rel := range scope.Relations(orm.Permission{}) {
 			messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, scope.Name(true), rel.Field), Description: fmt.Sprintf(Desc, rel.Field, scope.Name(true)), Other: rel.Field})

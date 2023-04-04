@@ -256,7 +256,7 @@ func isInit() bool {
 func checkConfig(c interface{}) (Configuration, error) {
 	rv := reflect.Indirect(reflect.ValueOf(c))
 	if rv.IsValid() {
-		// check if its the the server config struct
+		// check if it's the server config struct
 		if rv.Type().String() == "server.Configuration" {
 			return c.(Configuration), nil
 		}

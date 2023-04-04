@@ -358,29 +358,29 @@ func newValueInstanceFromType(field reflect.Type) reflect.Value {
 // gridFields is recursively adding the orm fields/relations to the grid.
 //
 // orm.Fields:
-// 		- add referenceID, referenceName. The referenceID will be the same as referenceName if its a no sql field.
-//		- add Name. Will be the orm field name or the json name if defined.
-//		- set primary, type, position.
-//		- set title, description. By default is the orm model name + field name + -title or -description.
-//		- set sort. By default its allowed and the field value is the orm column name.
-//      - set filter. By default its allowed and the condition operator equal and the field value is the orm column name.
-//		- set groupAble. By default allowed.
-//		- validator config is added as option by the key "validate".
-// 		- if the type is SELECT or MULTISELCET, the select is added as option by the key "select".
-// 		- if its a primary-, fk-, refs-, polymorphic key the field is getting removed by default.
+//   - add referenceID, referenceName. The referenceID will be the same as referenceName if its a no sql field.
+//   - add Name. Will be the orm field name or the json name if defined.
+//   - set primary, type, position.
+//   - set title, description. By default is the orm model name + field name + -title or -description.
+//   - set sort. By default its allowed and the field value is the orm column name.
+//   - set filter. By default its allowed and the condition operator equal and the field value is the orm column name.
+//   - set groupAble. By default allowed.
+//   - validator config is added as option by the key "validate".
+//   - if the type is SELECT or MULTISELCET, the select is added as option by the key "select".
+//   - if its a primary-, fk-, refs-, polymorphic key the field is getting removed by default.
 //
 // orm.Relations:
-// 		- If its a BelongsTo and its not the FeTable, the relation will be skipped.
-//		  The Foreign-Key will be un-removed because this will be the dropdown field on the frontend.
-//		- referenceName will be set as orm field name.
-//		- add Name. Will be the orm field name or the json name if defined.
-// 		- set relation, type, position
-//		- set title, description. By default is the orm model name + field name + -title or -description.
-// 		- TODO sort and filter for relations depth 1
-//		- validator config is added as option by the key "validate".
-// 		- IF its belongsTo or M2M relation a Select is added. TextField = field index 2(experimental orm,id,->name)  and ValueField will be the Mapping.References.Name.
-// 		- recursively add all relation fields.
-// 		- if its a primary-, fk-, refs-, polymorphic key the field is getting removed by default.
+//   - If its a BelongsTo and its not the FeTable, the relation will be skipped.
+//     The Foreign-Key will be un-removed because this will be the dropdown field on the frontend.
+//   - referenceName will be set as orm field name.
+//   - add Name. Will be the orm field name or the json name if defined.
+//   - set relation, type, position
+//   - set title, description. By default is the orm model name + field name + -title or -description.
+//   - TODO sort and filter for relations depth 1
+//   - validator config is added as option by the key "validate".
+//   - IF its belongsTo or M2M relation a Select is added. TextField = field index 2(experimental orm,id,->name)  and ValueField will be the Mapping.References.Name.
+//   - recursively add all relation fields.
+//   - if its a primary-, fk-, refs-, polymorphic key the field is getting removed by default.
 func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 
 	var rv []Field
@@ -421,6 +421,9 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		// field.SetView(g.NewValue(""))
 		field.SetSort(true, f.Information.Name)
 		field.SetFilter(true, query.LIKE, f.Information.Name)
+		if f.Information.Type.Kind() == types.DATE || f.Information.Type.Kind() == types.DATETIME {
+			field.SetFilter(true, query.MYSQLDATE, f.Information.Name)
+		}
 		field.SetGroupAble(true)
 		// set validation tag
 		if f.Validator.Config() != "" {
@@ -431,7 +434,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			var items []options.SelectItem
 			sel := f.Information.Type.(types.Items)
 			for _, i := range sel.Items() {
-				items = append(items, options.SelectItem{Text: i, Value: i})
+				items = append(items, options.SelectItem{Text: translation.ORM + scope.Name(true) + "." + f.Name + "." + i, Value: i})
 			}
 			var multiple bool
 			if f.Information.Type.Kind() == types.MULTISELECT {
@@ -753,6 +756,7 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 	src := g.Scope().Source().(orm.Interface)
 	scope, err := src.Scope()
 	relation, err := scope.SQLRelation(fields[0], orm.Permission{})
+
 	if err != nil {
 		return nil, err
 	}

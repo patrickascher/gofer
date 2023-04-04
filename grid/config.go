@@ -13,10 +13,11 @@ import (
 )
 
 type Config struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Policy      int    `json:"-"`
+	ID           string `json:"id"`
+	Title        string `json:"title"`
+	DisableTitle bool   `json:"disableTitle"`
+	Description  string `json:"description"`
+	Policy       int    `json:"-"`
 
 	History HistoryConfig `json:"history,omitempty"`
 	Action  Action        `json:"action,omitempty"`
@@ -64,10 +65,11 @@ type Filter struct {
 // description will be the grid id + -description
 func defaultConfig(ctrl controller.Interface) Config {
 	cfg := Config{
-		ID:          "",
-		Title:       "",
-		Description: "",
-		Policy:      orm.WHITELIST,
+		ID:           "",
+		Title:        "",
+		DisableTitle: false,
+		Description:  "",
+		Policy:       orm.WHITELIST,
 		Action: Action{
 			DisableDetail: true,
 		},

@@ -10,6 +10,7 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/patrickascher/gofer/orm"
 	"os"
 
@@ -152,7 +153,48 @@ func (d *dbBundle) Bundle() (*i18n.Bundle, error) {
 
 // SetDefaultLanguage sets the default language on the i18n.Bundle.
 func (d *dbBundle) SetDefaultLanguage(defaultLang language.Tag) {
+	//delete all none existing translations
+	// SetDefault will be called at last point on the init process.
+	deleteOldTranslations()
+
 	d.defaultLang = defaultLang
+}
+
+func deleteOldTranslations() {
+
+	b, err := server.Databases()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	rows, err := b[0].Query().DB().Query("SELECT id FROM fw_translations WHERE lang!=? AND message_id NOT IN (SELECT message_id FROM fw_translations WHERE lang=?)", "raw", "raw")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var ids []int
+	for rows.Next() {
+		var id int
+		err = rows.Scan(&id)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		ids = append(ids, id)
+	}
+	err = rows.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if len(ids) > 0 {
+		_, err = b[0].Query().Delete("fw_translations").Where("id IN (?)", ids).Exec()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 // DefaultMessage will return the raw message as default if exists, otherwise it will return the requested ID.

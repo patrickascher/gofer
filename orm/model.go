@@ -140,6 +140,10 @@ func (m *Model) Count(c ...condition.Condition) (int, error) {
 		cond = c[0]
 	}
 
+	// TODO must be fixed as soon as there are different strategies at the moment its fixed eager.
+	// First,all,... already using the right strategy
+	addSoftDeleteCondition(&m.scope, m.scope.Config(), cond)
+
 	// create query
 	row, err := m.builder.Query(m.tx).Select(m.scope.FqdnTable()).Condition(cond).Columns(query.DbExpr("COUNT(*)")).First()
 	if err != nil {

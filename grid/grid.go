@@ -221,13 +221,14 @@ func New(ctrl controller.Interface, src Source, conf ...Config) (Grid, error) {
 // Mode will return the correct grid mode.
 // HTTP.ANYTYPE: mode callback = SrcCallback
 // HTTP.GET:
-// 		- no mode param = FeTable
-// 		- mode history = FeHistory
-// 		- mode filter = FeFilter
-// 		- mode export = FeExport
-// 		- mode create = FeCreate
-// 		- mode details = FeDetails
-// 		- mode update = FeUpdate
+//   - no mode param = FeTable
+//   - mode history = FeHistory
+//   - mode filter = FeFilter
+//   - mode export = FeExport
+//   - mode create = FeCreate
+//   - mode details = FeDetails
+//   - mode update = FeUpdate
+//
 // HTTP.POST: 	SrcCreate
 // HTTP.PUT: 	SrcUpdate
 // HTTP.DELETE: SrcDelete
@@ -326,30 +327,37 @@ func (g *grid) Scope() Scope {
 // Title and description will be set to the controller.
 // Modes:
 // SrcCreate:
-// 		- The source create function is called.
+//   - The source create function is called.
+//
 // SrcUpdate
-// 		- The source update function is called.
+//   - The source update function is called.
+//
 // SrcDelete
-//		- The condition first will be called to ensure the correct primary key.
-//		- The source delete function is called.
+//   - The condition first will be called to ensure the correct primary key.
+//   - The source delete function is called.
+//
 // FeTable,FeExport
-//		- ConditionAll is called to create the condition.
-// 		- Add header/pagination if its not excluded by param.
-//		- The source all function is called.
-// 		- Add config and result to the controller.
-// 		- call the defined render type.
+//   - ConditionAll is called to create the condition.
+//   - Add header/pagination if its not excluded by param.
+//   - The source all function is called.
+//   - Add config and result to the controller.
+//   - call the defined render type.
+//
 // FeCreate
-// 		- add header data.
+//   - add header data.
+//
 // FeDetails, FeUpdate
-// 		- add header data.
-// 		- call conditionFirst
-//		- fetch the entry by the given id and set the controller data.
+//   - add header data.
+//   - call conditionFirst
+//   - fetch the entry by the given id and set the controller data.
+//
 // FeFilter
-// 		- add header data if there is no ID given in the param.
-//		- read filter by ID if ID is given in the param.
+//   - add header data if there is no ID given in the param.
+//   - read filter by ID if ID is given in the param.
+//
 // FeHistory
-// 		- add all histories to the given primary key and grid id(s).
-//		- get all linked users.
+//   - add all histories to the given primary key and grid id(s).
+//   - get all linked users.
 func (g *grid) Render() {
 
 	// update the user config in the source

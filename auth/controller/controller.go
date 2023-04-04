@@ -273,6 +273,15 @@ func (c *Auth) Roles() {
 		SetOption(options.SELECT, options.Select{TextField: "Name, Pattern", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 0 AND public = 0"})
 
 	g.Render()
+
+	// post callback - middleware gets updated
+	if g.Mode() == grid.SrcUpdate || g.Mode() == grid.SrcCreate {
+		err = auth.BuildRouteGuard()
+		if err != nil {
+			c.Error(500, err)
+			return
+		}
+	}
 }
 
 // Nav configures the frontend vue navigation.

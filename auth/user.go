@@ -68,6 +68,10 @@ type User struct {
 	FailedLogins    query.NullInt  `json:",omitempty"`
 	LastFailedLogin query.NullTime `json:",omitempty"`
 
+	//experimental updates
+	Language   string
+	DateFormat string
+
 	RefreshTokens []RefreshToken `json:",omitempty"`
 	Roles         []Role         `orm:"relation:m2m;join_table:fw_user_roles" json:",omitempty" validate:"min=1"`
 	Options       []Option       `json:",omitempty"`
@@ -390,9 +394,11 @@ func JWTGenerateCallback(w http.ResponseWriter, r *http.Request, c jwt.Claimer, 
 	c.(*Claim).Surname = u.Surname.String
 	c.(*Claim).Login = u.Login
 	c.(*Claim).Options = u.OptionsToMap()
+	c.(*Claim).Options["Language"] = u.Language
+	c.(*Claim).Options["DateFormat"] = u.DateFormat
 	c.(*Claim).Roles = append([]string{"Guest"}, FlatRoles(u.Roles)...)
 
-	// protocol login if its not a refresh token.
+	// protocol login if it's not a refresh token.
 	if r.Context().Value("refresh") == nil {
 		err = AddProtocol(c.(*Claim).Login, LOGIN)
 	}

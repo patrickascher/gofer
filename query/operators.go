@@ -24,13 +24,14 @@ const (
 	CUSTOMLIKE = "CUSTOMLIKE"
 	DATE       = "DATE"
 	ORACLEDATE = "ORACLEDATE"
+	MYSQLDATE  = "MYSQLDATE"
 	SANITIZE   = "SANITIZE"
 )
 
 // IsOperatorAllowed will return false if the operator is not implemented.
 func IsOperatorAllowed(s string) bool {
 	switch s {
-	case EQ, NEQ, NULL, NOTNULL, GT, GTE, LT, LTE, LIKE, NOTLIKE, IN, NOTIN, RIN, RNOTIN, CUSTOM, CUSTOMLIKE, SANITIZE, ORACLEDATE:
+	case EQ, NEQ, NULL, NOTNULL, GT, GTE, LT, LTE, LIKE, NOTLIKE, IN, NOTIN, RIN, RNOTIN, CUSTOM, CUSTOMLIKE, SANITIZE, ORACLEDATE, MYSQLDATE:
 		return true
 	default:
 		return false

@@ -369,7 +369,7 @@ func (c *Auth) Accounts() {
 			return
 		}
 	} else {
-		g.Field("Login").SetRemove(grid.NewValue(false))
+		g.Field("Login").SetRemove(grid.NewValue(false)).SetReadOnly(true)
 		g.Field("Salutation").SetRemove(grid.NewValue(false))
 		g.Field("Name").SetRemove(grid.NewValue(false))
 		g.Field("Surname").SetRemove(grid.NewValue(false))

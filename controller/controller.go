@@ -122,14 +122,14 @@ func (c *Base) Action() string {
 // Error calls the renderer Error function with the given error.
 // As fallback a normal http.Error will be triggered.
 func (c *Base) Error(code int, err error) {
+	// no further calls after error.
+	c.err = true
 	// call renderer error function.
 	err = c.Context().Response.Error(code, err, c.renderType)
 	// fallback if the renderer is not able to set the error message.
 	if err != nil {
 		http.Error(c.Context().Response.Writer(), err.Error(), code)
 	}
-	// no further calls after error.
-	c.err = true
 }
 
 // Redirect sets a HTTP location header and status code.

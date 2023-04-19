@@ -22,6 +22,9 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "BOOL.False", Description: "", Other: "False"},
 		i18n.Message{ID: translation.COMMON + "Language", Description: "", Other: "Language"},
 		i18n.Message{ID: translation.COMMON + "Add", Description: "", Other: "Add"},
+		i18n.Message{ID: translation.COMMON + "User", Description: "", Other: "User"},
+		i18n.Message{ID: translation.COMMON + "Date", Description: "", Other: "Date"},
+		i18n.Message{ID: translation.COMMON + "Description", Description: "", Other: "Description"},
 		i18n.Message{ID: translation.COMMON + "Save", Description: "", Other: "Save"},
 		i18n.Message{ID: translation.COMMON + "Close", Description: "", Other: "Close"},
 		i18n.Message{ID: translation.COMMON + "Delete", Description: "", Other: "Delete"},
@@ -42,6 +45,9 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "ProfileSaved", Description: "", Other: "Profile saved!"},
 		i18n.Message{ID: translation.COMMON + "PasswordSaved", Description: "", Other: "Password saved!"},
 		i18n.Message{ID: translation.COMMON + "Required", Description: "", Other: "Required"},
+
+		// ERRORS experimental:
+		i18n.Message{ID: translation.ERROR + "SQLRelationInUse", Description: "", Other: "Could not delete because it is still in use!"},
 
 		// history experimental.
 		i18n.Message{ID: translation.HISTORY + "Title", Description: "", Other: "History"},

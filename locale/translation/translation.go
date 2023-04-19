@@ -29,6 +29,7 @@ const (
 	NAV     = "NAVIGATION."
 	GRID    = "GRID."
 	HISTORY = "HISTORY."
+	ERROR   = "ERROR."
 )
 
 // predefined translation providers.

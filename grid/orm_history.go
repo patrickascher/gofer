@@ -6,6 +6,9 @@ package grid
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/patrickascher/gofer/query"
+	"github.com/patrickascher/gofer/query/types"
 	"reflect"
 	"strings"
 
@@ -95,6 +98,11 @@ func createHistoryEntry(g Grid, fields []Field, val interface{}, index ...int) [
 		// normal fields.
 		if !f.relation {
 			changedValue.New = rvField.Interface()
+
+			if f.Type() == types.SELECT {
+				changedValue.New = helperSelectsToHistory(f, changedValue.New)
+			}
+
 			// belongsTo - in grid a belongsTo field is the direct relation field.
 			if f.fType == orm.BelongsTo {
 				changedValue.Field = f.option[options.SELECT][0].(options.Select).OrmField
@@ -129,6 +137,35 @@ func createHistoryEntry(g Grid, fields []Field, val interface{}, index ...int) [
 	return changedValues
 }
 
+func helperSelectsToHistory(f Field, val interface{}) string {
+	var v string
+	var rv []string
+	var selId []string
+	sel := f.Option(options.SELECT)[0].(options.Select)
+
+	switch reflect.ValueOf(val).Type().String() {
+	case "query.NullString":
+		v = val.(query.NullString).String
+	default:
+		v = fmt.Sprint(val)
+	}
+
+	if sel.Multiple {
+		selId = strings.Split(v, ",")
+	} else {
+		selId = append(selId, v)
+	}
+
+	for _, si := range selId {
+		for _, i := range sel.Items {
+			if fmt.Sprint(i.Value) == fmt.Sprint(si) {
+				rv = append(rv, fmt.Sprint(i.Text))
+			}
+		}
+	}
+	return strings.Join(rv, ",")
+}
+
 // updateHistoryEntry will create a history for an updated model.
 // the default orm.ChangeValue struct will be manipulated, because by default its not offering all the needed data.
 //
@@ -139,9 +176,9 @@ func createHistoryEntry(g Grid, fields []Field, val interface{}, index ...int) [
 // - create = new entered slice (all fields will be set with a new value)
 // - delete = deleted all slices (all fields will be set with a old value)
 // - update  = slices already existed.
-// 			- create (new slice was added) same logic as create above.
-//			- update (one or more fields got updated)
-//			- delete (one slice was deleted) same logic as delete above.
+//   - create (new slice was added) same logic as create above.
+//   - update (one or more fields got updated)
+//   - delete (one slice was deleted) same logic as delete above.
 func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interface{}, ormChanges []orm.ChangedValue) []orm.ChangedValue {
 	var changedValues []orm.ChangedValue
 	for _, ormChange := range ormChanges {
@@ -172,6 +209,11 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 			}
 			if ormChange.New != "" {
 				changedValue.New = ormChange.New
+			}
+
+			if f.Type() == types.SELECT {
+				changedValue.Old = helperSelectsToHistory(f, ormChange.Old)
+				changedValue.New = helperSelectsToHistory(f, ormChange.New)
 			}
 
 			// belongsTo logic.
@@ -263,7 +305,13 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 				continue
 			}
 		}
-		changedValues = append(changedValues, changedValue)
+
+		// skip relations - if no change
+		if changedValue.Field != "" {
+			changedValues = append(changedValues, changedValue)
+
+		}
+
 	}
 	return changedValues
 }

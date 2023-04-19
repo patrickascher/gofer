@@ -6,8 +6,10 @@
 package grid
 
 import (
+	"errors"
 	"fmt"
 	"github.com/patrickascher/gofer/auth"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/structer"
 	"net/http"
 	"sort"
@@ -408,6 +410,10 @@ func (g *grid) Render() {
 		}
 		err = g.src.Delete(c, g)
 		if err != nil {
+			// error renaming:
+			if strings.Contains(err.Error(), "Cannot delete or update a parent row") {
+				err = errors.New(g.controller.T(translation.ERROR + "SQLRelationInUse"))
+			}
 			g.controller.Error(500, fmt.Errorf(errWrap, err))
 			return
 		}

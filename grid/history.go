@@ -19,6 +19,10 @@ import (
 	"time"
 )
 
+func init() {
+	orm.RegisterModel(&History{})
+}
+
 // HistoryType constants.
 const (
 	HistoryCreated HistoryType = iota - 1

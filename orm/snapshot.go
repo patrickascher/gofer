@@ -85,7 +85,10 @@ func (s scope) EqualWith(snapshot Interface) ([]ChangedValue, error) {
 	// normal fields
 	for _, field := range s.SQLFields(perm) {
 		// skip the automatic time fields or soft delete field.
-		if (field.Name == CreatedAt || field.Name == UpdatedAt || field.Name == DeletedAt) || s.model.softDelete != nil && s.model.softDelete.Field == field.Information.Name {
+
+		// it was also skipping softdeleted fields before. why? if no errors happen, this comments can be removed.
+		// || s.model.softDelete != nil && s.model.softDelete.Field == field.Information.Name
+		if field.Name == CreatedAt || field.Name == UpdatedAt || field.Name == DeletedAt {
 			continue
 		}
 

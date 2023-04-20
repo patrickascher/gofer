@@ -40,7 +40,11 @@ func addSoftDeleteCondition(scope Scope, config config, c condition.Condition) {
 		if scope.SoftDelete().ActiveValues == nil {
 			c.SetWhere(scope.Builder().QuoteIdentifier(scope.SoftDelete().Field) + " IS NULL")
 		} else {
-			c.SetWhere(scope.Builder().QuoteIdentifier(scope.SoftDelete().Field)+" IN (?)", scope.SoftDelete().ActiveValues)
+			if scope.SoftDelete().ActiveValues[0] == "!=" {
+				c.SetWhere("("+scope.Builder().QuoteIdentifier(scope.SoftDelete().Field)+" != ? OR "+scope.Builder().QuoteIdentifier(scope.SoftDelete().Field)+" IS NULL)", scope.SoftDelete().Value)
+			} else {
+				c.SetWhere(scope.Builder().QuoteIdentifier(scope.SoftDelete().Field)+" IN (?)", scope.SoftDelete().ActiveValues)
+			}
 		}
 	}
 }

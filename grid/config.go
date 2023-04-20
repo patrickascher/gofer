@@ -44,6 +44,7 @@ type Action struct {
 	DisableUpdate bool              `json:"disableUpdate,omitempty"`
 	DisableDelete bool              `json:"disableDelete,omitempty"`
 	CreateLinks   map[string]string `json:"createLinks,omitempty"`
+	CreateTitle   string            `json:"createTitle,omitempty"`
 }
 
 // Filter configuration.

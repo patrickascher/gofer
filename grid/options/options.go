@@ -35,5 +35,5 @@ type SelectItem struct {
 	Value   interface{} `json:"value"`
 	Header  string      `json:"header,omitempty"`
 	Divider bool        `json:"divider,omitempty"`
-	Custom  interface{} `json:",omitempty"`
+	Custom  interface{} `json:"custom,omitempty"`
 }

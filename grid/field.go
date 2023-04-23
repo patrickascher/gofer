@@ -304,7 +304,12 @@ func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	}
 
 	mutex.Lock()
-	f.option[key] = append([]interface{}{}, value...)
+	if value == nil {
+		delete(f.option, key)
+	} else {
+		f.option[key] = append([]interface{}{}, value...)
+
+	}
 	mutex.Unlock()
 
 	//experimental, on set select the textValue will be set as decorator

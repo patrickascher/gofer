@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/patrickascher/gofer/grid/options"
+	"github.com/patrickascher/gofer/query/types"
 	"reflect"
 	"sync"
 
@@ -191,6 +192,7 @@ func (f Field) Hidden() bool {
 // Hidden can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or bool.
 func (f *Field) SetHidden(hidden interface{}) *Field {
+	//TODO set remove false if it is set to hidden.
 	setValuerByInterface(f, &f.hidden, hidden, "bool")
 	return f
 }
@@ -315,6 +317,11 @@ func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	//experimental, on set select the textValue will be set as decorator
 	if key == options.SELECT {
 		sel := value[0].(options.Select)
+		if sel.Multiple {
+			f.SetType(types.MULTISELECT)
+		} else {
+			f.SetType(types.SELECT)
+		}
 		if sel.TextField != "" {
 			f.SetOption(options.DECORATOR, "{{"+sel.TextField+"}}", ", ")
 		}

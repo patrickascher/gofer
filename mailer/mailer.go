@@ -9,11 +9,21 @@ import (
 	"fmt"
 	"github.com/go-gomail/gomail"
 	"github.com/patrickascher/gofer/server"
+	"strings"
 )
 
 var ErrMailer = "mailer: %w"
 
-func New(to []string, from string, subject string, body string, attachments ...string) error {
+func Nl2Br(txt string) string {
+	return strings.Replace(txt, "\n", "<br/>", -1)
+}
+
+type Attachment struct {
+	Path string
+	Name string
+}
+
+func New(to []string, from string, subject string, body string, attachments ...Attachment) error {
 
 	cfg, err := server.ServerConfig()
 	if err != nil {
@@ -29,7 +39,11 @@ func New(to []string, from string, subject string, body string, attachments ...s
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", body)
 	for _, attachment := range attachments {
-		m.Attach(attachment)
+		if attachment.Name != "" {
+			m.Attach(attachment.Path, gomail.Rename(attachment.Name))
+		} else {
+			m.Attach(attachment.Path)
+		}
 	}
 	// TODO: error if not defined correctly.
 

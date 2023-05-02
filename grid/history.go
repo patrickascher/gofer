@@ -54,12 +54,12 @@ func (t HistoryType) String() (string, error) {
 // History struct
 type History struct {
 	orm.Model
-	ID     int
-	GridID string
-	UserID string
-	SrcID  string
-	Type   string
-	Value  string
+	ID     int    `json:",omitempty"`
+	GridID string `json:",omitempty"`
+	UserID string `json:",omitempty"`
+	SrcID  string `json:",omitempty"`
+	Type   string `json:",omitempty"`
+	Value  string `json:",omitempty"`
 }
 
 func (h History) DefaultTableName() string {

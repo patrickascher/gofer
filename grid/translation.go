@@ -17,6 +17,7 @@ func init() {
 		i18n.Message{ID: translation.GRID + "NoData", Description: "Text if no data is available.", Other: "No data"},
 		i18n.Message{ID: translation.GRID + "RowsPerPage", Description: "Pagination info", Other: "Rows per page"},
 		i18n.Message{ID: translation.GRID + "XofY", Description: "Pagination info", Other: "of"},
+		i18n.Message{ID: translation.GRID + "ItemUploaded", Description: "Alert text after a item got uploaded.", Other: "Item uploaded!"},
 
 		i18n.Message{ID: translation.GRID + "Filter.Title", Description: "user filter title", Other: "Filter"},
 		i18n.Message{ID: translation.GRID + "Filter.Edit", Description: "user filter edit", Other: "Edit"},

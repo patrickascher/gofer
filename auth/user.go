@@ -65,14 +65,14 @@ type User struct {
 
 	State           string         `json:",omitempty"`
 	LastLogin       query.NullTime `json:",omitempty"`
-	FailedLogins    query.NullInt  `json:",omitempty"`
-	LastFailedLogin query.NullTime `json:",omitempty"`
+	FailedLogins    query.NullInt  `json:"-"`
+	LastFailedLogin query.NullTime `json:"-"`
 
 	//experimental updates
-	Language   string
-	DateFormat string
+	Language   string `json:",omitempty"`
+	DateFormat string `json:",omitempty"`
 
-	RefreshTokens []RefreshToken `json:",omitempty"`
+	RefreshTokens []RefreshToken `json:"-"`
 	Roles         []Role         `orm:"relation:m2m;join_table:fw_user_roles" json:",omitempty" validate:"min=1"`
 	Options       []Option       `json:",omitempty"`
 

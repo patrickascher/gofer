@@ -136,6 +136,7 @@ func whitelistFields(g *gridSource, fields []Field, parent string) ([]string, er
 
 		// check if its a normal field
 		if !f.Relation() {
+
 			// add if its not removed
 			if !f.Removed() {
 				if _, exists := slicer.StringExists(whitelist, parent+f.referenceName); !exists {
@@ -160,6 +161,7 @@ func whitelistFields(g *gridSource, fields []Field, parent string) ([]string, er
 
 			// If sub notations are allowed of the relation, allow the relation but dont whitelist the whole.
 			bList, err := whitelistFields(g, f.Fields(), parent+f.referenceName)
+
 			if err != nil {
 				return nil, err
 			}
@@ -528,6 +530,23 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 					field.SetOption(options.DECORATOR, "{{"+t.Field(2).Name+"}}")
 				}
 
+			}
+
+			// recursively add fields
+			// this is needed because otherwise all fields are loaded on a belongsTo relation
+			// TODO investigate to find a better solution
+			// TODO CreatedAt,UpdatedAt are also loaded by default - even if they are on removed.
+			rScope, err := scope.NewScopeFromType(relation.Type)
+			if err != nil {
+				return nil, err
+			}
+			rScope.SetParent(scope.Model()) // adding parent to avoid loops
+			rField, err := gridFields(rScope, g, relation.Field)
+			if err != nil {
+				return nil, err
+			}
+			if len(rField) > 0 {
+				field.SetFields(rField)
 			}
 
 			rv = append(rv, field)

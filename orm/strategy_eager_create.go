@@ -40,10 +40,10 @@ func (e *eager) Create(scope Scope) error {
 
 	perm := Permission{Write: true}
 	b := scope.Builder()
-
 	// belongsTo Relations must be create before, to set the parent fk.
 	for _, relation := range scope.SQLRelations(perm) {
 		if relation.Kind == BelongsTo {
+
 			// skip if empty or self referencing loop
 			if IsValueZero(scope.FieldValue(relation.Field)) || scope.IsSelfReferenceLoop(relation) {
 				continue
@@ -103,6 +103,7 @@ func (e *eager) Create(scope Scope) error {
 
 	// handle the other relations
 	for _, relation := range scope.SQLRelations(perm) {
+
 		// skip if no value is given
 		if IsValueZero(scope.FieldValue(relation.Field)) {
 			continue

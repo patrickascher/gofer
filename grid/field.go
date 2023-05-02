@@ -317,9 +317,7 @@ func (f *Field) SetOption(key string, value ...interface{}) *Field {
 	//experimental, on set select the textValue will be set as decorator
 	if key == options.SELECT {
 		sel := value[0].(options.Select)
-		if sel.Multiple {
-			f.SetType(types.MULTISELECT)
-		} else {
+		if f.Type() == types.TEXT || f.Type() == types.INTEGER {
 			f.SetType(types.SELECT)
 		}
 		if sel.TextField != "" {

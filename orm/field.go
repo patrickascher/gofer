@@ -209,6 +209,11 @@ Columns:
 			continue
 		}
 
+		// custom sql tags or field is a DbExpr
+		if m.fields[i].Information.Name[0:1] == "!" {
+			continue
+		}
+
 		return fmt.Errorf(ErrDbColumnMissing, m.fields[i].Information.Name, m.scope.FqdnModel(m.fields[i].Name), m.db+"."+m.table)
 	}
 

@@ -5,6 +5,8 @@
 // Package options provides some pre-defined field options.
 package options
 
+import "github.com/patrickascher/gofer/query/condition"
+
 // pre defined options.
 const (
 	FILEPATH  = "filepath"
@@ -20,13 +22,13 @@ const (
 type Select struct {
 	Items []SelectItem `json:",omitempty"`
 
-	API         string `json:"api,omitempty"` // backend api link
-	TextField   string `json:",omitempty"`    // name of the text field
-	ValueField  string `json:",omitempty"`    // name of the value field
-	Condition   string `json:",omitempty"`    // additional conditions
-	OrmField    string `json:"-"`             // Orm field
-	Multiple    bool   `json:",omitempty"`    // multiselect
-	ReturnValue bool   `json:",omitempty"`    // return object or value only.
+	API         string              `json:"api,omitempty"` // backend api link
+	TextField   string              `json:",omitempty"`    // name of the text field
+	ValueField  string              `json:",omitempty"`    // name of the value field
+	Condition   condition.Condition `json:",omitempty"`    // additional conditions
+	OrmField    string              `json:"-"`             // Orm field
+	Multiple    bool                `json:",omitempty"`    // multiselect
+	ReturnValue bool                `json:",omitempty"`    // return object or value only.
 }
 
 // SelectItem represents a HTML select Option.

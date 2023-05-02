@@ -828,9 +828,11 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 	if len(cond) == 1 {
 		c = cond[0]
 	} else {
-		c = condition.New()
-		if sel.Condition != "" {
-			c.SetWhere(sel.Condition)
+		if sel.Condition != nil {
+			c = sel.Condition
+		} else {
+			c = condition.New()
+			c.SetOrder(textFields[0]) // default order, first text field asc
 		}
 	}
 

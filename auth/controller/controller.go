@@ -12,6 +12,7 @@ import (
 	"github.com/patrickascher/gofer/auth"
 	"github.com/patrickascher/gofer/grid/options"
 	"github.com/patrickascher/gofer/locale/translation"
+	"github.com/patrickascher/gofer/query/condition"
 	"golang.org/x/text/language/display"
 	"net/http"
 	"reflect"
@@ -267,10 +268,10 @@ func (c *Auth) Roles() {
 	g.Field("Children.Name").SetRemove(grid.NewValue(false))
 
 	g.Field("Frontend").SetRemove(grid.NewValue(false).SetTable(true)).
-		SetOption(options.SELECT, options.Select{TextField: "Name", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 1 AND public = 0"})
+		SetOption(options.SELECT, options.Select{TextField: "Name", ValueField: "ID", Condition: condition.New().SetWhere("deleted_at IS NULL AND frontend = 1 AND public = 0")})
 
 	g.Field("Backend").SetRemove(grid.NewValue(false).SetTable(true)).
-		SetOption(options.SELECT, options.Select{TextField: "Name, Pattern", ValueField: "ID", Condition: "deleted_at IS NULL AND frontend = 0 AND public = 0"})
+		SetOption(options.SELECT, options.Select{TextField: "Name, Pattern", ValueField: "ID", Condition: condition.New().SetWhere("deleted_at IS NULL AND frontend = 0 AND public = 0")})
 
 	g.Render()
 
@@ -305,7 +306,7 @@ func (c *Auth) Nav() {
 	g.Field("Route").SetRemove(grid.NewValue(true).SetTable(false)).SetOption(options.DECORATOR, "{{Pattern}}").SetPosition(grid.NewValue(3))
 	g.Field("Route.Pattern").SetRemove(grid.NewValue(true).SetTable(false))
 
-	g.Field("RouteID").SetTitle(grid.NewValue("ROUTE")).SetType("Select").SetRemove(grid.NewValue(false).SetTable(true)).SetPosition(grid.NewValue(4)).SetOption(options.SELECT, options.Select{OrmField: "Route", TextField: "Name", ValueField: "ID", Condition: "frontend = 1 AND deleted_at IS NULL", ReturnValue: true})
+	g.Field("RouteID").SetTitle(grid.NewValue("ROUTE")).SetType("Select").SetRemove(grid.NewValue(false).SetTable(true)).SetPosition(grid.NewValue(4)).SetOption(options.SELECT, options.Select{OrmField: "Route", TextField: "Name", ValueField: "ID", Condition: condition.New().SetWhere("frontend = 1 AND deleted_at IS NULL"), ReturnValue: true})
 
 	g.Render()
 }

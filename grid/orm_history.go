@@ -105,12 +105,17 @@ func createHistoryEntry(g Grid, fields []Field, val interface{}, index ...int) [
 
 			// belongsTo - in grid a belongsTo field is the direct relation field.
 			if f.fType == orm.BelongsTo {
-				changedValue.Field = f.option[options.SELECT][0].(options.Select).OrmField
-				if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", rvField.Interface())); v != "" {
-					changedValue.New = v
+				if len(f.option[options.SELECT][0].(options.Select).Items) > 0 {
+					changedValue.New = helperSelectsToHistory(f, changedValue.New)
 				} else {
-					continue
+					changedValue.Field = f.option[options.SELECT][0].(options.Select).OrmField
+					if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", rvField.Interface())); v != "" {
+						changedValue.New = v
+					} else {
+						continue
+					}
 				}
+
 			}
 		} else {
 			// relations.
@@ -146,6 +151,8 @@ func helperSelectsToHistory(f Field, val interface{}) string {
 	switch reflect.ValueOf(val).Type().String() {
 	case "query.NullString":
 		v = val.(query.NullString).String
+	case "query.NullInt":
+		v = fmt.Sprint(val.(query.NullInt).Int64)
 	default:
 		v = fmt.Sprint(val)
 	}
@@ -218,15 +225,21 @@ func updateHistoryEntry(g Grid, fields []Field, val interface{}, snapshot interf
 
 			// belongsTo logic.
 			if f.fType == orm.BelongsTo {
-				changedValue.Field = f.option[options.SELECT][0].(options.Select).OrmField
-				if changedValue.Old != nil {
-					if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", changedValue.Old)); v != "" {
-						changedValue.Old = v
+
+				if len(f.option[options.SELECT][0].(options.Select).Items) > 0 {
+					changedValue.Old = helperSelectsToHistory(f, ormChange.Old)
+					changedValue.New = helperSelectsToHistory(f, ormChange.New)
+				} else {
+					changedValue.Field = f.option[options.SELECT][0].(options.Select).OrmField
+					if changedValue.Old != nil {
+						if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", changedValue.Old)); v != "" {
+							changedValue.Old = v
+						}
 					}
-				}
-				if changedValue.New != nil {
-					if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", changedValue.New)); v != "" {
-						changedValue.New = v
+					if changedValue.New != nil {
+						if v := selectCallbackHistory(g, f.name, condition.New().SetWhere(f.option[options.SELECT][0].(options.Select).ValueField+" = ?", changedValue.New)); v != "" {
+							changedValue.New = v
+						}
 					}
 				}
 			}

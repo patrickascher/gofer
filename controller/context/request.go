@@ -72,8 +72,9 @@ func (r *Request) Locale() translation.Locale {
 // Pattern returns the router url pattern.
 // The pattern will be checked by the request context with the key "router_pattern".
 // If the pattern is not set, an empty string will return.
-//		Example: http://example.com/user/1
-// 		/user/:id
+//
+//	Example: http://example.com/user/1
+//	/user/:id
 func (r *Request) Pattern() string {
 	if p := r.HTTPRequest().Context().Value("router_pattern"); p != nil { // used string instead of router.PATTERN because of dependency cycle.
 		return p.(string)
@@ -177,6 +178,45 @@ func (r *Request) Param(k string) ([]string, error) {
 	return nil, fmt.Errorf(ErrParam, k)
 }
 
+// ParamInt returns an int parameter by key.
+// Error will return on parse error, if it can not be converted to an int or if the key does not exist.
+func (r *Request) ParamInt(k string) (int, error) {
+
+	p, err := r.Param(k)
+	if err != nil {
+		return 0, err
+	}
+	val, err := strconv.Atoi(p[0])
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
+}
+
+// ParamString returns a string parameter by key.
+// Error will return on parse error or if the key does not exist.
+func (r *Request) ParamString(k string) (string, error) {
+
+	val, err := r.Param(k)
+	if err != nil {
+		return "", err
+	}
+
+	return val[0], nil
+}
+
+// ParamExists returns a boolean if the param is given.
+func (r *Request) ParamExists(k string) bool {
+
+	_, err := r.Param(k)
+	if err == nil {
+		return true
+	}
+
+	return false
+}
+
 // Params returns all existing parameters.
 // It returns a map[string][]string because the underlying HTML input field could be an array.
 // Error will return on parse error.
@@ -231,8 +271,9 @@ func (r *Request) Scheme() string {
 // Host returns the host name.
 // Port number will be removed if existing.
 // If no host info is available, localhost will return.
-//		Example: https://example.com:8080/user?id=12#test
-//		example.com
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	example.com
 func (r *Request) Host() string {
 	if r.HTTPRequest().Host != "" {
 		if hostPart, _, err := net.SplitHostPort(r.HTTPRequest().Host); err == nil {
@@ -249,22 +290,25 @@ func (r *Request) Protocol() string {
 }
 
 // URI returns full request url with query string, fragment.
-//		Example: https://example.com:8080/user?id=12#test
-//		/user?id=12#test
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	/user?id=12#test
 func (r *Request) URI() string {
 	return r.HTTPRequest().RequestURI
 }
 
 // URL returns request url path without the query string and fragment.
-//		Example: https://example.com:8080/user?id=12#test
-//		/user
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	/user
 func (r *Request) URL() string {
 	return r.HTTPRequest().URL.Path
 }
 
 // FullURL returns the schema,host,port,uri
-//		Example: https://example.com:8080/user?id=12#test
-//		https://example.com:8080/user?id=12#test
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	https://example.com:8080/user?id=12#test
 func (r *Request) FullURL() string {
 	s := r.Site()
 	if r.Port() != 80 {
@@ -274,15 +318,17 @@ func (r *Request) FullURL() string {
 }
 
 // Site returns base site url as scheme://domain type without the port.
-//		Example: https://example.com:8080/user?id=12#test
-//		https://example.com
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	https://example.com
 func (r *Request) Site() string {
 	return r.Scheme() + "://" + r.Domain()
 }
 
 // Domain is an alias of Host method.
-//		Example: https://example.com:8080/user?id=12#test
-//		example.com
+//
+//	Example: https://example.com:8080/user?id=12#test
+//	example.com
 func (r *Request) Domain() string {
 	return r.Host()
 }

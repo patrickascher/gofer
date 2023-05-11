@@ -26,6 +26,7 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "Date", Description: "", Other: "Date"},
 		i18n.Message{ID: translation.COMMON + "Description", Description: "", Other: "Description"},
 		i18n.Message{ID: translation.COMMON + "Save", Description: "", Other: "Save"},
+		i18n.Message{ID: translation.COMMON + "Cancel", Description: "", Other: "Cancel"},
 		i18n.Message{ID: translation.COMMON + "Close", Description: "", Other: "Close"},
 		i18n.Message{ID: translation.COMMON + "Delete", Description: "", Other: "Delete"},
 		i18n.Message{ID: translation.COMMON + "DeleteItem", Description: "", Other: "Are you sure to delete this item?"},

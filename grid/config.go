@@ -38,13 +38,14 @@ type HistoryConfig struct {
 
 // Action configuration.
 type Action struct {
-	PositionLeft  bool              `json:"positionLeft,omitempty"`
-	DisableDetail bool              `json:"disableDetail,omitempty"`
-	DisableCreate bool              `json:"disableCreate,omitempty"`
-	DisableUpdate bool              `json:"disableUpdate,omitempty"`
-	DisableDelete bool              `json:"disableDelete,omitempty"`
-	CreateLinks   map[string]string `json:"createLinks,omitempty"`
-	CreateTitle   string            `json:"createTitle,omitempty"`
+	PositionLeft     bool              `json:"positionLeft,omitempty"`
+	DisableDetail    bool              `json:"disableDetail,omitempty"`
+	DisableCreate    bool              `json:"disableCreate,omitempty"`
+	DisableUpdate    bool              `json:"disableUpdate,omitempty"`
+	DisableDelete    bool              `json:"disableDelete,omitempty"`
+	DisableActionRow bool              `json:"disableActionRow,omitempty"`
+	CreateLinks      map[string]string `json:"createLinks,omitempty"`
+	CreateTitle      string            `json:"createTitle,omitempty"`
 }
 
 // Filter configuration.

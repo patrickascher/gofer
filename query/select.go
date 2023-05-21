@@ -37,6 +37,7 @@ func (s *SelectBase) First() (*sql.Row, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return s.Provider.First(stmt, args)
 }
 

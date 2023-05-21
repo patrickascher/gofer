@@ -6,6 +6,7 @@ package context
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // register json renderer automatically.
@@ -48,6 +49,7 @@ func (jr jsonRenderer) Write(r *Response) error {
 func (jr jsonRenderer) Error(r *Response, code int, err error) error {
 	// set error message as value.
 	r.SetValue("error", err.Error())
+	fmt.Println(code, err)
 	// set http status
 	r.Writer().WriteHeader(code)
 	// write output

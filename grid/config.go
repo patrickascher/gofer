@@ -46,6 +46,7 @@ type Action struct {
 	DisableActionRow bool              `json:"disableActionRow,omitempty"`
 	CreateLinks      map[string]string `json:"createLinks,omitempty"`
 	CreateTitle      string            `json:"createTitle,omitempty"`
+	DisableRedirect  bool              `json:"disableRedirect,omitempty"`
 }
 
 // Filter configuration.

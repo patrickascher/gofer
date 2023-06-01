@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/patrickascher/gofer/grid/options"
 	"github.com/patrickascher/gofer/query/types"
+	"github.com/patrickascher/gofer/slicer"
 	"reflect"
 	"sync"
 
@@ -93,9 +94,9 @@ func (f *Field) SetType(t string) *Field {
 }
 
 // DefaultValue of the field.
-func (f Field) DefaultValue() string {
+func (f Field) DefaultValue() interface{} {
 	if rv := f.defaultValue.get(f.mode); rv != nil {
-		return rv.(string)
+		return rv
 	}
 	return ""
 }
@@ -105,7 +106,7 @@ func (f Field) DefaultValue() string {
 // Title can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or string.
 func (f *Field) SetDefaultValue(value interface{}) *Field {
-	setValuerByInterface(f, &f.defaultValue, value, "string")
+	setValuerByInterface(f, &f.defaultValue, value, []string{"int", "string"})
 	return f
 }
 
@@ -122,7 +123,7 @@ func (f Field) Title() string {
 // Title can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or string.
 func (f *Field) SetTitle(title interface{}) *Field {
-	setValuerByInterface(f, &f.title, title, "string")
+	setValuerByInterface(f, &f.title, title, []string{"string"})
 	return f
 }
 
@@ -140,7 +141,7 @@ func (f Field) Description() string {
 // Description can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or string.
 func (f *Field) SetDescription(desc interface{}) *Field {
-	setValuerByInterface(f, &f.description, desc, "string")
+	setValuerByInterface(f, &f.description, desc, []string{"string"})
 
 	return f
 }
@@ -158,7 +159,7 @@ func (f Field) Position() int {
 // Position can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or int.
 func (f *Field) SetPosition(pos interface{}) *Field {
-	setValuerByInterface(f, &f.position, pos, "int")
+	setValuerByInterface(f, &f.position, pos, []string{"int"})
 	return f
 }
 
@@ -175,7 +176,7 @@ func (f Field) Removed() bool {
 // Remove can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or bool.
 func (f *Field) SetRemove(remove interface{}) *Field {
-	setValuerByInterface(f, &f.remove, remove, "bool")
+	setValuerByInterface(f, &f.remove, remove, []string{"bool"})
 	return f
 }
 
@@ -193,7 +194,7 @@ func (f Field) Hidden() bool {
 // Error will be set if the type is not grid.NewValue() or bool.
 func (f *Field) SetHidden(hidden interface{}) *Field {
 	//TODO set remove false if it is set to hidden.
-	setValuerByInterface(f, &f.hidden, hidden, "bool")
+	setValuerByInterface(f, &f.hidden, hidden, []string{"bool"})
 	return f
 }
 
@@ -210,7 +211,7 @@ func (f Field) View() string {
 // View can have different values between the grid modes.
 // Error will be set if the type is not grid.NewValue() or string.
 func (f *Field) SetView(view interface{}) *Field {
-	setValuerByInterface(f, &f.view, view, "string")
+	setValuerByInterface(f, &f.view, view, []string{"string"})
 	return f
 }
 
@@ -423,14 +424,14 @@ func (f Field) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rv)
 }
 
-func setValuerByInterface(field *Field, fieldValue *value, v interface{}, allowedType string) {
+func setValuerByInterface(field *Field, fieldValue *value, v interface{}, allowedType []string) {
 	tpe := reflect.TypeOf(v)
 	switch tpe.String() {
 	case "*grid.value":
 		*fieldValue = *v.(*value)
 		return
 	default:
-		if tpe.Kind().String() == allowedType {
+		if _, ok := slicer.StringExists(allowedType, tpe.Kind().String()); ok {
 			*fieldValue = *NewValue(v)
 			return
 		}

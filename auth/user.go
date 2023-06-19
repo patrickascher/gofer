@@ -18,6 +18,7 @@ import (
 	"github.com/peterhellberg/duration"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -265,7 +266,7 @@ func (r Role) DefaultTableName() string {
 	return orm.OrmFwPrefix + "roles"
 }
 
-// UserByLogin will return the user.
+// UserByLogin (or Email) will return the user.
 // Error will return if the user does not exist.
 func UserByLogin(login string) (*User, error) {
 	u := User{}
@@ -280,9 +281,18 @@ func UserByLogin(login string) (*User, error) {
 		return nil, err
 	}
 
-	err = u.First(condition.New().SetWhere("login = ?", login))
-	if err != nil || login == "" {
-		return nil, err
+	// get user data.
+	// if login string contains an @, the email will be checked
+	if strings.Contains(login, "@") {
+		err = u.First(condition.New().SetWhere("email = ?", login))
+		if err != nil || login == "" {
+			return nil, err
+		}
+	} else {
+		err = u.First(condition.New().SetWhere("login = ?", login))
+		if err != nil || login == "" {
+			return nil, err
+		}
 	}
 
 	// check if user is locked

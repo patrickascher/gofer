@@ -35,6 +35,7 @@ func init() {
 		i18n.Message{ID: translation.COMMON + "Back", Description: "", Other: "Back"},
 		i18n.Message{ID: translation.COMMON + "Export", Description: "", Other: "Export"},
 		i18n.Message{ID: translation.COMMON + "Login", Description: "", Other: "Login"},
+		i18n.Message{ID: translation.COMMON + "ResetLogin", Description: "", Other: "ResetLogin"},
 		i18n.Message{ID: translation.COMMON + "Password", Description: "", Other: "Password"},
 		i18n.Message{ID: translation.COMMON + "PasswordConfirm", Description: "", Other: "Password confirm"},
 		i18n.Message{ID: translation.COMMON + "Reset", Description: "", Other: "Reset"},

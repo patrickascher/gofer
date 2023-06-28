@@ -61,7 +61,12 @@ func historyGridHelper(g Grid) error {
 		}
 
 		// create history
-		err = NewHistory(g.Scope().Config().ID, g.Scope().Controller().Context().Request.JWTClaim().(jwt.Claimer).UserID(), historySrcID, historyMode, historyValue)
+		var userID interface{}
+		userID = 0
+		if g.Scope().Controller().Context().Request.JWTClaim() != nil {
+			userID = g.Scope().Controller().Context().Request.JWTClaim().(jwt.Claimer).UserID()
+		}
+		err = NewHistory(g.Scope().Config().ID, userID, historySrcID, historyMode, historyValue)
 		if err != nil {
 			return err
 		}

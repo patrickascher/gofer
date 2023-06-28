@@ -227,7 +227,6 @@ func (g *gridSource) All(c condition.Condition, grid Grid) (interface{}, error) 
 	if err != nil {
 		return nil, err
 	}
-
 	return reflect.Indirect(resultSlice).Interface(), nil
 }
 
@@ -835,6 +834,8 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 			c.SetOrder(textFields[0]) // default order, first text field asc
 		}
 	}
+
+	fmt.Println(c.Render(condition.Placeholder{Char: "?"}))
 
 	err = relScope.Model().All(rRes.Interface(), c)
 	if err != nil {

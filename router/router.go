@@ -203,6 +203,16 @@ func (m *manager) SetSecureMiddleware(mw *middleware) {
 	m.secureMiddleware = mw
 }
 
+// secureHeader for files,directories.
+// its double because of import cycle... fix when possible.
+func secureHeader(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		w.Header().Add("X-Frame-Options", "DENY")
+		h(w, r)
+	}
+}
+
 // AddPublicFile to the router.
 // Error will return if the source does not exist or the pattern already exists.
 func (m *manager) AddPublicFile(pattern string, source string) error {
@@ -211,7 +221,7 @@ func (m *manager) AddPublicFile(pattern string, source string) error {
 		return err
 	}
 	// add to routes.
-	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, nil)))
+	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, NewMiddleware(secureHeader))))
 	return m.provider.AddPublicFile(pattern, source)
 }
 
@@ -224,7 +234,7 @@ func (m *manager) AddPublicDir(pattern string, source string) error {
 		return err
 	}
 	// add to routes.
-	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, nil)))
+	m.routes = append(m.routes, NewRoute(pattern, nil, NewMapping([]string{"GET"}, nil, NewMiddleware(secureHeader))))
 	return m.provider.AddPublicDir(pattern, source)
 }
 

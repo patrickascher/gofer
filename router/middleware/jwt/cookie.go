@@ -28,8 +28,8 @@ func NewCookie(w http.ResponseWriter, name string, value string, ttl time.Durati
 	cookie.Value = value
 	cookie.Path = "/"
 
-	//cookie.HttpOnly = true // not available for JS
-	//cookie.Secure = true   // send only over HTTPS
+	cookie.HttpOnly = true // not available for JS
+	cookie.Secure = true   // send only over HTTPS
 
 	// maxAge and expires is set (for old ie browsers)
 	if ttl != 0 {

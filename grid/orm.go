@@ -835,8 +835,6 @@ func selectCallback(g Grid, selectField string, cond ...condition.Condition) (in
 		}
 	}
 
-	fmt.Println(c.Render(condition.Placeholder{Char: "?"}))
-
 	err = relScope.Model().All(rRes.Interface(), c)
 	if err != nil {
 		return nil, err

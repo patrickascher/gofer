@@ -192,8 +192,6 @@ func (g *grid) userFilter(c condition.Condition) error {
 
 			if gridField := g.Field(s.Key); gridField.error == nil && gridField.sortAble {
 				_, sorting := gridField.Sort()
-				fmt.Println("Field", gridField.name, sorting)
-
 				sort += sorting + " " + op
 				g.config.Filter.Active.Sort = append(g.config.Filter.Active.Sort, s.Key+" "+op)
 			} else {

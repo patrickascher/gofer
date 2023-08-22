@@ -119,6 +119,9 @@ func (h *httpRouterExtended) AddPublicDir(pattern string, source string) error {
 	fileServer := http.FileServer(http.Dir(source))
 	pattern = pattern + "/*filepath"
 	h.HandlerFunc("GET", pattern, func(w http.ResponseWriter, req *http.Request) {
+		//secure headers
+		w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		w.Header().Add("X-Frame-Options", "DENY")
 		//disable directory listing
 		if strings.HasSuffix(req.URL.Path, "/") {
 			h.NotFound.ServeHTTP(w, req)
@@ -137,12 +140,15 @@ func (h *httpRouterExtended) AddPublicDir(pattern string, source string) error {
 // TODO if the file does not exist, the standard http.NotFound handler will be called.
 func (h *httpRouterExtended) AddPublicFile(pattern string, source string) error {
 	h.HandlerFunc("GET", pattern, func(w http.ResponseWriter, req *http.Request) {
+		//secure headers
+		w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+		w.Header().Add("X-Frame-Options", "DENY")
 		http.ServeFile(w, req, source)
 	})
 	return nil
 }
 
-//SetNotFound is a function to add a custom not found handler if a route does not math
+// SetNotFound is a function to add a custom not found handler if a route does not math
 func (h *httpRouterExtended) SetNotFound(handler http.Handler) {
 	h.NotFound = handler
 }

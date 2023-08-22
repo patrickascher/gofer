@@ -16,7 +16,7 @@ type middleware struct {
 	mws []mwHandlerFunc
 }
 
-// NewMiddleware creates an middleware chain.
+// NewMiddleware creates a middleware chain.
 // It can be empty or multiple mws can be added as argument.
 func NewMiddleware(m ...mwHandlerFunc) *middleware {
 	return &middleware{append(([]mwHandlerFunc)(nil), m...)}

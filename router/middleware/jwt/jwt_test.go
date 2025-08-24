@@ -17,13 +17,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//Default Claim
+// Default Claim
 type customClaim struct {
 	Email string `json:"email"`
 	gJwt.Claim
 }
 
-//Error Claim
+// Error Claim
 type customClaimErr struct {
 	Email string `json:"email"`
 	gJwt.Claim
@@ -122,7 +122,7 @@ func TestToken_Generate(t *testing.T) {
 
 			// new jwt instance
 			token.CallbackGenerate = test.callbackFn
-			claim, err := token.Generate(w, r)
+			claim, _, err := token.Generate(w, r)
 			if test.error {
 				asserts.Error(err)
 				asserts.Equal(test.errorMsg, errors.Unwrap(err).Error())

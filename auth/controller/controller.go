@@ -10,19 +10,20 @@ import (
 	"fmt"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/patrickascher/gofer/auth"
-	"github.com/patrickascher/gofer/grid/options"
-	"github.com/patrickascher/gofer/locale/translation"
-	"github.com/patrickascher/gofer/query/condition"
-	"golang.org/x/text/language/display"
-	"net/http"
-	"reflect"
-
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/grid"
+	"github.com/patrickascher/gofer/grid/options"
+	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
+	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/router"
 	"github.com/patrickascher/gofer/router/middleware/jwt"
 	"github.com/patrickascher/gofer/server"
+	"golang.org/x/text/language/display"
+	"net/http"
+	"reflect"
+	"strings"
+	"time"
 )
 
 func init() {
@@ -112,6 +113,12 @@ func (c *Auth) Login() {
 		return
 	}
 
+	var api bool
+	if strings.HasSuffix(prov[0], "-api") {
+		api = true
+		prov[0] = strings.Replace(prov[0], "-api", "", -1)
+	}
+
 	// get provider
 	provider, err := auth.New(prov[0])
 	if err != nil {
@@ -135,14 +142,20 @@ func (c *Auth) Login() {
 
 	// set ParamLogin and ParamProvider as context to use it in the jwt generator callback.
 	ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, schema.Login), auth.ParamProvider, prov[0])
-	claim, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
+	claim, token, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
 	if err != nil {
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
 
 	// set the user claim.
-	c.Set(auth.KeyClaim, claim.Render())
+	if api {
+		c.Set("access_token", token)
+		c.Set("token_type", "Bearer")
+		c.Set("expires_in", claim.Exp()-time.Now().Unix())
+	} else {
+		c.Set(auth.KeyClaim, claim.Render())
+	}
 }
 
 // Logout will delete the browser cookies and deleted the refresh token.

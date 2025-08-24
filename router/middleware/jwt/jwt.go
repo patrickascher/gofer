@@ -93,7 +93,7 @@ func New(config Config, claimer Claimer) (*Token, error) {
 // Refresh cookie will be set, a new Claim generated and passed to the callback function - if defined.
 // The JWT token gets signed and set as JTW cookie.
 // Error will return if the token could not get signed or the callback function returns an error.
-func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error) {
+func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, string, error) {
 
 	// create a new claim.
 	now := time.Now()
@@ -111,7 +111,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 	if t.CallbackGenerate != nil {
 		err := t.CallbackGenerate(w, r, claim, refreshToken)
 		if err != nil {
-			return nil, fmt.Errorf("jwt: %w", err)
+			return nil, "", fmt.Errorf("jwt: %w", err)
 		}
 	}
 
@@ -127,10 +127,12 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 	}
 
 	// signing token.
+	var tokenString string
+	var err error
 	if token != nil {
-		tokenString, err := token.SignedString([]byte(t.config.SignKey))
+		tokenString, err = token.SignedString([]byte(t.config.SignKey))
 		if err != nil {
-			return nil, fmt.Errorf("jwt: %w", err)
+			return nil, "", fmt.Errorf("jwt: %w", err)
 		}
 
 		// set the refresh cookie.
@@ -155,7 +157,7 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 		NewCookie(w, CookieJWT(), tokenString, t.config.RefreshToken.Expiration)
 	}
 
-	return claim, nil
+	return claim, tokenString, nil
 }
 
 // Parse the JWT cookie.
@@ -164,10 +166,20 @@ func (t *Token) Generate(w http.ResponseWriter, r *http.Request) (Claimer, error
 // A refresh token will only be generated if the CookieJWT (expired) and CookieRefresh is set.
 func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
 
-	// get jwt cookie.
-	token, err := Cookie(r, CookieJWT())
-	if err != nil {
-		return fmt.Errorf("jwt: %w", err)
+	var token string
+	var fromCookie bool
+
+	if c, err := Cookie(r, CookieJWT()); err == nil {
+		token = c
+		fromCookie = true
+	} else {
+		authHeader := r.Header.Get("Authorization")
+		if strings.HasPrefix(authHeader, "Bearer ") {
+			token = strings.TrimPrefix(authHeader, "Bearer ")
+			fromCookie = false
+		} else {
+			return fmt.Errorf("jwt: token not found")
+		}
 	}
 
 	// creating a new struct of the custom claimer.
@@ -208,14 +220,14 @@ func (t *Token) Parse(w http.ResponseWriter, r *http.Request) error {
 	// refresh the claim, if allowed.
 	if now > claim.Exp() {
 		// try to refresh jwt. only possible if refresh token and callback exists.
-		if _, err := Cookie(r, CookieRefresh()); err == nil && t.CallbackRefresh != nil {
+		if _, err := Cookie(r, CookieRefresh()); fromCookie && err == nil && t.CallbackRefresh != nil {
 			// check callback function if a refresh is allowed
 			err := t.CallbackRefresh(w, r, claim)
 			if err != nil {
 				return fmt.Errorf("jwt: %w", err)
 			}
 			// generate new token
-			claim, err = t.Generate(w, r)
+			claim, _, err = t.Generate(w, r)
 			if err != nil {
 				return err
 			}

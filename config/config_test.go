@@ -28,6 +28,7 @@ func TestLoad(t *testing.T) {
 
 	// register mock provider
 	err := registry.Set("config-mock", mockProvider)
+
 	asserts.NoError(err)
 	err = registry.Set("config-err-interface", "")
 	asserts.NoError(err)

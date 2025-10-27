@@ -109,6 +109,7 @@ func (c *Auth) Login() {
 	// auth type.
 	prov, err := c.Context().Request.Param(auth.ParamProvider)
 	if err != nil {
+		fmt.Println("login", err)
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
@@ -122,6 +123,7 @@ func (c *Auth) Login() {
 	// get provider
 	provider, err := auth.New(prov[0])
 	if err != nil {
+		fmt.Println("login new", err)
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
@@ -129,6 +131,7 @@ func (c *Auth) Login() {
 	// call the provider login function.
 	schema, err := provider.Login(c)
 	if err != nil {
+		fmt.Println("login", err)
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
@@ -136,6 +139,7 @@ func (c *Auth) Login() {
 	// get the jwt instance.
 	j, err := server.JWT()
 	if err != nil {
+		fmt.Println("login jwt", err)
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}
@@ -144,6 +148,7 @@ func (c *Auth) Login() {
 	ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, schema.Login), auth.ParamProvider, prov[0])
 	claim, token, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
 	if err != nil {
+		fmt.Println("login ctx", err)
 		c.Error(http.StatusInternalServerError, fmt.Errorf(ErrWrap, UserErr)) // was err before
 		return
 	}

@@ -267,7 +267,7 @@ func (n *Native) ChangeProfile(c controller.Interface) error {
 
 		// set ParamLogin and ParamProvider as context to use it in the jwt generator callback.
 		ctx := context.WithValue(context.WithValue(c.Context().Request.HTTPRequest().Context(), auth.ParamLogin, user.Login), auth.ParamProvider, name)
-		claim, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
+		claim, _, err := j.Generate(c.Context().Response.Writer(), c.Context().Request.HTTPRequest().WithContext(ctx))
 		if err != nil {
 			return err
 		}

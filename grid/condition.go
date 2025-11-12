@@ -262,7 +262,6 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 		if gridField.filterCondition == query.CUSTOM {
 			args = strings.Split(escape(params[0]), ",")
 		}
-		fmt.Println("aaargs:", args)
 
 		// TODO what is with not... conditions - taking care of?
 		if len(args) > 1 && gridField.filterCondition != query.IN && gridField.filterCondition != query.NOTIN && gridField.filterCondition != query.CUSTOM {
@@ -404,7 +403,6 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 					argsCustom = append(argsCustom, args[i])
 				}
 			}
-			fmt.Println(gridField.filterField, argsCustom)
 			c.SetWhere(gridField.filterField, argsCustom...)
 
 		default:

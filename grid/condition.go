@@ -259,9 +259,13 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 	if gridField := g.Field(field); gridField.error == nil && gridField.filterAble && !g.config.Filter.Disable {
 
 		args := strings.Split(escape(params[0]), conditionFilterSeparator)
+		if gridField.filterCondition == query.CUSTOM {
+			args = strings.Split(escape(params[0]), ",")
+		}
+		fmt.Println("aaargs:", args)
 
 		// TODO what is with not... conditions - taking care of?
-		if len(args) > 1 && gridField.filterCondition != query.IN && gridField.filterCondition != query.NOTIN {
+		if len(args) > 1 && gridField.filterCondition != query.IN && gridField.filterCondition != query.NOTIN && gridField.filterCondition != query.CUSTOM {
 			gridField.filterCondition = query.IN
 		}
 
@@ -395,12 +399,14 @@ func addFilterCondition(g *grid, field string, params []string, c condition.Cond
 			var argsCustom []interface{}
 			for i := 0; i < strings.Count(gridField.filterField, "?"); i++ {
 				if gridField.filterCondition == query.CUSTOMLIKE {
-					argsCustom = append(argsCustom, "%%"+args[0]+"%%")
+					argsCustom = append(argsCustom, "%%"+args[i]+"%%")
 				} else {
-					argsCustom = append(argsCustom, args[0])
+					argsCustom = append(argsCustom, args[i])
 				}
 			}
+			fmt.Println(gridField.filterField, argsCustom)
 			c.SetWhere(gridField.filterField, argsCustom...)
+
 		default:
 			c.SetWhere(gridField.filterField+" "+gridField.filterCondition, args[0])
 		}

@@ -1,0 +1,3091 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The fullstack go framework. Focus on your actual ideas and create applications within minutes.">
+      
+      
+      
+      
+        <link rel="prev" href="../controller/">
+      
+      
+        <link rel="next" href="../stringer/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../static/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Query - gofer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atom-one-light.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+
+
+
+
+<meta content="website" property="og:type">
+<meta content="gofer" property="og:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." property="og:description">
+<meta content="None" property="og:url">
+<meta content="Nonestatic/card.png" property="og:image">
+<meta content="image/png" property="og:image:type">
+<meta content="1200" property="og:image:width">
+<meta content="630" property="og:image:height">
+<meta content="summary_large_image" name="twitter:card">
+<meta content="@goreleaser" name="twitter:site">
+<meta content="@goreleaser" name="twitter:creator">
+<meta content="gofer - Query" name="twitter:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." name="twitter:description">
+<meta content="Nonestatic/card.png" name="twitter:image">
+<style>
+    .md-header-nav__button.md-logo img, .md-header-nav__button.md-logo svg {
+        width: 2rem;
+        height: unset;
+    }
+</style>
+
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#query" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="gofer" class="md-header__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../../assets/img/go.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            gofer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Query
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/patrickascher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../quickstart/" class="md-tabs__link">
+          
+  
+  
+  Getting started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../registry/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="gofer" class="md-nav__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../../assets/img/go.png" alt="logo">
+
+    </a>
+    gofer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/patrickascher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Logger
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetLogger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quoteidentifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QuoteIdentifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#null-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitizevalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SanitizeValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Select
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Select">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#join" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Having
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#columns_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lastinsertedid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LastInsertedID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columns_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Delete">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#describe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Describe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreignkey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ForeignKey
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dbexpr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DbExpr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#condition_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Condition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setjoin-join" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetJoin, Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setwhere-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetWhere, Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setgroup-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetGroup, Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sethaving-having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetHaving, Having
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setorder-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetOrder, Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlimit-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetLimit, Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setoffset-offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetOffset, Offset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replaceplaceholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReplacePlaceholders
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mysql
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mysql">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stringer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stringer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../slicer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Slicer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scheduler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/alert/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alert
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/login/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Login
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/translate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/grid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlogger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetLogger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quoteidentifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QuoteIdentifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#null-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitizevalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SanitizeValue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Select
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Select">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#join" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Having
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#columns_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lastinsertedid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LastInsertedID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columns_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Delete">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#condition_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exec_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#describe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Describe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreignkey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ForeignKey
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dbexpr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DbExpr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#condition_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Condition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setjoin-join" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetJoin, Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setwhere-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetWhere, Where
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setgroup-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetGroup, Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sethaving-having" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetHaving, Having
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setorder-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetOrder, Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setlimit-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetLimit, Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setoffset-offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SetOffset, Offset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replaceplaceholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReplacePlaceholders
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mysql
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mysql">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="query">Query</h1>
+<p>The package query provides a simple programmatically sql query builder. The idea was to create a unique query builder
+which can be used with any database driver in go - with minimal effort.</p>
+<p>Features:</p>
+<ul>
+<li>Unique Placeholder for all database drivers</li>
+<li>Batching function for large Inserts</li>
+<li>Whitelist</li>
+<li>automatic quote of column and table names.</li>
+<li>SQL queries and durations log debugging</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>Inspired by the <code>database/sql</code>, this module is also based on providers. You have to import the needed provider with a
+dash in front:
+This will only call the init function(s) of the package(s) and will register itself. For a full list of all available
+providers, see the <a href="./#providers">providers section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/patrickascher/gofer/query&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="s">&quot;github.com/patrickascher/gofer/query/mysql&quot;</span>
+</code></pre></div>
+<h3 id="new">New</h3>
+<p>To create a builder instance, you have to call <code>New()</code> with the needed provider name and configuration. Please see
+the <a href="./#providers">providers section</a> for a full list.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">builder</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">query</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;mysql&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">query</span><span class="p">.</span><span class="nx">Config</span><span class="p">{})</span>
+</code></pre></div>
+<h3 id="setlogger">SetLogger</h3>
+<p>A <code>logger.Manager</code> <a href="../logger/">logger</a> can be added to the builder. If one is defined, all queries will be logged
+on <code>DEBUG</code> level.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">builder</span><span class="p">.</span><span class="nx">SetLogger</span><span class="p">(</span><span class="nx">logManager</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="config">Config</h3>
+<p>Will return the <code>query.Config</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">builder</span><span class="p">.</span><span class="nx">Config</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="quoteidentifier">QuoteIdentifier</h3>
+<p>Will quote an identifier by the providers quote tags.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">name</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">builder</span><span class="p">.</span><span class="nx">QuoteIdentifier</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+<span class="c1">// on mysql name will be `test`</span>
+</code></pre></div>
+<h3 id="null-types">Null types</h3>
+<p>The following null type are defined for dealing with nullable SQL and JSON values.</p>
+<p>Following helper functions are defined <code>NewNullString(string,valid)</code>, <code>NewNullBool(bool,valid)</code>
+,<code>NewNullInt(int64,valid)</code>,<code>NewNullFloat(float64,valid)</code> and <code>NewNullTime(time.Time,valid)</code>.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>It' s a type alias for <a href="https://pkg.go.dev/github.com/guregu/null">https://pkg.go.dev/github.com/guregu/null</a></p>
+</div>
+<ul>
+<li>query.NullString</li>
+<li>query.NullBool</li>
+<li>query.NullInt</li>
+<li>query.NullFloat</li>
+<li>query.NullTime</li>
+</ul>
+<h3 id="sanitizevalue">SanitizeValue</h3>
+<p>SanitizeValue is a helper which converts:</p>
+<ul>
+<li><code>int</code>,<code>int8</code>,<code>int16</code>,<code>int32</code>,<code>int64</code>,<code>uint</code>,<code>uint8</code>,<code>uint16</code>,<code>uint32</code>,<code>uint64</code>,<code>query.NullInt</code> to <code>int64</code></li>
+<li><code>string</code>,<code>query.NullString</code> to <code>string</code></li>
+</ul>
+<p>Error will return if the argument is not of the described types, or a NullType is not valid.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">value</span><span class="p">,</span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">query</span><span class="p">.</span><span class="nx">SanitizeValue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span>
+<span class="c1">// value will be int64(1) and err will be nil</span>
+</code></pre></div>
+<h3 id="query_1">Query</h3>
+<p>To create any query you have to call the query function</p>
+<div class="highlight"><pre><span></span><code><span class="nx">builder</span><span class="p">.</span><span class="nx">Query</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="select">Select</h4>
+<h5 id="columns">Columns</h5>
+<p>Columns define a fixed column order for the insert. If the columns are not set manually, <code>*</code> will be used. Only Values
+will be inserted which are defined here. This means, you can use Columns as a whitelist.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Column</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;surname&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="condition">Condition</h5>
+<p>Condition adds your own condition to the query.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">condition</span><span class="p">.</span><span class="nx">New</span><span class="p">().</span><span class="nx">SetWhere</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Condition</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="join">Join</h5>
+<p>Join wraps the <code>condition.SetJoin()</code> function. For more details see <a href="./#setjoin-join">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Join</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">LEFT</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test_relation&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test.id = test_relation&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="where">Where</h5>
+<p>Where wraps the <code>condition.SetWhere()</code> function. For more details see <a href="./#setwhere-where">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Where</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="group">Group</h5>
+<p>Group wraps the <code>condition.SetGroup()</code> function. For more details see <a href="./#setgroup-group">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Group</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;surname&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="having">Having</h5>
+<p>Having wraps the <code>condition.SetHaving()</code> function. For more details see <a href="./#sethaving-having">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Having</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="order">Order</h5>
+<p>Order wraps the <code>condition.SetOrder()</code> function. For more details see <a href="./#setorder-order">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Order</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-surname&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="limit">Limit</h5>
+<p>Limit wraps the <code>condition.SetLimit()</code> function. For more details see <a href="./#setlimit-limit">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="offset">Offset</h5>
+<p>Offset wraps the <code>condition.SetOffset()</code> function. For more details see <a href="./#setoffset-offset">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Offset</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="string">String</h5>
+<p>String returns the rendered statement and arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">sql</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">String</span><span class="p">()</span>
+</code></pre></div>
+<h5 id="first">First</h5>
+<p>First will return a sql.Row.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">row</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Column</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;surname&quot;</span><span class="p">).</span><span class="nx">First</span><span class="p">()</span>
+<span class="c1">// SELECT `name`, `surname` FROM test</span>
+</code></pre></div>
+<h5 id="all">All</h5>
+<p>All will return sql.Rows.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Select</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Column</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;surname&quot;</span><span class="p">).</span><span class="nx">All</span><span class="p">()</span>
+<span class="c1">// SELECT `name`, `surname` FROM test</span>
+</code></pre></div>
+<h4 id="insert">Insert</h4>
+<h5 id="batch">Batch</h5>
+<p>Batch sets the batching size. Default batching size is 50.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Batch</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="columns_1">Columns</h5>
+<p>Columns define a fixed column order for the insert. If the columns are not set manually, all keys of the Values will be
+added. Only Values will be inserted which are defined here. This means, you can use Columns as a whitelist.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="values">Values</h5>
+<p>Values sets the insert data.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">values</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}}</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">).</span><span class="nx">Values</span><span class="p">(</span><span class="nx">values</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="lastinsertedid">LastInsertedID</h5>
+<p>LastInsertedID gets the last id over different drivers. The first argument must be a ptr to the value field. The second
+argument should be the name of the ID column - if needed.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="kt">int</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">).</span><span class="nx">LastInsertedID</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">id</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="string_1">String</h5>
+<p>String returns the rendered statement and arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">values</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}}</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">).</span><span class="nx">Values</span><span class="p">(</span><span class="nx">values</span><span class="p">).</span><span class="nx">String</span><span class="p">()</span>
+</code></pre></div>
+<h5 id="exec">Exec</h5>
+<p>Exec the statement. It will return a slice of <code>[]sql.Result</code> because it could have been batched.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">values</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}}</span>
+<span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Insert</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">).</span><span class="nx">Values</span><span class="p">(</span><span class="nx">values</span><span class="p">).</span><span class="nx">Exec</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="update">Update</h4>
+<h5 id="columns_2">Columns</h5>
+<p>Columns define a fixed column order for the insert. If the columns are not set manually, all keys of the Values will be
+added. Only Values will be inserted which are defined here. This means, you can use Columns as a whitelist.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Columns</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="set">Set</h5>
+<p>Set the values.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Set</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">})</span>
+</code></pre></div>
+<h5 id="where_1">Where</h5>
+<p>Where wraps the <code>condition.SetWhere()</code> function. For more details see <a href="./#setwhere-where">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Set</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}).</span><span class="nx">Where</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="condition_1">Condition</h5>
+<p>Condition adds your own condition to the query.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">condition</span><span class="p">.</span><span class="nx">New</span><span class="p">().</span><span class="nx">SetWhere</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Set</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}).</span><span class="nx">Condition</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="string_2">String</h5>
+<p>String returns the rendered statement and arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">sql</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Set</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}).</span><span class="nx">String</span><span class="p">()</span>
+</code></pre></div>
+<h5 id="exec_1">Exec</h5>
+<p>Exec the statement. It will return a <code>sql.Result</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Update</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Set</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">}).</span><span class="nx">Exec</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="delete">Delete</h4>
+<h5 id="where_2">Where</h5>
+<p>Where wraps the <code>condition.SetWhere()</code> function. For more details see <a href="./#setwhere-where">condition section</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Delete</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Where</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="condition_2">Condition</h5>
+<p>Condition adds your own condition to the query.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">condition</span><span class="p">.</span><span class="nx">New</span><span class="p">().</span><span class="nx">SetWhere</span><span class="p">(</span><span class="s">&quot;id = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Delete</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Condition</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="string_3">String</h5>
+<p>String returns the rendered statement and arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">sql</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Delete</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">String</span><span class="p">()</span>
+</code></pre></div>
+<h5 id="exec_2">Exec</h5>
+<p>Exec the statement. It will return a <code>sql.Result</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Delete</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Exec</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="information">Information</h4>
+<h5 id="describe">Describe</h5>
+<p>Describe the defined table.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// all columns</span>
+<span class="nx">cols</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Information</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Describe</span><span class="p">()</span>
+
+<span class="c1">// only some columns</span>
+<span class="nx">cols</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Information</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">Describe</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;surname&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="foreignkey">ForeignKey</h5>
+<p>ForeignKey will return the foreign keys for the defined table.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">fks</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Query</span><span class="p">().</span><span class="nx">Information</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">).</span><span class="nx">ForeignKey</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="dbexpr">DbExpr</h2>
+<p>DBExpr is a helper to avoid quoting. Every string which is wrapped in <code>query.DbExrp("test")</code> will not get quoted by the
+builder.</p>
+<h2 id="condition_3">Condition</h2>
+<p>Condition provides a sql condition builder. The placeholder <code>?</code> must be used and will automatically replaced with the
+driver placeholder later on.</p>
+<h3 id="new_1">New</h3>
+<p>Will create a new condition instance.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">condition</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="setjoin-join">SetJoin, Join</h3>
+<p>SetJoin will create a sql JOIN condition.
+<code>LEFT</code>, <code>RIGHT</code>, <code>INNER</code> and <code>CROSS</code> are supported. SQL USING() is not supported at the moment. If the join type is
+unknown or the table is empty, an error will be set.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetJoin</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">LEFT</span><span class="p">,</span><span class="s">&quot;users&quot;</span><span class="p">,</span><span class="s">&quot;users.id = ?&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>Join will return the defined conditions as <code>condition.Clause</code>. On a clause, you can receive the condition and passed
+arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">clauses</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nx">Join</span><span class="p">()</span>
+<span class="nx">clause</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Condition</span><span class="p">()</span><span class="w"> </span><span class="c1">// would return `JOIN LEFT users ON users.id = ?`</span>
+<span class="nx">clause</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Arguments</span><span class="p">()</span><span class="w"> </span><span class="c1">// would return `[]int{1}`</span>
+</code></pre></div>
+<h3 id="setwhere-where">SetWhere, Where</h3>
+<p>SetWhere will create a sql WHERE condition. When called multiple times, its getting chained by AND operator.</p>
+<p>Arrays and slices can be passed as argument.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetWhere</span><span class="p">(</span><span class="s">&quot;id = ? AND name = ?&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&quot;John&quot;</span><span class="p">)</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">SetWhere</span><span class="p">(</span><span class="s">&quot;id IN (?)&quot;</span><span class="p">,[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">})</span><span class="w"> </span><span class="c1">// will render the condition into `id IN (?, ?, ?)`</span>
+</code></pre></div>
+<p>Where will return the defined conditions as <code>condition.Clause</code>. On a clause, you can receive the condition and passed
+arguments.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">clauses</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nx">Where</span><span class="p">()</span>
+<span class="nx">clause</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">Condition</span><span class="p">()</span><span class="w"> </span><span class="c1">// would return `id IN (?, ?, ?)`</span>
+<span class="nx">clause</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">Arguments</span><span class="p">()</span><span class="w"> </span><span class="c1">// would return `[]int{10,11,12}`</span>
+</code></pre></div>
+<h3 id="setgroup-group">SetGroup, Group</h3>
+<p>SetGroup should only be called once. If it's called more often, the last values are set.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetGroup</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span><span class="s">&quot;name&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Group will return a slice of a string with all the added values.</p>
+<h3 id="sethaving-having">SetHaving, Having</h3>
+<p><code>SetHaving</code> and <code>Having</code> have the same functionality as <code>SetWhere</code> and <code>Where</code>.</p>
+<h3 id="setorder-order">SetOrder, Order</h3>
+<p>SetOrder should only be called once. If a column has a <code>-</code> prefix, DESC order will get set. If it's called more often,
+the last values are set.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetOrder</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-surname&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// rendered into `ORDER BY name ASC, surname DESC`</span>
+</code></pre></div>
+<h3 id="setlimit-limit">SetLimit, Limit</h3>
+<p>Set or get the sql <code>LIMIT</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetLimit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="setoffset-offset">SetOffset, Offset</h3>
+<p>Set or get the sql <code>OFFSET</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">c</span><span class="p">.</span><span class="nx">SetOffset</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="reset">Reset</h3>
+<p>Reset the complete condition or only single parts.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// complete condition will be reset.</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">Reset</span><span class="p">()</span>
+
+<span class="c1">// only the WHERE conditions will be reset.</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">Reset</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">Where</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="merge">Merge</h3>
+<p>Merge two conditions.
+<code>Group</code>, <code>Offset</code>, <code>Limit</code> and <code>Order</code> will be set if they have a none zero value instead of merged, because they should
+only be used once.
+<code>Where</code>, <code>Having</code> and <code>Join</code> will be merged, if exist.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">a</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">conditon</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+<span class="c1">// ...</span>
+<span class="nx">b</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">condition</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+<span class="c1">// ...</span>
+
+<span class="nx">a</span><span class="p">.</span><span class="nx">Merge</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="replaceplaceholders">ReplacePlaceholders</h3>
+<p>ReplacePlaceholders is a helper function to replace the <code>condition.Placholder</code> <code>?</code> with any other placeholder.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">condition</span><span class="p">.</span><span class="nx">ReplacePlaceholders</span><span class="p">(</span><span class="s">&quot;id = ? AND name = ?&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Placeholder</span><span class="p">{</span><span class="nx">Char</span><span class="p">:</span><span class="s">&quot;$&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">Numeric</span><span class="p">:</span><span class="kc">true</span><span class="p">})</span>
+<span class="c1">// will return `id = $1 AND name = $2`</span>
+</code></pre></div>
+<h2 id="config_1">Config</h2>
+<p>The basic sql config is required. If a provider needs some additional configuration, its no problem to embed this struct
+but the providers function <code>Config()</code> must return this struct.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Config</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="nx">Username</span><span class="w"> </span><span class="kt">string</span>
+<span class="nx">Password</span><span class="w"> </span><span class="kt">string</span>
+<span class="nx">Host</span><span class="w">     </span><span class="kt">string</span>
+<span class="nx">Port</span><span class="w">     </span><span class="kt">int</span>
+<span class="nx">Database</span><span class="w"> </span><span class="kt">string</span>
+
+<span class="nx">MaxIdleConnections</span><span class="w"> </span><span class="kt">int</span>
+<span class="nx">MaxOpenConnections</span><span class="w"> </span><span class="kt">int</span>
+<span class="nx">MaxConnLifetime</span><span class="w">    </span><span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span>
+<span class="nx">Timeout</span><span class="w">            </span><span class="kt">string</span>
+
+<span class="nx">PreQuery</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="providers">Providers</h2>
+<h3 id="mysql">Mysql</h3>
+<p>Mysql Provider which uses <code>github.com/go-sql-driver/mysql</code> under the hood.</p>
+<p>Time structs will be parsed and a timeout limit is set to 30s by default.</p>
+<h4 id="usage_1">Usage:</h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="s">&quot;github.com/patrickascher/gofer/query&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="s">&quot;github.com/patrickascher/gofer/query/mysql&quot;</span>
+
+<span class="nx">query</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;mysql&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">config</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Made with ❤️ by gofer contributors.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+      
+        <script src="../../../assets/js/config.js"></script>
+      
+    
+  </body>
+</html>

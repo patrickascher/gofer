@@ -1,0 +1,2466 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The fullstack go framework. Focus on your actual ideas and create applications within minutes.">
+      
+      
+      
+      
+        <link rel="prev" href="../orm/">
+      
+      
+        <link rel="next" href="../server/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../static/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Grid - gofer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atom-one-light.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+
+
+
+
+<meta content="website" property="og:type">
+<meta content="gofer" property="og:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." property="og:description">
+<meta content="None" property="og:url">
+<meta content="Nonestatic/card.png" property="og:image">
+<meta content="image/png" property="og:image:type">
+<meta content="1200" property="og:image:width">
+<meta content="630" property="og:image:height">
+<meta content="summary_large_image" name="twitter:card">
+<meta content="@goreleaser" name="twitter:site">
+<meta content="@goreleaser" name="twitter:creator">
+<meta content="gofer - Grid" name="twitter:title">
+<meta content="The fullstack go framework. Focus on your actual ideas and create applications within minutes." name="twitter:description">
+<meta content="Nonestatic/card.png" name="twitter:image">
+<style>
+    .md-header-nav__button.md-logo img, .md-header-nav__button.md-logo svg {
+        width: 2rem;
+        height: unset;
+    }
+</style>
+
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#grid" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="gofer" class="md-header__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../../assets/img/go.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            gofer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Grid
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/patrickascher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../quickstart/" class="md-tabs__link">
+          
+  
+  
+  Getting started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../registry/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="gofer" class="md-nav__button md-logo" aria-label="gofer" data-md-component="logo">
+      
+  <img src="../../../assets/img/go.png" alt="logo">
+
+    </a>
+    gofer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/patrickascher" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    patrickascher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logger/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Logger
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Query
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stringer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stringer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../slicer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Slicer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grid
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#primaryfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PrimaryFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#render" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Render
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orm
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="History">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manually-add-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manually add history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source interface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scheduler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/alert/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alert
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/login/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Login
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/translate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/grid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#primaryfields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PrimaryFields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#render" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Render
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orm
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="History">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manually-add-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manually add history
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source interface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="grid">Grid</h1>
+<p>The grid package converts any <code>grid.Source</code> into a CRUD backend.</p>
+<ul>
+<li>All primary-, foreign, references and polymorphic fields are removed by default</li>
+<li>Relation will be displayed depth max 1 at the moment.</li>
+<li><code>belongsTo</code> and <code>manyToMany</code> will be select boxes on the frontend.</li>
+<li>Errors will be set as controller errors.</li>
+<li>Field validation will happen automatically on front- and backend.</li>
+<li>Frontend fields will be rendered automatically by field type.</li>
+<li>Developer friendly. Every source which implements the <code>grid.Source</code> can be used.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="nx">MyController</span><span class="p">)</span><span class="w"> </span><span class="nx">User</span><span class="p">(){</span>
+<span class="w">    </span><span class="nx">g</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span><span class="nx">grid</span><span class="p">.</span><span class="nx">Orm</span><span class="p">(</span><span class="nx">model</span><span class="p">),</span><span class="kc">nil</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">//...</span>
+<span class="w">    </span><span class="nx">g</span><span class="p">.</span><span class="nx">Render</span><span class="p">()</span>
+<span class="p">}</span><span class="w"> </span>
+</code></pre></div>
+<h2 id="new">New</h2>
+<p>Creates a new grid instance. The first argument must be the <code>controller</code>, the second is the <code>grid.Source</code> and the third
+is the <code>grid.config</code> which is optional.</p>
+<p>The grid will be cached, to avoid re-creating the grid fields. The cache key will be the configured grid ID. Be aware
+that the config will be cached. If you need dynamic configuration, use <code>grid.Scope().Config</code> for it, after init.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">g</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">Orm</span><span class="p">(</span><span class="nx">model</span><span class="p">))</span>
+</code></pre></div>
+<h2 id="config">Config</h2>
+<p>The grid can be fully configured. If the configuration should be changed after init dynamically, the <code>Scope.Config()</code>
+can be used.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID</td>
+<td><code>controller:action</code></td>
+<td>Unique name for the grid. This is used as cache key.</td>
+</tr>
+<tr>
+<td>Title</td>
+<td><code>{ID}-title</code></td>
+<td>Title of the grid.</td>
+</tr>
+<tr>
+<td>Description</td>
+<td><code>{ID}-description</code></td>
+<td>Description of the grid.</td>
+</tr>
+<tr>
+<td>Policy</td>
+<td><code>orm.WHITELIST</code></td>
+<td>If the Policy is <code>WHITELIST</code>, the fields have to be set explicit.</td>
+</tr>
+<tr>
+<td>Exports</td>
+<td><code>csv</code></td>
+<td>Slice of names of render types.</td>
+</tr>
+<tr>
+<td>Action</td>
+<td></td>
+<td>see ACTION</td>
+</tr>
+<tr>
+<td>Filter</td>
+<td></td>
+<td>see FILTER</td>
+</tr>
+<tr>
+<td>History</td>
+<td></td>
+<td>see HISTORY</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Action</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PositionLeft</td>
+<td><code>false</code></td>
+<td>Defines where the action (details,edit,delete) column should be displayed on the grid table.</td>
+</tr>
+<tr>
+<td>DisableDetails</td>
+<td><code>true</code></td>
+<td>Disables the details mode. It is disabled because its not implemented yet!</td>
+</tr>
+<tr>
+<td>DisableCreate</td>
+<td><code>false</code></td>
+<td>Disables the create mode.</td>
+</tr>
+<tr>
+<td>DisableUpdate</td>
+<td><code>false</code></td>
+<td>Disables the update mode.</td>
+</tr>
+<tr>
+<td>DisableDelete</td>
+<td><code>false</code></td>
+<td>Disables the delete mode.</td>
+</tr>
+<tr>
+<td>CreateLinks</td>
+<td><code>nil</code></td>
+<td>You can add params to the grid Add button. IF multiple entries exist, a menu will be generated.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Filter</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disable</td>
+<td><code>false</code></td>
+<td>Disable filter.</td>
+</tr>
+<tr>
+<td>DisableQuickFilter</td>
+<td><code>false</code></td>
+<td>Disable the quick filter.</td>
+</tr>
+<tr>
+<td>DisableCustomFilter</td>
+<td><code>false</code></td>
+<td>Disable the custom filter.</td>
+</tr>
+<tr>
+<td>OpenQuickFilter</td>
+<td><code>false</code></td>
+<td>The quick filter will be opened by default</td>
+</tr>
+<tr>
+<td>AllowedRowsPerPage</td>
+<td><code>-1</code>,<code>5</code>,<code>10</code>,<code>15</code>,<code>25</code>,<code>50</code></td>
+<td>The allowed rows per page.</td>
+</tr>
+<tr>
+<td>RowsPerPage</td>
+<td><code>15</code></td>
+<td>Default rows per page.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>History</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disable</td>
+<td><code>false</code></td>
+<td>Disable the history.</td>
+</tr>
+<tr>
+<td>AdditionalIDs</td>
+<td><code>[]string{}</code></td>
+<td>Additional grid IDs can be added to show in the history content.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mode">Mode</h2>
+<p>The grid mode is defined by the <code>http.Method</code> and <code>controller.Params</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>http.Method</th>
+<th>Param</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grid.FeTable</code></td>
+<td><code>GET</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>grid.FeHistory</code></td>
+<td><code>GET</code></td>
+<td><code>mode=history</code></td>
+</tr>
+<tr>
+<td><code>grid.FeFilter</code></td>
+<td><code>GET</code></td>
+<td><code>mode=filter</code></td>
+</tr>
+<tr>
+<td><code>grid.SrcCallback</code></td>
+<td><code>GET</code></td>
+<td><code>mode=callback</code></td>
+</tr>
+<tr>
+<td><code>grid.FeDetails</code></td>
+<td><code>GET</code></td>
+<td><code>mode=details</code></td>
+</tr>
+<tr>
+<td><code>grid.FeCreate</code></td>
+<td><code>GET</code></td>
+<td><code>mode=create</code></td>
+</tr>
+<tr>
+<td><code>grid.FeUpdate</code></td>
+<td><code>GET</code></td>
+<td><code>mode=update</code></td>
+</tr>
+<tr>
+<td><code>grid.FeExport</code></td>
+<td><code>GET</code></td>
+<td><code>mode=export</code></td>
+</tr>
+<tr>
+<td><code>grid.SrcCreate</code></td>
+<td><code>POST</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>grid.SrcUpdate</code></td>
+<td><code>PUT</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>grid.SrcDelete</code></td>
+<td><code>DELETE</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="field">Field</h2>
+<p>Will return the grid field by name. If the field does not exist, an empty field with an error will return.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">field</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">Field</span><span class="p">(</span><span class="s">&quot;ID&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>A field can be configured by the following functions. Each function returns itself, this way it can be chained. If an
+error occures, the fields error will be set. Error will be handled in <code>grid.Render</code>.</p>
+<p>The configuration for <code>SetPosition</code>, <code>SetTitle</code>, <code>SetDescription</code>, <code>SetRemove</code>, <code>SetHidden</code> and <code>SetView</code> must be set
+with <code>grid.NewValue()</code> or native go type.</p>
+<ul>
+<li><code>string</code> for <code>SetTitle</code>, <code>SetDescription</code>, <code>SetView</code></li>
+<li><code>bool</code> for <code>SetRemove</code>, <code>SetHidden</code></li>
+<li><code>int</code> for <code>SetPosition</code></li>
+</ul>
+<p>If the native type is different, an error will be set.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">grid</span><span class="p">.</span><span class="nx">Field</span><span class="p">(</span><span class="s">&quot;ID&quot;</span><span class="p">).</span><span class="nx">SetTitle</span><span class="p">(</span><span class="nx">grid</span><span class="p">.</span><span class="nx">NewValue</span><span class="p">(</span><span class="s">&quot;ID&quot;</span><span class="p">).</span><span class="nx">SetDetails</span><span class="p">(</span><span class="s">&quot;Identifier&quot;</span><span class="p">))</span>
+<span class="c1">// grid mode: table, update, create will have the title &quot;ID&quot; </span>
+<span class="c1">// and details will have the title &quot;Identifier&quot;.</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>available frontend</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Name</code>, <code>SetName</code></td>
+<td>x</td>
+<td>Will set the fields name. The name is used in the frontend as id.</td>
+</tr>
+<tr>
+<td><code>Primary</code>, <code>SetPrimary</code></td>
+<td>x</td>
+<td>Will define if the field is a primary key.</td>
+</tr>
+<tr>
+<td><code>Type</code>, <code>SetType</code></td>
+<td>x</td>
+<td>Defines the field type.</td>
+</tr>
+<tr>
+<td><code>Title</code>, <code>SetTitle</code></td>
+<td>x</td>
+<td>Will set the fields title.</td>
+</tr>
+<tr>
+<td><code>Description</code>, <code>SetDescription</code></td>
+<td>x</td>
+<td>Will set the fields description.</td>
+</tr>
+<tr>
+<td><code>Position</code>, <code>SetPosition</code></td>
+<td>x</td>
+<td>Will set the fields position.</td>
+</tr>
+<tr>
+<td><code>Removed</code>, <code>SetRemove</code></td>
+<td>x</td>
+<td>Will flag the field as removed.</td>
+</tr>
+<tr>
+<td><code>Hidden</code>, <code>SetHidden</code></td>
+<td>x</td>
+<td>Will set the field as hidden.</td>
+</tr>
+<tr>
+<td><code>View</code>, <code>SetView</code></td>
+<td>x</td>
+<td>Will set a custom frontend view component for the field.</td>
+</tr>
+<tr>
+<td><code>ReadOnly</code>, <code>SetReadOnly</code></td>
+<td>x</td>
+<td>Will set the field as read only.</td>
+</tr>
+<tr>
+<td><code>Sort</code>, <code>SetSort</code></td>
+<td>x</td>
+<td>Will allow the sorting of the field and set the condition field name.</td>
+</tr>
+<tr>
+<td><code>Filter</code>, <code>SetFilter</code></td>
+<td>x</td>
+<td>Will allow the filtering of the field and set the condition operator and field name.</td>
+</tr>
+<tr>
+<td><code>GroupAble</code>, <code>SetGroupAble</code></td>
+<td>x</td>
+<td>Will set the field as group able.</td>
+</tr>
+<tr>
+<td><code>Options</code>, <code>Option</code>, <code>SetOption</code></td>
+<td>x</td>
+<td>Will add a option for the field.</td>
+</tr>
+<tr>
+<td><code>Relation</code>, <code>SetRelation</code></td>
+<td>x</td>
+<td>Will define the field as relation</td>
+</tr>
+<tr>
+<td><code>Field</code></td>
+<td></td>
+<td>Will return a field by name. If the field was not found, an field error will be set. (relation)</td>
+</tr>
+<tr>
+<td><code>Fields</code>, <code>SetFields</code></td>
+<td>x</td>
+<td>Will return all child fields. (relation)</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td></td>
+<td>Will return the field error.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Field types</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>implemented in frontend</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Bool</code></td>
+<td></td>
+<td>Checkbox</td>
+</tr>
+<tr>
+<td><code>Integer</code></td>
+<td></td>
+<td>Input-Integer</td>
+</tr>
+<tr>
+<td><code>Float</code></td>
+<td></td>
+<td>Input-Numeric</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td></td>
+<td>Input-Text</td>
+</tr>
+<tr>
+<td><code>TextArea</code></td>
+<td></td>
+<td>TextArea</td>
+</tr>
+<tr>
+<td><code>Time</code></td>
+<td></td>
+<td>Input</td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td></td>
+<td>Datepicker</td>
+</tr>
+<tr>
+<td><code>DateTime</code></td>
+<td></td>
+<td>Datepicker+Input</td>
+</tr>
+<tr>
+<td><code>Select</code></td>
+<td></td>
+<td>Select</td>
+</tr>
+<tr>
+<td><code>MultiSelect</code></td>
+<td></td>
+<td>Select</td>
+</tr>
+<tr>
+<td><code>belongsTo</code></td>
+<td></td>
+<td>Select</td>
+</tr>
+<tr>
+<td><code>hasOne</code></td>
+<td></td>
+<td>Inputs</td>
+</tr>
+<tr>
+<td><code>hasMany</code></td>
+<td></td>
+<td>Inputs</td>
+</tr>
+<tr>
+<td><code>m2m</code></td>
+<td></td>
+<td>Select</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Options</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DecoratorOption</code></td>
+<td><code>string</code>,<code>string</code></td>
+<td>a field name can be used {{Name}}. As second param a separator can be set - if set the FE escaping will be disabled.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Callbacks</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Select</code></td>
+<td><code>?</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>TODO: Validate</p>
+<h2 id="scope">Scope</h2>
+<p>The scope will return some helper functions.</p>
+<h3 id="source">Source</h3>
+<p>Will return the grid source.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">src</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">scrope</span><span class="p">.</span><span class="nx">Source</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="config_1">Config</h3>
+<p>Will return a pointer to the grid config. For dynamically configuration of the grid.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">cfg</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">scrope</span><span class="p">.</span><span class="nx">Config</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="fields">Fields</h3>
+<p>Will return all configured grid fields.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">fields</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">scrope</span><span class="p">.</span><span class="nx">Fields</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="primaryfields">PrimaryFields</h3>
+<p>Will return all defined primary fields of the grid.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">primaryFields</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">scrope</span><span class="p">.</span><span class="nx">PrimaryFields</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="controller">Controller</h3>
+<p>Will return the grid controller instance.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">ctrl</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">scrope</span><span class="p">.</span><span class="nx">Controller</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="render">Render</h2>
+<p>Will render the grid by the actual grid mode.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>set in frontend data</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grid.SrcCallback</code></td>
+<td><code>data</code></td>
+<td>The source callback function is called. as first param the requested callback will be set as string.</td>
+</tr>
+<tr>
+<td><code>grid.SrcCreate</code></td>
+<td></td>
+<td>The source create function is called.</td>
+</tr>
+<tr>
+<td><code>grid.SrcUpdate</code></td>
+<td></td>
+<td>The source update function is called.</td>
+</tr>
+<tr>
+<td><code>grid.SrcDelete</code></td>
+<td></td>
+<td>The condition first will be called to ensure the correct primary key. The source delete function is called.</td>
+</tr>
+<tr>
+<td><code>grid.FeTable</code></td>
+<td><code>pagination</code>, <code>head</code>, <code>data</code>, <code>config</code></td>
+<td>ConditionAll is called to create the condition. Add header/pagination if its not excluded by param. The source all function is called. Add config and result to the controller. call the defined render type.</td>
+</tr>
+<tr>
+<td><code>grid.FeExport</code></td>
+<td><code>head</code>, <code>data</code>, <code>config</code></td>
+<td>Same as FeTable but without the pagination and limit.</td>
+</tr>
+<tr>
+<td><code>grid.FeCreate</code></td>
+<td><code>head</code></td>
+<td>add header data.</td>
+</tr>
+<tr>
+<td><code>grid.FeDetails</code>,<code>grid.FeUpdate</code></td>
+<td><code>head</code>, <code>data</code></td>
+<td>add header data. call conditionFirst. fetch the entry by the given id and set the controller data.</td>
+</tr>
+<tr>
+<td><code>grid.FeFilter</code></td>
+<td></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><code>grid.FeHistory</code></td>
+<td><code>histories</code>, <code>users</code></td>
+<td>all history entries and user data to the given sourceID will be fetched.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="orm">Orm</h2>
+<p>With the orm function an <code>orm.Interface</code> will be converted to a <code>grid.Source</code> and can be used out of the box.</p>
+<p>History is implemented.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">g</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">ctrl</span><span class="p">,</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">Orm</span><span class="p">(</span><span class="nx">model</span><span class="p">),</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="history">History</h2>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Must be implmented by the source.</p>
+</div>
+<p>The data will be saved in the <code>histories</code> table by the <code>grid.Histroy</code> struct. The following Fields are available
+defined:</p>
+<p><em>grid.History</em> saves the entries in the database with all the needed information.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GridID</td>
+<td><code>string</code></td>
+<td>The grid id. There can be multiple IDs set. The will get separated through <code>,</code></td>
+</tr>
+<tr>
+<td>UserID</td>
+<td><code>string</code></td>
+<td>The users id as a string.</td>
+</tr>
+<tr>
+<td>SrcID</td>
+<td><code>string</code></td>
+<td>The ID of the source struct.</td>
+</tr>
+<tr>
+<td>Type</td>
+<td><code>enum</code></td>
+<td>Can have the value <code>Created</code>, <code>Updated</code> or <code>Deleted</code></td>
+</tr>
+<tr>
+<td>Value</td>
+<td><code>text</code></td>
+<td><code>orm.ChangeValue</code> as json.</td>
+</tr>
+<tr>
+<td>CratedAt</td>
+<td><code>datetime</code></td>
+<td>The current datetime when it was created.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If the <code>UserID</code> is <code>0</code> or <code>grid.HistroySystemUser</code>, it will be displayed as a SYSTEM user. This can be used for cronjobs or other automated changes.</p>
+</div>
+<p><em>orm.ChangeValue</em> will be used to describe the source changes.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Field</td>
+<td><code>string</code></td>
+<td>The name of the struct field.</td>
+</tr>
+<tr>
+<td>Operation</td>
+<td><code>string</code></td>
+<td>Value of <code>create</code>, <code>update</code> or <code>delete</code></td>
+</tr>
+<tr>
+<td>New</td>
+<td><code>string</code></td>
+<td>The new value of the field. Can be empty if zero value.</td>
+</tr>
+<tr>
+<td>Old</td>
+<td><code>string</code></td>
+<td>The old value of the field. Can be empty if zero value.</td>
+</tr>
+<tr>
+<td>Index</td>
+<td><code>int</code></td>
+<td>Only used for <code>hasMany</code> relations.</td>
+</tr>
+<tr>
+<td>Children</td>
+<td><code>[]orm.ChangeValue</code></td>
+<td>Same fields as described before in a deeper level.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Create:</em> Fields will only be added if they have no zero value.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>normal field</td>
+<td><code>New</code> will be the value of the field.</td>
+</tr>
+<tr>
+<td>belongsTo, m2m</td>
+<td><code>New</code> field will be the value of the select <code>TextValue</code> field. To guarantee the correct value in the future, also if the ID got deleted.</td>
+</tr>
+<tr>
+<td>HasOne</td>
+<td>Every field will be in the <code>Childeren</code> slice if the value is not zero.</td>
+</tr>
+<tr>
+<td>HasMany</td>
+<td>Same as <code>hasOne</code> but a the <code>Index</code> field will be set.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Update</em> Only changed values will be added.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>normal field</td>
+<td><code>New</code> and <code>Old</code> will have the fields value. If one of it has a zero value, it will be omitted.</td>
+</tr>
+<tr>
+<td>belongsTo, m2m</td>
+<td><code>New</code> and <code>Old</code> will be the value of the select <code>TextValue</code> field. To guarantee the correct value in the future, also if the ID got deleted. If one of it has a zero value, it will be omitted.</td>
+</tr>
+<tr>
+<td>HasOne</td>
+<td>Every field will be in the <code>Childeren</code> slice if the value is not zero.</td>
+</tr>
+<tr>
+<td>HasMany</td>
+<td>Can have the following state <code>create</code>, <code>update</code> or <code>delete</code>. On <code>create</code> only the new value will be set, on <code>delete</code> only the old value.</td>
+</tr>
+</tbody>
+</table>
+<p><em>Delete</em></p>
+<p>A <code>orm.History</code> entry will be added with the <code>Type: DELETED</code>.</p>
+<h3 id="manually-add-history">manually add history</h3>
+<div class="highlight"><pre><span></span><code><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">NewHistory</span><span class="p">(</span><span class="s">&quot;gridID&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;userID&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;srcID&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">grid</span><span class="p">.</span><span class="nx">HistoryCreated</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;New data received.&quot;</span><span class="p">)</span>
+<span class="c1">//...</span>
+</code></pre></div>
+<h2 id="source-interface">Source interface</h2>
+<p>To create your own source, you have to implement the <code>grid.Source</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Source</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
+<span class="nx">Cache</span><span class="p">()</span><span class="w"> </span><span class="nx">cache</span><span class="p">.</span><span class="nx">Manager</span>
+
+<span class="nx">PreInit</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="nx">Init</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="nx">Fields</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">([]</span><span class="nx">Field</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="nx">UpdatedFields</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+
+<span class="nx">Callback</span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kd">interface</span><span class="p">{},</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="nx">First</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">Condition</span><span class="p">,</span><span class="w"> </span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kd">interface</span><span class="p">{},</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="nx">All</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">Condition</span><span class="p">,</span><span class="w"> </span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kd">interface</span><span class="p">{},</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="nx">Create</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kd">interface</span><span class="p">{},</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+<span class="nx">Update</span><span class="p">(</span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="nx">Delete</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">Condition</span><span class="p">,</span><span class="w"> </span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="nx">Count</span><span class="p">(</span><span class="nx">condition</span><span class="p">.</span><span class="nx">Condition</span><span class="p">,</span><span class="w"> </span><span class="nx">Grid</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span>
+
+<span class="c1">//Interface() interface{}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Made with ❤️ by gofer contributors.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+      
+        <script src="../../../assets/js/config.js"></script>
+      
+    
+  </body>
+</html>

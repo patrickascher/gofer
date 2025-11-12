@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block extrahead %}
+{% set title = config.site_name %}
+{% if page and page.title and not page.is_homepage %}
+{% set title = config.site_name ~ " - " ~ page.title | striptags %}
+{% endif %}
+{% set image = config.site_url ~ 'static/card.png' %}
+<meta content="website" property="og:type">
+<meta content="{{ config.site_name }}" property="og:title">
+<meta content="{{ config.site_description }}" property="og:description">
+<meta content="{{ page.canonical_url }}" property="og:url">
+<meta content="{{ image }}" property="og:image">
+<meta content="image/png" property="og:image:type">
+<meta content="1200" property="og:image:width">
+<meta content="630" property="og:image:height">
+<meta content="summary_large_image" name="twitter:card">
+<meta content="@goreleaser" name="twitter:site">
+<meta content="@goreleaser" name="twitter:creator">
+<meta content="{{ title }}" name="twitter:title">
+<meta content="{{ config.site_description }}" name="twitter:description">
+<meta content="{{ image }}" name="twitter:image">
+<style>
+    .md-header-nav__button.md-logo img, .md-header-nav__button.md-logo svg {
+        width: 2rem;
+        height: unset;
+    }
+</style>
+{% endblock %}

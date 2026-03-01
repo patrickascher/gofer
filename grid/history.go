@@ -152,9 +152,6 @@ func historiesById(g *grid) ([]History, []auth.User, error) {
 	}
 
 	if g.config.History.Condition == nil {
-
-		fmt.Println("here we old", g.config.History)
-
 		// create condition for all grid ids.
 		gridIDs := []interface{}{"%" + g.config.ID + "%"}
 		gridIDWhere := "(grid_id LIKE ?"
@@ -165,9 +162,7 @@ func historiesById(g *grid) ([]History, []auth.User, error) {
 		gridIDWhere += ")"
 		err = history.All(&histories, condition.New().SetWhere(gridIDWhere, gridIDs...).SetWhere("src_id = ?", params[pFields[0].referenceName][0]).SetOrder("-id"))
 	} else {
-		fmt.Println("here we go")
 		err = history.All(&histories, g.config.History.Condition)
-
 	}
 
 	// fetch histories.

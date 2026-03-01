@@ -10,6 +10,7 @@ import (
 	"github.com/patrickascher/gofer/controller"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
+	"github.com/patrickascher/gofer/query/condition"
 )
 
 type Config struct {
@@ -34,6 +35,7 @@ type HistoryConfig struct {
 	Hide          bool     `json:"hide,omitempty"`
 	Disable       bool     `json:"disable,omitempty"`
 	AdditionalIDs []string `json:"-"`
+	Condition     condition.Condition
 }
 
 // Action configuration.

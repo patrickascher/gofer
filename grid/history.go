@@ -151,17 +151,26 @@ func historiesById(g *grid) ([]History, []auth.User, error) {
 		return nil, nil, fmt.Errorf(errWrap, err)
 	}
 
-	// create condition for all grid ids.
-	gridIDs := []interface{}{"%" + g.config.ID + "%"}
-	gridIDWhere := "(grid_id LIKE ?"
-	for _, gId := range g.config.History.AdditionalIDs {
-		gridIDWhere += " OR grid_id LIKE ?"
-		gridIDs = append(gridIDs, "%"+gId+"%")
+	if g.config.History.Condition == nil {
+
+		fmt.Println("here we old", g.config.History)
+
+		// create condition for all grid ids.
+		gridIDs := []interface{}{"%" + g.config.ID + "%"}
+		gridIDWhere := "(grid_id LIKE ?"
+		for _, gId := range g.config.History.AdditionalIDs {
+			gridIDWhere += " OR grid_id LIKE ?"
+			gridIDs = append(gridIDs, "%"+gId+"%")
+		}
+		gridIDWhere += ")"
+		err = history.All(&histories, condition.New().SetWhere(gridIDWhere, gridIDs...).SetWhere("src_id = ?", params[pFields[0].referenceName][0]).SetOrder("-id"))
+	} else {
+		fmt.Println("here we go")
+		err = history.All(&histories, g.config.History.Condition)
+
 	}
-	gridIDWhere += ")"
 
 	// fetch histories.
-	err = history.All(&histories, condition.New().SetWhere(gridIDWhere, gridIDs...).SetWhere("src_id = ?", params[pFields[0].referenceName][0]).SetOrder("-id"))
 	if err != nil {
 		return nil, nil, fmt.Errorf(errWrap, err)
 	}

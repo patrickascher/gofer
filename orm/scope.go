@@ -871,7 +871,7 @@ func (s scope) addField(a []reflect.StructField, b []reflect.StructField) ([]ref
 				case CreatedAt, UpdatedAt, DeletedAt:
 					exist = true
 				default:
-					return nil, fmt.Errorf(ErrFieldUnique, s.FqdnModel(fieldA.Name))
+					//return nil, fmt.Errorf(ErrFieldUnique, s.FqdnModel(fieldA.Name))
 				}
 				exist = true
 			}

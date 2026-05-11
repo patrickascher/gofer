@@ -80,9 +80,8 @@ func ormTranslation() error {
 		var messages []i18n.Message
 		for _, field := range scope.Fields(orm.Permission{}) {
 			messages = append(messages, i18n.Message{ID: fmt.Sprintf(MessageID, scope.Name(true), field.Name), Description: fmt.Sprintf(Desc, field.Name, scope.Name(true)), Other: field.Name})
-			if field.Information.Type.Kind() == "MultiSelect" || field.Information.Type.Kind() == "Select" {
+			if field.Information.Type != nil && (field.Information.Type.Kind() == "MultiSelect" || field.Information.Type.Kind() == "Select") {
 				field.Information.Type.Kind()
-
 				replacer := strings.NewReplacer("enum(", "", "set(", "", ")", "", "'", "")
 				ll := replacer.Replace(field.Information.Type.Raw())
 				if len(ll) > 0 {

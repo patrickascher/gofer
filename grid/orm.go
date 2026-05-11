@@ -410,7 +410,9 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			continue
 		}
 		field.SetPrimary(f.Information.PrimaryKey)
-		field.SetType(f.Information.Type.Kind())
+		if !f.NoSQLColumn {
+			field.SetType(f.Information.Type.Kind())
+		}
 
 		field.SetTitle(NewValue(translation.ORM + scope.Name(true) + "." + f.Name))
 		// TODO translate desc
@@ -422,7 +424,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		// field.SetView(g.NewValue(""))
 		field.SetSort(true, f.Information.Name)
 		field.SetFilter(true, query.LIKE, f.Information.Name)
-		if f.Information.Type.Kind() == types.DATE || f.Information.Type.Kind() == types.DATETIME {
+		if !f.NoSQLColumn && (f.Information.Type.Kind() == types.DATE || f.Information.Type.Kind() == types.DATETIME) {
 			field.SetFilter(true, query.MYSQLDATE, f.Information.Name)
 		}
 		field.SetGroupAble(true)
@@ -431,7 +433,7 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 			field.SetOption(orm.TagValidate, f.Validator.Config())
 		}
 
-		if f.Information.Type.Kind() == types.SELECT || f.Information.Type.Kind() == types.MULTISELECT {
+		if !f.NoSQLColumn && (f.Information.Type.Kind() == types.SELECT || f.Information.Type.Kind() == types.MULTISELECT) {
 			var items []options.SelectItem
 			sel := f.Information.Type.(types.Items)
 			for _, i := range sel.Items() {

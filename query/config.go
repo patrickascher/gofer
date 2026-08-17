@@ -18,7 +18,7 @@ type Config struct {
 
 	MaxIdleConnections int
 	MaxOpenConnections int
-	MaxConnLifetime    time.Duration
+	MaxConnLifetime    int
 	Timeout            string
 
 	PreQuery []string `mapstructure:",omitempty"`

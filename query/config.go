@@ -4,8 +4,6 @@
 
 package query
 
-import "time"
-
 // Config sql struct.
 type Config struct {
 	Provider string // used for gofer.Server

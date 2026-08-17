@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/patrickascher/gofer/logger"
 )
@@ -184,9 +185,13 @@ func (b *Base) Open() error {
 	}
 
 	// settings
-	b.db.SetMaxIdleConns(b.Config.MaxIdleConnections) // go default 2
-	b.db.SetMaxOpenConns(b.Config.MaxOpenConnections) // go default 0
-	b.db.SetConnMaxLifetime(b.Config.MaxConnLifetime) // go default 0
+	b.db.SetMaxIdleConns(b.Config.MaxIdleConnections)
+	b.db.SetMaxOpenConns(b.Config.MaxOpenConnections)
+	if b.Config.MaxConnLifetime > 0 {
+  		b.db.SetConnMaxLifetime(
+  			time.Duration(b.Config.MaxConnLifetime) * time.Second,
+   		)
+	}
 
 	// check connection
 	err := b.db.Ping()

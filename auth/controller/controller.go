@@ -394,7 +394,7 @@ func (c *Auth) Accounts() {
 		g.Field("Surname").SetRemove(grid.NewValue(false))
 		g.Field("State").SetRemove(grid.NewValue(false))
 		g.Field("LastLogin").SetRemove(grid.NewValue(false))
-		g.Field("Roles").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "Name", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})
+		g.Field("Roles").SetFilter(true, query.CUSTOMLIKE, "(SELECT GROUP_CONCAT(fw_roles.name SEPARATOR ',') FROM fw_roles JOIN fw_user_roles ON fw_user_roles.role_id = fw_roles.id WHERE fw_user_roles.user_id = fw_users.id) LIKE ?").SetRemove(grid.NewValue(false)).SetOption(options.DECORATOR, "Name", ", ").SetOption(options.SELECT, options.Select{TextField: "Name"})		
 		g.Field("Roles.Name").SetRemove(grid.NewValue(false))
 	}
 

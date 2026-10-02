@@ -15,6 +15,7 @@ import (
 	"github.com/patrickascher/gofer/grid/options"
 	"github.com/patrickascher/gofer/locale/translation"
 	"github.com/patrickascher/gofer/orm"
+	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
 	"github.com/patrickascher/gofer/router"
 	"github.com/patrickascher/gofer/router/middleware/jwt"

@@ -142,7 +142,7 @@ func Start() error {
 	//TODO write own cors middleware
 	corsManager := cors.New(cors.Options{
 		AllowCredentials: true,
-		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedOrigins:   []string{"http://localhost:18080","http://localhost:8080"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Authorization", "Origin", "Cache-Control", "Accept", "Content-Type", "X-Requested-With"},
 		Debug:            false,

@@ -12,6 +12,7 @@ import (
 
 	"github.com/patrickascher/gofer/query"
 	"github.com/patrickascher/gofer/query/condition"
+	"github.com/patrickascher/gofer/query/types"
 )
 
 // internal constants.
@@ -19,6 +20,7 @@ const (
 	conditionSortKey         = "sort"
 	conditionSortSeparator   = ","
 	conditionFilterPrefix    = "filter_"
+	conditionZeroPrefix      = "filterZero_"
 	conditionFilterSeparator = ";"
 )
 
@@ -240,8 +242,18 @@ func (g *grid) conditionAll() (condition.Condition, error) {
 				return nil, err
 			}
 		}
+		if strings.HasPrefix(key, conditionZeroPrefix) {
+			name := strings.TrimPrefix(key, conditionZeroPrefix)
+			if err := addZeroFilterCondition(g, name, param, c); err != nil {
+				return nil, err
+			}
+		}
 		if strings.HasPrefix(key, conditionFilterPrefix) {
-			err := addFilterCondition(g, key[len(conditionFilterPrefix):], param, c)
+			name := strings.TrimPrefix(key, conditionFilterPrefix)
+			if _, exists := params[conditionZeroPrefix+name]; exists {
+				return nil, fmt.Errorf("grid: conflicting quick filters for %s", name)
+			}
+			err := addFilterCondition(g, name, param, c)
 			if err != nil {
 				return nil, err
 			}
@@ -249,6 +261,29 @@ func (g *grid) conditionAll() (condition.Condition, error) {
 	}
 
 	return c, nil
+}
+
+// addZeroFilterCondition adds an empty-only predicate for a configured scalar field.
+func addZeroFilterCondition(g *grid, name string, values []string, c condition.Condition) error {
+	field := g.Field(name)
+	if field.error != nil || !field.FilterZeroValue() || g.config.Filter.Disable || g.config.Filter.DisableQuickFilter {
+		return fmt.Errorf(ErrFieldPermission, name, "filter for empty values")
+	}
+	if len(values) != 1 || values[0] != "1" {
+		return fmt.Errorf("grid: %s%s requires the value 1", conditionZeroPrefix, name)
+	}
+
+	expr := field.zeroValueExpression()
+	if expr == field.referenceID {
+		switch field.columnType {
+		case types.INTEGER, types.FLOAT, types.BOOL, types.TIME, types.DATE, types.DATETIME:
+			c.SetWhere(strings.TrimPrefix(expr, "!") + " IS NULL")
+			return nil
+		}
+	}
+	// LENGTH preserves spaces and avoids equating numeric 0 with an empty string.
+	c.SetWhere("COALESCE(LENGTH(" + strings.TrimPrefix(expr, "!") + "), 0) = 0")
+	return nil
 }
 
 // addFilterCondition adds a where condition with the given params.

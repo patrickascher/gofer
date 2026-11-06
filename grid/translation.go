@@ -20,6 +20,7 @@ func init() {
 		i18n.Message{ID: translation.GRID + "ItemUploaded", Description: "Alert text after a item got uploaded.", Other: "Item uploaded!"},
 
 		i18n.Message{ID: translation.GRID + "Filter.Title", Description: "user filter title", Other: "Filter"},
+		i18n.Message{ID: translation.GRID + "Filter.EmptyOnly", Description: "Quick filter for NULL or empty values", Other: "Is empty"},
 		i18n.Message{ID: translation.GRID + "Filter.Edit", Description: "user filter edit", Other: "Edit"},
 		i18n.Message{ID: translation.GRID + "Filter.Name", Description: "Name of the user filter", Other: "Name"},
 		i18n.Message{ID: translation.GRID + "Filter.Group", Description: "Group of the user filter", Other: "Group"},

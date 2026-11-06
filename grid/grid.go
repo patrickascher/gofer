@@ -302,20 +302,22 @@ func (g *grid) Mode() int {
 // Error will be set if the field does not exist.
 // This is used to avoid annoying error handling on defining fields.
 func (g *grid) Field(name string) *Field {
-	loop := strings.Split(name, ".")
 	fields := g.fields
-	for i := 0; i < len(loop); i++ {
-		for k, f := range fields {
-			if f.name == loop[i] && i < len(loop)-1 {
-				fields = fields[k].fields
-			}
-			if f.name == loop[i] && i == len(loop)-1 {
-				return &fields[k]
+	var field *Field
+	for _, part := range strings.Split(name, ".") {
+		field = nil
+		for i := range fields {
+			if fields[i].name == part {
+				field = &fields[i]
+				break
 			}
 		}
+		if field == nil {
+			return &Field{error: fmt.Errorf(ErrField, name)}
+		}
+		fields = field.fields
 	}
-
-	return &Field{error: fmt.Errorf(ErrField, name)}
+	return field
 }
 
 // Scope of the grid.

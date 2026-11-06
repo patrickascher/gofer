@@ -411,7 +411,11 @@ func gridFields(scope orm.Scope, g Grid, parent string) ([]Field, error) {
 		}
 		field.SetPrimary(f.Information.PrimaryKey)
 		if !f.NoSQLColumn {
-			field.SetType(f.Information.Type.Kind())
+			field.columnType = f.Information.Type.Kind()
+			field.SetType(field.columnType)
+		} else {
+			// Virtual fields need an explicit SQL mapping to filter for empty values.
+			field.SetFilterZeroValue(false)
 		}
 
 		field.SetTitle(NewValue(translation.ORM + scope.Name(true) + "." + f.Name))

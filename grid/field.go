@@ -11,6 +11,7 @@ import (
 	"github.com/patrickascher/gofer/query/types"
 	"github.com/patrickascher/gofer/slicer"
 	"reflect"
+	"strings"
 	"sync"
 
 	"github.com/patrickascher/gofer/query"
@@ -49,6 +50,12 @@ type Field struct {
 	filterAble      bool
 	filterCondition string
 	filterField     string
+
+	columnType              string // database type before presentation overrides (e.g. an integer select)
+	filterZeroValueDisabled bool
+	filterZeroValueOnly     bool
+	filterZeroValueExpr     string
+	virtualFilterName       string // implicit ORM name of a field without a database column
 
 	groupAble bool
 
@@ -254,6 +261,7 @@ func (f Field) Filter() (allowed bool, condition string, field string) {
 // Field error will be set, if the operator is not allowed.
 func (f *Field) SetFilter(allow bool, customize ...string) *Field {
 	f.filterAble = allow
+	f.filterZeroValueOnly = false
 	if len(customize) > 0 {
 		if !query.IsOperatorAllowed(customize[0]) {
 			f.error = fmt.Errorf(ErrOperator, customize[0], f.name)
@@ -268,6 +276,96 @@ func (f *Field) SetFilter(allow bool, customize ...string) *Field {
 		f.filterField = f.name
 	}
 	return f
+}
+
+// FilterZeroValue reports whether this field supports the empty-only quick filter.
+func (f Field) FilterZeroValue() bool {
+	return (f.filterAble || f.filterZeroValueOnly) && !f.filterZeroValueDisabled && f.zeroValueExpression() != ""
+}
+
+// SetFilterZeroValueOnly allows only the empty-value quick filter for a scalar SQL expression.
+// A subsequent SetFilter call selects the regular filter behavior again.
+func (f *Field) SetFilterZeroValueOnly(expression string) *Field {
+	f.filterAble = false
+	f.filterZeroValueOnly = true
+	return f.SetFilterZeroValue(true, expression)
+}
+
+// SetFilterZeroValue enables or disables the empty-only quick filter (enabled by default).
+// For a computed field, supply a scalar SQL expression without placeholders.
+// Custom predicates can reuse a scalar SELECT from SetSort or a mapped database column.
+func (f *Field) SetFilterZeroValue(allow bool, expression ...string) *Field {
+	f.filterZeroValueDisabled = !allow
+	if len(expression) > 0 {
+		f.filterZeroValueExpr = expression[0]
+	}
+	return f
+}
+
+func (f Field) zeroValueExpression() string {
+	if f.filterZeroValueExpr != "" {
+		return f.filterZeroValueExpr
+	}
+	switch f.filterCondition {
+	case query.CUSTOM, query.CUSTOMLIKE, query.RIN, query.RNOTIN:
+		// A predicate or list cannot be tested for emptiness as a scalar value.
+	default:
+		if f.filterField != "" && (f.virtualFilterName == "" ||
+			(f.filterField != f.virtualFilterName && f.filterField != f.name)) {
+			return f.filterField
+		}
+	}
+	if f.sortAble && isScalarSortSelect(f.sortField) {
+		return f.sortField
+	}
+	if f.columnType != "" {
+		return f.referenceID
+	}
+	return ""
+}
+
+// Recognize one parenthesized SELECT. A compound ORDER BY, a placeholder or a
+// trailing sort direction cannot be reused as the value of a WHERE predicate.
+func isScalarSortSelect(expr string) bool {
+	expr = strings.TrimSpace(expr)
+	if len(expr) < 8 || expr[0] != '(' || expr[len(expr)-1] != ')' || strings.Contains(expr, "?") {
+		return false
+	}
+	body := strings.Fields(expr[1 : len(expr)-1])
+	if len(body) < 2 || !strings.EqualFold(body[0], "SELECT") {
+		return false
+	}
+	depth := 0
+	var quote byte
+	for i := 0; i < len(expr); i++ {
+		ch := expr[i]
+		if quote != 0 {
+			if ch == '\\' || (ch == quote && i+1 < len(expr) && expr[i+1] == quote) {
+				i++
+			} else if ch == quote {
+				quote = 0
+			}
+			continue
+		}
+		switch ch {
+		case '\'', '"', '`':
+			quote = ch
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				return i == len(expr)-1
+			}
+		case '#', ';':
+			return false
+		case '/', '-':
+			if strings.HasPrefix(expr[i:], "/*") || strings.HasPrefix(expr[i:], "--") {
+				return false
+			}
+		}
+	}
+	return false
 }
 
 // GroupAble identifier.
@@ -343,9 +441,9 @@ func (f *Field) SetRelation(r bool) *Field {
 // Field will return the field by the given name.
 // If it was not found, an error will be set.
 func (f *Field) Field(name string) *Field {
-	for _, fn := range f.fields {
-		if fn.name == name {
-			return &fn
+	for i := range f.fields {
+		if f.fields[i].name == name {
+			return &f.fields[i]
 		}
 	}
 
@@ -406,7 +504,10 @@ func (f Field) MarshalJSON() ([]byte, error) {
 		rv["sortable"] = f.sortAble
 	}
 	if f.filterAble {
-		rv["filterable"] = f.filterAble
+		rv["filterable"] = true
+	}
+	if f.filterAble || f.filterZeroValueOnly {
+		rv["filterZeroValue"] = f.FilterZeroValue()
 	}
 	if f.groupAble {
 		rv["groupable"] = f.groupAble
